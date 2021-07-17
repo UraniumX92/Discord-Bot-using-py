@@ -74,18 +74,3 @@ def modHlelpPromt_func(prefix):
                        f'```')
     return modHelp_prompt
 
-
-
-if __name__ == '__main__':
-    susStrInp = input("Enter sus string to append, // to skip: ")
-    if susStrInp == "//":
-        pass
-    else:
-        susList.append(susStrInp)
-        botFuncs.dumpJson(susList,botFuncs.susStringFile)
-
-    for item in susList:
-        print(item)
-
-    print(help_prompt)
-    print(modHelp_prompt)

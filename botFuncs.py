@@ -35,15 +35,6 @@ def loadJson(fileName):
     return pyObj
 
 
-def readnClear(filename):
-    with open(filename) as f:
-        lines = f.readlines()
-    if len(lines) >= 1000:
-        with open(filename, "w") as fclear:
-            fclear.write("")
-        print("Cleared message log File")
-
-
 def createFiles():
 
     if os.path.exists(os.path.join(os.getcwd(),banWordFile)):

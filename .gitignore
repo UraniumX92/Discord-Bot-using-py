@@ -1,0 +1,7 @@
+.env
+todo.txt
+__pycache__/
+.idea
+pyDiscBot.code-workspace
+
+

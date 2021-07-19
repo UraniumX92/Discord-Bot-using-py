@@ -18,33 +18,43 @@ reactionsList = ["😂","🤨","🤣","😆","🤔","😠","🤖","🥵","👀",
 
 #---------------------------------- Commands lists and description Dictionaries ----------------------------------#
 commandsList = [
-    'working',
-    'mybotprefix',
-    'prefix',
     'regfind',
     'fax',
-    'sneak'
+    'sneak',
+    'gif',
+    'code',
+    'dvc',
+    'dm',
+    'dmid'
 ]
 
 modCmdList = [
     'banword',
-    'mod',
-    'resetmybotprefix'
+    'mute',
+    'unmute',
+    'kick',
+    'ban',
+    'unban',
 ]
 #-------------------------------------------------- Dictionaries --------------------------------------------------#
 commandDescription_dict = {
-    commandsList[0] : 'Type this command to check if bot is active and responding to messages.',
-    commandsList[1] : 'Type this command to check the current prefix of bot.',
-    commandsList[2] : 'Type this command to change prefix (maximum length of prefix can be 3).',
-    commandsList[3] : 'Type this command to extract emails or discord tags from the text you enter after command.',
-    commandsList[4] : 'Type this command to get random % of some quality given in commad.',
-    commandsList[5] : 'Type this command to make bot say anything you say after command, your message will get deleted instantly.'
+    commandsList[0] : 'Type this command to extract emails or discord tags from the text you enter after command.',
+    commandsList[1] : 'Type this command to get random % of some quality given in commad.',
+    commandsList[2] : 'Type this command to make bot say anything you say after command, your message will get deleted instantly.',
+    commandsList[3] : 'Gives a Random GIF from tenor - from a given category',
+    commandsList[4] : 'Encloses the text given in command in a given format of code snippet.',
+    commandsList[5] : 'sends a funny message depending on the platform mentioned-user is active on (Mobile | PC)',
+    commandsList[6] : 'sends dm to mentioned user, message = message of command author in command. \n\t(limitation: only users who are in guild can get these messages from bot).',
+    commandsList[7] : 'same as {direct_anonymous|dm} but takes user-id instead of user mention,\n\tWorks even if user is not in guild , but should have DM\'s open.'
 }
 
 modCmdDescription_dict = {
     modCmdList[0] : 'Type this command to add , remove banned words , can also show list of banwords',
-    modCmdList[1] : 'Type this command to add , remove Mods , can also show list of Mods.',
-    modCmdList[2] : 'Type this command to reset the bot prefix back to `$` '
+    modCmdList[1] : 'If User is having higher role than muted role, then bot moves the muted role above user\'s highest role \n\tand then mutes the user.',
+    modCmdList[2] : 'Unmutes the user.',
+    modCmdList[3] : 'Kicks the user from guild.',
+    modCmdList[4] : 'Bans the user from guild.',
+    modCmdList[5] : 'Un-bans the user form guild.'
 }
 
 #-------------------------- Functions to create help prompt messages using real time prefix --------------------------#

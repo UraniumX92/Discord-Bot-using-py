@@ -316,6 +316,6 @@ async def dm_withID(ctx,memberID:int,*,message):
     await ctx.send("Done.")
 
 
-BOT_TOKEN = os.environ['BOT_TOKEN']
+BOT_TOKEN = os.environ['BOTTOKEN']
 
 client.run(BOT_TOKEN)

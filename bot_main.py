@@ -23,6 +23,7 @@ client = commands.Bot(command_prefix=bot_prefix ,
                       help_command= None,
                       intents = discord.Intents.all())
 
+
 @client.event
 async def on_ready():
     print(f'{client.user} is online and ready to go.')
@@ -133,7 +134,7 @@ async def purge(ctx,amount: int = 1 ):
     else:
         await ctx.message.delete()
         await ctx.channel.purge(limit=amount)
-        await ctx.send(f'Deleted `{amount - 1}` messages',delete_after = 2.5)
+        await ctx.send(f'Deleted `{amount}` messages',delete_after = 2.5)
 
 
 
@@ -143,7 +144,7 @@ async def mute(ctx,member: discord.Member):
     listOfGuildRoles = ctx.guild.roles
     listMemberRoles = member.roles
 
-    # Getting the position of highest role of user to be muted
+    # Getting the position of highest role of -user to be muted-
     highestMemberRole_pos = listMemberRoles[len(listMemberRoles)-1].position
 
     for role in listOfGuildRoles:

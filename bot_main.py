@@ -1,10 +1,8 @@
 import discord
 import random
-import requests
 import os
 import re
 from discord.ext import commands
-import asyncio
 #-------------------------------------------------- My Files - Imports --------------------------------------------------#
 import botFuncs
 import botData
@@ -75,6 +73,7 @@ async def mod_help(ctx):
     await ctx.send(modHelpPrompt)
 
 #TODO-false ----------------------------------------- MOD COMMANDS -----------------------------------------#
+
 @client.command(aliases = ["bw"])
 @commands.has_permissions(manage_guild = True)
 async def banword(ctx,*args):
@@ -132,7 +131,7 @@ async def purge(ctx,amount: int = 1 ):
         await ctx.message.add_reaction("❓")
         await ctx.send("Can't delete negative number of messages!", delete_after = 2.5)
     else:
-        amount += 1
+        await ctx.message.delete()
         await ctx.channel.purge(limit=amount)
         await ctx.send(f'Deleted `{amount - 1}` messages',delete_after = 2.5)
 

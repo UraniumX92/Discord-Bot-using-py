@@ -10,6 +10,7 @@ So, I re-wrote the entire bot's main script using a `command` decorator .
     * banword - add , remove or show banned words (filtered words)
     
     * New :
+        * purge - Deletes the specified number of messages in the channel.
         * Mute
             * If User is having higher role than `muted` role, then bot moves the `muted` role above user's highest role and then mutes the user.
         * Un-mute

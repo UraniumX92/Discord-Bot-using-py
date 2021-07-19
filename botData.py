@@ -1,10 +1,5 @@
 import botFuncs
 
-#TODO: {bot_prefix}help prompt response
-#   list which contains commands
-#   then a dict whose keys are list[i], value = str - description of the command and usage
-#TO.DO: sus command strings list
-
 #----------------------------------- Bot Variables -----------------------------------#
 bot_prefix = botFuncs.loadJson(botFuncs.prefixFile)
 #-------------------------------------------------------------------------------------#
@@ -29,6 +24,7 @@ commandsList = [
 ]
 
 modCmdList = [
+    'purge',
     'banword',
     'mute',
     'unmute',
@@ -49,12 +45,13 @@ commandDescription_dict = {
 }
 
 modCmdDescription_dict = {
-    modCmdList[0] : 'Type this command to add , remove banned words , can also show list of banwords',
-    modCmdList[1] : 'If User is having higher role than muted role, then bot moves the muted role above user\'s highest role \n\tand then mutes the user.',
-    modCmdList[2] : 'Unmutes the user.',
-    modCmdList[3] : 'Kicks the user from guild.',
-    modCmdList[4] : 'Bans the user from guild.',
-    modCmdList[5] : 'Un-bans the user form guild.'
+    modCmdList[0] : 'Deletes the specified number of messages from the channel.',
+    modCmdList[1] : 'Type this command to add , remove banned words , can also show list of banwords',
+    modCmdList[2] : 'If User is having higher role than muted role, then bot moves the muted role above user\'s highest role \n\tand then mutes the user.',
+    modCmdList[3] : 'Unmutes the user.',
+    modCmdList[4] : 'Kicks the user from guild.',
+    modCmdList[5] : 'Bans the user from guild.',
+    modCmdList[6] : 'Un-bans the user form guild.'
 }
 
 #-------------------------- Functions to create help prompt messages using real time prefix --------------------------#
@@ -67,8 +64,7 @@ def helpPromt_func(prefix):
         else:
             help_prompt += f'{prefix}{commandsList[i]} --> {commandDescription_dict[commandsList[i]]}\n'
     help_prompt += (f'\n'
-                    f'Tip: just type {prefix}{{command}} to know the usage of the complex commands.\n'
-                    f'\t for mod commands type this: {prefix}help mod\n'
+                    f'\t for mod commands type this: {prefix}mod_help or {prefix}mh\n'
                     f'```')
     return help_prompt
 
@@ -77,12 +73,8 @@ def modHlelpPromt_func(prefix):
     """Takes modCmdList from botData and makes a prompt message for mod help command"""
     modHelp_prompt = f'```\n'
     for j in range(len(modCmdList)):
-        if j == 2: # command(s) with no prefix
-            modHelp_prompt += f'{modCmdList[j]} --> {modCmdDescription_dict[modCmdList[j]]}\n'
-        else:
-            modHelp_prompt += f'{prefix}{modCmdList[j]} --> {modCmdDescription_dict[modCmdList[j]]}\n'
+        modHelp_prompt += f'{prefix}{modCmdList[j]} --> {modCmdDescription_dict[modCmdList[j]]}\n'
     modHelp_prompt += (f'\n'
-                       f'Tip: just type {prefix}{{command}} to know the usage of the complex commands.\n'
                        f'```')
     return modHelp_prompt
 

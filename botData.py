@@ -12,7 +12,9 @@ bot_prefix = botFuncs.loadJson(botFuncs.prefixFile)
 #-------------------------------- Bot Commands Data ----------------------------------#
 bannedWords = botFuncs.loadJson(botFuncs.banWordFile)
 modsList = botFuncs.loadJson(botFuncs.modListFile)
-
+#-------------------------------- Fun Commands Data ----------------------------------#
+susList = botFuncs.loadJson(botFuncs.susStringFile)
+reactionsList = ["😂","🤨","🤣","😆","🤔","😠","🤖","🥵","👀","☝","😳","😬","🙄","🤠","⛔","😈","💀","🤡","❌","⁉️"]
 
 #---------------------------------- Commands lists and description Dictionaries ----------------------------------#
 commandsList = [
@@ -74,3 +76,14 @@ def modHlelpPromt_func(prefix):
                        f'```')
     return modHelp_prompt
 
+
+if __name__ == '__main__':
+    susStrInp = input("Enter sus string to append, // to skip: ")
+    if susStrInp == "//":
+        pass
+    else:
+        susList.append(susStrInp)
+        botFuncs.dumpJson(susList,botFuncs.susStringFile)
+
+    for item in susList:
+        print(item)

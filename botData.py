@@ -1,82 +1,67 @@
 import botFuncs
-
-#----------------------------------- Bot Variables -----------------------------------#
-bot_prefix = botFuncs.loadJson(botFuncs.prefixFile)
-#-------------------------------------------------------------------------------------#
+import discord
+from discord.ext import commands
 
 #-------------------------------- Bot Commands Data ----------------------------------#
 bannedWords = botFuncs.loadJson(botFuncs.banWordFile)
 modsList = botFuncs.loadJson(botFuncs.modListFile)
 #-------------------------------- Fun Commands Data ----------------------------------#
 susList = botFuncs.loadJson(botFuncs.susStringFile)
-reactionsList = ["😂","🤨","🤣","😆","🤔","😠","🤖","🥵","👀","☝","😳","😬","🙄","🤠","⛔","😈","💀","🤡","❌","⁉️"]
+reactionsList = ['😂','🤮','💀','🤡','💩']
 
-#---------------------------------- Commands lists and description Dictionaries ----------------------------------#
-commandsList = [
-    'regfind',
-    'fax',
-    'sneak',
-    'gif',
-    'code',
-    'dvc',
-    'dm',
-    'dmid'
-]
+#---------------------------------- {Commands : Description}  Dictionaries ----------------------------------#
 
-modCmdList = [
-    'purge',
-    'banword',
-    'mute',
-    'unmute',
-    'kick',
-    'ban',
-    'unban',
-]
-#-------------------------------------------------- Dictionaries --------------------------------------------------#
-commandDescription_dict = {
-    commandsList[0] : 'Type this command to extract emails or discord tags from the text you enter after command.',
-    commandsList[1] : 'Type this command to get random % of some quality given in commad.',
-    commandsList[2] : 'Type this command to make bot say anything you say after command, your message will get deleted instantly.',
-    commandsList[3] : 'Gives a Random GIF from tenor - from a given category',
-    commandsList[4] : 'Encloses the text given in command in a given format of code snippet.',
-    commandsList[5] : 'sends a funny message depending on the platform mentioned-user is active on (Mobile | PC)',
-    commandsList[6] : 'sends dm to mentioned user, message = message of command author in command. \n\t(limitation: only users who are in guild can get these messages from bot).',
-    commandsList[7] : 'same as {direct_anonymous|dm} but takes user-id instead of user mention,\n\tWorks even if user is not in guild , but should have DM\'s open.'
+commandsDescription_dict = {
+    'regfind'   : "Type this command to extract emails or discord tags from the text you enter after command.",
+    'fax'       : "Type this command to get random % of some quality given in command.",
+    'sneak'     : "Type this command to make bot say anything you say after command, your message will get deleted instantly.",
+    'gif'       : "Gives a Random GIF from tenor - from a given category",
+    'code'      : "Encloses the text given in command in a given format of code snippet.",
+    'dvc'       : "sends a funny message depending on the platform mentioned-user is active on (Mobile | PC)",
+    'dm'        : "sends dm to mentioned user, message = message of command author in command. \n\t(limitation: only users who are in guild can get these messages from bot).",
+    'dmid'      : "same as {direct_anonymous|dm} but takes user-id instead of user mention,\n\tWorks even if user is not in guild , but should have DM\'s open.",
+    'avatar'    : "Shows Avatar of mentioned user, if not mentioned, then shows user\'s avatar."
 }
 
 modCmdDescription_dict = {
-    modCmdList[0] : 'Deletes the specified number of messages from the channel.',
-    modCmdList[1] : 'Type this command to add , remove banned words , can also show list of banwords',
-    modCmdList[2] : 'If User is having higher role than muted role, then bot moves the muted role above user\'s highest role \n\tand then mutes the user.',
-    modCmdList[3] : 'Unmutes the user.',
-    modCmdList[4] : 'Kicks the user from guild.',
-    modCmdList[5] : 'Bans the user from guild.',
-    modCmdList[6] : 'Un-bans the user form guild.'
+    'purge'     : "Deletes the speci    fied number of messages from the channel.",
+    'banword'   : "Type this command to add , remove banned words , can also show list of banwords",
+    'mute'      : "If User is having higher role than muted role, then bot moves the muted role above user\'s highest role \n\tand then mutes the user.",
+    'unmute'    : "Unmutes the user.",
+    'kick'      : "Kicks the user from guild.",
+    'ban'       : "Bans the user from guild.",
+    'unban'     : "Un-bans the user form guild.",
+    'filter'    : "Turn the message filter for banwords on/off using +/-",
+    'pin'       : "Turn the 'Pin Message on Reactions' feature on/off using +/-",
+    'rlimit'    : "Bot Feature 'Pin Message on Reactions' : Set the number of reactions needed to pin the message ",
+    'difflimit' : "Bot Feature 'Pin Message on Reactions' : Set the number of different reactions required to pin the message"
 }
 
 #-------------------------- Functions to create help prompt messages using real time prefix --------------------------#
-def helpPromt_func(prefix):
-    """Takes commandsList form botData and makes a prompt message for help command"""
-    help_prompt = f'```\n'
-    for i in range(len(commandsList)):
-        if i == 1: # command(s) with no prefix
-            help_prompt += f'{commandsList[i]} --> {commandDescription_dict[commandsList[i]]}\n'
-        else:
-            help_prompt += f'{prefix}{commandsList[i]} --> {commandDescription_dict[commandsList[i]]}\n'
-    help_prompt += (f'\n'
-                    f'\t for mod commands type this: {prefix}mod_help or {prefix}mh\n'
-                    f'```')
-    return help_prompt
+def helpPromt_func(member : discord.Member, client : commands.Bot):
+    """Takes commandsList form botData and makes a Embed message for help command"""
+    embed = discord.Embed(title="User Commands:", color=discord.Colour.dark_gold())
+    embed.set_thumbnail(url=client.user.avatar_url)
+    for command,description in commandsDescription_dict.items():
+        embed.add_field(name=command,value=botFuncs.capFistChar(description),inline=False)
+    embed.add_field(name="Note:",value="For mod commands, type this: mod_help or mh")
+
+    member_name = str(member.name) + '#' + str(member.discriminator)
+    embed.set_footer(text=f"Requested by {member_name}", icon_url=member.avatar_url)
+    return embed
 
 
-def modHlelpPromt_func(prefix):
-    """Takes modCmdList from botData and makes a prompt message for mod help command"""
-    modHelp_prompt = f'```\n'
-    for j in range(len(modCmdList)):
-        modHelp_prompt += f'{prefix}{modCmdList[j]} --> {modCmdDescription_dict[modCmdList[j]]}\n'
-    modHelp_prompt += (f'\n'
-                       f'```')
-    return modHelp_prompt
+
+def modHlelpPromt_func(member : discord.Member, client : commands.Bot):
+    """Takes modCmdList from botData and makes a Embed message for mod help command"""
+    embed = discord.Embed(title="Mod Commands:", color=discord.Colour.dark_gold())
+    embed.set_thumbnail(url=client.user.avatar_url)
+    for command,description in modCmdDescription_dict.items():
+        embed.add_field(name=command,value=botFuncs.capFistChar(description),inline=False)
+
+    member_name = str(member.name) + '#' + str(member.discriminator)
+    embed.set_footer(text=f"Requested by {member_name}", icon_url=member.avatar_url)
+    return embed
 
 
 if __name__ == '__main__':

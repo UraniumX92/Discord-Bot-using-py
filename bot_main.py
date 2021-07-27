@@ -141,18 +141,19 @@ async def on_message(message):
     if fullMsgList[0] == (f'{bot_prefix}mod'):
         if fUserName not in botData.modsList:
             return
+        modToAdd = " ".join(fullMsgList[2:])
         try:
             operator_mod = fullMsgList[1]
-            if fullMsgList[2].isnumeric():
+            if modToAdd.isnumeric():
                 try:
-                    newBotMod = await client.fetch_user(fullMsgList[2])
+                    newBotMod = await client.fetch_user(modToAdd)
                     nameToAdd = str(newBotMod)
                 except:
                     await message.channel.send("Can't find any user with given ID.")
                     return
-            elif botFuncs.isDiscTag(fullMsgList[2])[0]:
-                nameToAdd = botFuncs.isDiscTag(fullMsgList[2])[1]
-            elif fullMsgList[2] == 'show':
+            elif botFuncs.isDiscTag(modToAdd)[0]:
+                nameToAdd = botFuncs.isDiscTag(modToAdd)[1]
+            elif modToAdd == 'show':
                 nameToAdd = fullMsgList[2]
             else:
                 raise ValueError

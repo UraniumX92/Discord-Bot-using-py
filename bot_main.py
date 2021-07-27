@@ -233,7 +233,7 @@ async def on_command_error(ctx,error):
             erMsg.write(f"{logTime} --> {author}: {ctx.message.content} --Guild : \"{guild_name}\" -- Channel: #{channel_name}\n")
 
         await ctx.send(f"{author.mention}, Either bot doesn't have permission to do the task or you used the command incorrectly\n"
-	                   f"an error has occurred, Please contact the Bot Dev with this time stamp : {logTime} \n"
+	                   f"an error has occurred, Please contact the Bot Dev with this time stamp : `{logTime}` \n"
 	                   f"This message will be Deleted automatically after 2 minutes, make sure you copy the time stamp before this gets deleted", delete_after = 2*60)
 
 
@@ -415,10 +415,11 @@ async def kick(ctx,member: discord.Member,*,reason = "No Reason Provided"):
         await member.send(f'You were kicked from `{ctx.guild.name}`, Reason : `{reason}`')
         await member.kick(reason=reason)
     except:
-        await member.kick(reason=reason)
-        await ctx.send(f"{member} was kicked from `{ctx.guild.name}`, Reason : `{reason}`")
+        pass
+
+    await member.kick(reason=reason)
     await ctx.message.add_reaction("✅")
-    await ctx.send(f'`{member.name}` was Kicked from `{ctx.guild.name}`.')
+    await ctx.send(f'`{member.name}` was Kicked from `{ctx.guild.name}, Reason = `{reason}`.')
 
 
 @client.command(aliases = ["b"])
@@ -428,10 +429,10 @@ async def ban(ctx,member: discord.Member,*,reason = "No Reason Provided"):
         await member.send(f'You were banned from `{ctx.guild.name}`, Reason : `{reason}`')
         await member.ban(reason=reason)
     except:
-        await member.ban(reason=reason)
-        await ctx.send(f"{member} was banned from `{ctx.guild.name}`, Reason : `{reason}`")
+        pass
+    await member.ban(reason=reason)
     await ctx.message.add_reaction("✅")
-    await ctx.send(f'`{member.mention}` was banned from `{ctx.guild.name}`.')
+    await ctx.send(f'`{member.mention}` was banned from `{ctx.guild.name}, Reason = `{reason}`.')
 
 
 @client.command(aliases = ["unb"])

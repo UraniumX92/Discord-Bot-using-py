@@ -231,8 +231,10 @@ async def on_command_error(ctx,error):
             erf.write(f"{logTime} --> {error} -- In Guild : \"{guild_name}\" -- Command User : {author}\n")
         with open(errMessageLogFile,"a") as erMsg:
             erMsg.write(f"{logTime} --> {author}: {ctx.message.content} --Guild : \"{guild_name}\" -- Channel: #{channel_name}\n")
-        await ctx.send(f"{author.mention}, There is Something wrong, I can feel it! ||`ERROR LOGGED`||",delete_after = 2)
 
+        await ctx.send(f"{author.mention}, Either bot doesn't have permission to do the task or you used the command incorrectly\n"
+	                   f"an error has occurred, Please contact the Bot Dev with this time stamp : {logTime} \n"
+	                   f"This message will be Deleted automatically after 2 minutes, make sure you copy the time stamp before this gets deleted", delete_after = 2*60)
 
 
 #TODO-false ---------------------------------------- Help Commands ---------------------------------------- #
@@ -322,7 +324,7 @@ async def filter_switch(ctx,operator):
         await ctx.message.delete()
 
 
-@client.command(aliases = ['pswitch','pinswitch','pin'])
+@client.command(aliases = ['pswitch','pinswitch'])
 @commands.has_permissions(manage_channels = True)
 async def pin_switch(ctx,operator):
     fullDict = botFuncs.loadJson(switchesFile)
@@ -409,8 +411,12 @@ async def unmute(ctx,member: discord.Member):
 @client.command(aliases = ["k"])
 @commands.has_permissions(kick_members = True)
 async def kick(ctx,member: discord.Member,*,reason = "No Reason Provided"):
-    await member.send(f'You were kicked from `{ctx.guild.name}`, Reason : `{reason}`')
-    await member.kick(reason=reason)
+    try:
+        await member.send(f'You were kicked from `{ctx.guild.name}`, Reason : `{reason}`')
+        await member.kick(reason=reason)
+    except:
+        await member.kick(reason=reason)
+        await ctx.send(f"{member} was kicked from `{ctx.guild.name}`, Reason : `{reason}`")
     await ctx.message.add_reaction("✅")
     await ctx.send(f'`{member.name}` was Kicked from `{ctx.guild.name}`.')
 
@@ -418,8 +424,12 @@ async def kick(ctx,member: discord.Member,*,reason = "No Reason Provided"):
 @client.command(aliases = ["b"])
 @commands.has_permissions(ban_members = True)
 async def ban(ctx,member: discord.Member,*,reason = "No Reason Provided"):
-    await member.send(f'You were banned from `{ctx.guild.name}`, Reason : `{reason}`')
-    await member.ban(reason=reason)
+    try:
+        await member.send(f'You were banned from `{ctx.guild.name}`, Reason : `{reason}`')
+        await member.ban(reason=reason)
+    except:
+        await member.ban(reason=reason)
+        await ctx.send(f"{member} was banned from `{ctx.guild.name}`, Reason : `{reason}`")
     await ctx.message.add_reaction("✅")
     await ctx.send(f'`{member.mention}` was banned from `{ctx.guild.name}`.')
 
@@ -538,7 +548,9 @@ async def sneak(ctx,*,messageTosay):
 
 
 @client.command(aliases = ['sus', 'amoggus'])
-async def suspicious(ctx,member: discord.Member):
+async def suspicious(ctx,member: discord.Member = None):
+    member = ctx.author if not member else member
+
     susStr = random.choice(botData.susList)
     await ctx.message.add_reaction("🤨")
     await ctx.send(f'{member.mention} {susStr}')

@@ -32,7 +32,7 @@ modCmdDescription_dict = {
     'ban'       : "Bans the user from guild.",
     'unban'     : "Un-bans the user form guild.",
     'filter'    : "Turn the message filter for banwords on/off using +/-",
-    'pin'       : "Turn the 'Pin Message on Reactions' feature on/off using +/-",
+    'pswitch'       : "Turn the 'Pin Message on Reactions' feature on/off using +/-",
     'rlimit'    : "Bot Feature 'Pin Message on Reactions' : Set the number of reactions needed to pin the message ",
     'difflimit' : "Bot Feature 'Pin Message on Reactions' : Set the number of different reactions required to pin the message"
 }

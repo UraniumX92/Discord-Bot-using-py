@@ -26,3 +26,24 @@
 26-07-2021 14:41:26 --> Converting to "int" failed for parameter "memberID". -- In Guild : "STRUGGLES OF NOOB" -- Command User : Yagami#0869
 26-07-2021 14:42:27 --> Converting to "int" failed for parameter "memberID". -- In Guild : "STRUGGLES OF NOOB" -- Command User : Yagami#0869
 26-07-2021 14:42:38 --> Converting to "int" failed for parameter "memberID". -- In Guild : "STRUGGLES OF NOOB" -- Command User : Yagami#0869
+27-07-2021 20:51:45 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50007): Cannot send messages to this user -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+27-07-2021 20:54:06 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50007): Cannot send messages to this user -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+27-07-2021 21:07:27 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50007): Cannot send messages to this user -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+27-07-2021 21:08:17 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50007): Cannot send messages to this user -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+27-07-2021 21:13:29 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50007): Cannot send messages to this user -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+27-07-2021 21:50:34 --> Command raised an exception: TypeError: object NoneType can't be used in 'await' expression -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+27-07-2021 22:47:32 --> Command raised an exception: AttributeError: 'MessageReference' object has no attribute 'pin' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+27-07-2021 23:02:20 --> Command raised an exception: AttributeError: 'NoneType' object has no attribute 'message_id' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+27-07-2021 23:03:02 --> Command raised an exception: TypeError: remove_reaction() missing 1 required positional argument: 'member' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+27-07-2021 23:21:38 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50007): Cannot send messages to this user -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+28-07-2021 00:51:30 --> Command raised an exception: Forbidden: 403 Forbidden (error code: 50013): Missing Permissions -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+28-07-2021 01:18:51 --> Command raised an exception: UnboundLocalError: local variable 'member' referenced before assignment -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+28-07-2021 01:37:19 --> Command raised an exception: AttributeError: 'NoneType' object has no attribute 'type' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+28-07-2021 15:16:27 --> Command raised an exception: AttributeError: 'Context' object has no attribute 'user' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+28-07-2021 15:17:08 --> Command raised an exception: RuntimeError: PyNaCl library needed in order to use voice -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+28-07-2021 15:38:08 --> Command raised an exception: AttributeError: 'VoiceChannel' object has no attribute 'disconnect' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+29-07-2021 18:15:54 --> Command raised an exception: Forbidden: 403 Forbidden (error code: 50013): Missing Permissions -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+29-07-2021 18:16:41 --> Command raised an exception: Forbidden: 403 Forbidden (error code: 50013): Missing Permissions -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+29-07-2021 18:18:48 --> Command raised an exception: Forbidden: 403 Forbidden (error code: 50013): Missing Permissions -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+29-07-2021 18:25:00 --> Command raised an exception: Forbidden: 403 Forbidden (error code: 50013): Missing Permissions -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+29-07-2021 18:53:41 --> Command raised an exception: AttributeError: 'NoneType' object has no attribute 'channel' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939

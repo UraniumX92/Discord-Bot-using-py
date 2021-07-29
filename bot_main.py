@@ -4,6 +4,7 @@ import asyncio
 import os
 import re
 from discord.ext import commands
+from datetime import datetime
 #-------------------------------------------------- My Files - Imports --------------------------------------------------#
 import botFuncs
 import botData
@@ -24,9 +25,11 @@ botFuncs.createFiles()
 bot_prefix = "$"
 operatorList = ["+","-","*"] # --> List of operators used in different commands to add , remove and show respectively
 #------------------------------------------------------------------------------------------------------------------------#
+owner_id = int(os.environ['MY_DISCORD_USER_ID'])
 client = commands.Bot(command_prefix=bot_prefix ,
-                      help_command= None,
-                      intents = discord.Intents.all())
+                      help_command=None,
+                      owner_id=owner_id,
+                      intents=discord.Intents.all())
 
 
 @client.event
@@ -224,18 +227,32 @@ async def on_command_error(ctx,error):
     elif isinstance(error,commands.MissingRequiredArgument):
         await ctx.send(f"{author.mention}, Please provide all the arguments Required for the command.",delete_after = 4)
     else:
-        guild_name = ctx.guild.name
-        channel_name = ctx.message.channel
+        channel_name = ctx.channel
         logTime = botFuncs.getDateTime()
+        deleteAfter = 5*60 # time in seconds
+        owner = client.get_user(client.owner_id)
+        await ctx.message.add_reaction("❗")
+        try:
+            guild_name = ctx.guild.name
 
-        with open(errorsLogFile,"a") as erf:
-            erf.write(f"{logTime} --> {error} -- In Guild : \"{guild_name}\" -- Command User : {author}\n")
-        with open(errMessageLogFile,"a") as erMsg:
-            erMsg.write(f"{logTime} --> {author}: {ctx.message.content} --Guild : \"{guild_name}\" -- Channel: #{channel_name}\n")
+            with open(errorsLogFile,"a") as erf:
+                erf.write(f"{logTime} --> {error} -- In Guild : \"{guild_name}\" -- Command User : {author}\n")
+            with open(errMessageLogFile,"a") as erMsg:
+                erMsg.write(f"{logTime} --> {author}: {ctx.message.content} --Guild : \"{guild_name}\" -- Channel: #{channel_name}\n")
 
-        await ctx.send(f"{author.mention}, Either bot doesn't have permission to do the task or you used the command incorrectly\n"
-	                   f"an error has occurred, Please contact the Bot Dev with this time stamp : `{logTime}` \n"
-	                   f"This message will be Deleted automatically after 2 minutes, make sure you copy the time stamp before this gets deleted", delete_after = 2*60)
+            await ctx.send(f"{author.mention}, Either bot doesn't have permission to do the task or you used the command incorrectly\n"
+                           f"an error has occurred, Please contact the Bot Dev `{owner}` with this info :\n ```{logTime} --> {error}``` \n"
+                           f"This message will be Deleted automatically after {deleteAfter/60} minutes, make sure you copy the error info before this gets deleted", delete_after=deleteAfter)
+        except Exception as error_in_handling :
+            with open(errorsLogFile, "a") as erf:
+                erf.write(f"{logTime} --> {error} -- In Channel : {channel_name} -- Command User : {author}\n")
+            with open(errMessageLogFile, "a") as erMsg:
+                erMsg.write(f"{logTime} --> {author}: {ctx.message.content}  -- Channel: #{channel_name} --Command User : {author}\n")
+
+            await ctx.send(f"{author.mention}, Either bot doesn't have permission to do the task or you used the command incorrectly\n"
+                           f"an error has occurred, Please contact the Bot Dev `{owner}` with this info :\n ```{logTime} --> {error_in_handling}``` \n"
+                           f"This message will be Deleted automatically after {deleteAfter/60} minutes, make sure you copy the error info before this gets deleted", delete_after=deleteAfter)
+        raise error
 
 
 #TODO-false ---------------------------------------- Help Commands ---------------------------------------- #
@@ -325,9 +342,9 @@ async def filter_switch(ctx,operator):
         await ctx.message.delete()
 
 
-@client.command(aliases = ['pswitch','pinswitch'])
+@client.command(aliases = ['pswitch','psw'])
 @commands.has_permissions(manage_channels = True)
-async def pin_switch(ctx,operator):
+async def p_switch(ctx,operator):
     fullDict = botFuncs.loadJson(switchesFile)
     if operator == '+':
         fullDict['pinSwitch'] = True
@@ -454,6 +471,60 @@ async def unban(ctx,*,member):
     await ctx.send(f'{member} not found in this guild\'s banned list.')
     return
 
+
+@client.command()
+@commands.has_permissions(manage_guild=True)
+async def pin(ctx):
+    ref_message_id =  ctx.message.reference.message_id
+    ref_msg = await ctx.channel.fetch_message(ref_message_id)
+    await ref_msg.pin()
+    await ref_msg.add_reaction("📌")
+    await ctx.message.add_reaction("✅")
+
+
+@client.command()
+@commands.has_permissions(manage_guild=True)
+async def unpin(ctx):
+    ref_message_id =  ctx.message.reference.message_id
+    ref_msg = await ctx.channel.fetch_message(ref_message_id)
+    if ref_msg.pinned:
+        await ref_msg.unpin()
+    else:
+        await ctx.send("Referenced Message is not Pinned.",delete_after=5)
+        return
+    await ref_msg.remove_reaction("📌",client.user)
+    await ctx.message.add_reaction("✅")
+
+
+@client.command(aliases=['vc','changevc'])
+@commands.has_permissions(manage_guild=True)
+async def change_voice_channel(ctx,member:discord.Member,*,vcName=None):
+    guild_VC_list = ctx.guild.voice_channels
+    bot_owner = client.get_user(client.owner_id)
+
+    if member == bot_owner and ctx.author != bot_owner:
+        return await ctx.send(f"HAHA Nice try {ctx.author.name}, I am Loyal to my Owner, i won't do that to him. Better Luck next time :wink:")
+
+    try:
+        joined_vc = member.voice.channel
+    except:
+        return await ctx.send(f"{member.name} is currently not in any VC.")
+
+    if not vcName:
+        await member.edit(voice_channel=vcName)
+        return await ctx.send(f"{member.name} was Disconnected from `{joined_vc.name}` ")
+
+
+    temp_vcName = vcName.lower()
+    for vc in guild_VC_list:
+        if vc.name.lower() == temp_vcName:
+            voice_channel = vc
+            await member.edit(voice_channel=voice_channel)
+            return await ctx.send(f"{member.name} was moved from `{joined_vc.name}` to `{voice_channel.name}`")
+
+    return await ctx.send(f"Voice Channel with name `{vcName}` Not found.")
+
+
 #TODO-false ------------------------------------------- Commands For Users ------------------------------------------------#
 
 #TODO-false ------------------------------------------- Utility Commands --------------------------------------------------#
@@ -491,7 +562,6 @@ async def regfind(ctx,emailORdisctag,operator,*,text):
                           f'| --> or\n'
                           '{} exclude the brackets\n'
                           '```')
-
 
 
 @client.command(aliases = ['gif'])
@@ -535,6 +605,87 @@ async def code(ctx,format,*,code):
     os.remove(os.path.join(os.getcwd(),tempFileName))
 
 
+@client.command(aliases=['r'])
+async def react(ctx,emoji):
+    ref_message_id =  ctx.message.reference.message_id
+    ref_msg = await ctx.channel.fetch_message(ref_message_id)
+
+    try: # For default Emojis (Unicode characters) and Guild image emojis
+        await ref_msg.add_reaction(emoji)
+        await ctx.message.add_reaction("✅")
+    except: # For Guild Emojis which are Animated
+        for g_emoji in ctx.guild.emojis:
+            if g_emoji.name == emoji:
+                r_emoji = g_emoji
+                await ref_msg.add_reaction(r_emoji)
+                await ctx.message.add_reaction("✅")
+                return
+        await ctx.send("Emoji Not Found.")
+
+    await asyncio.sleep(4)
+    await ctx.message.delete()
+
+
+@client.command(aliases=['activ'])
+async def activity(ctx, member: discord.Member = None):
+    member = ctx.author if not member else member
+    try:
+        activT = member.activity
+        if str(activT) != "Spotify":
+            activT_type = botFuncs.capFistChar(str(activT.type).split('.')[1])
+            activT_application = botFuncs.capFistChar(str(activT.name))
+            activT_duration = str(datetime.now() - activT.created_at).split(".")[0]
+
+            embed = discord.Embed(title=f"{member.name}'s Activity:", color=discord.Colour.dark_gold())
+            embed.set_thumbnail(url=member.avatar_url)
+            embed.add_field(name="Activity Type", value=f"{activT_type}", inline=False)
+            embed.add_field(name="Application", value=f"{activT_application}", inline=False)
+            embed.add_field(name="Duration",value=activT_duration,inline=False)
+            if activT.details:
+                activT_details = botFuncs.capFistChar(str(activT.details))
+                embed.add_field(name="Details", value=f"{activT_details}", inline=False)
+
+            author_name = str(ctx.author)
+            embed.set_footer(text=f'Requested by {author_name}.', icon_url=ctx.author.avatar_url)
+            await ctx.send(embed=embed)
+
+        else:
+            spotify = member.activity
+
+            started_song_at = str(spotify.created_at.strftime("%d-%m-%Y %H:%M:%S")).split(".")[0]
+            song_name = spotify.title
+            song_total_duration = str(spotify.duration)[:-3]
+            artistsList = spotify.artists
+            artists = ", ".join(artistsList)
+            album = spotify.album
+            song_id = spotify.track_id
+            song_duration = str(datetime.now() - spotify.created_at).split(".")[0]
+            album_url = spotify.album_cover_url
+
+            embed = discord.Embed(title=f"{member.name}'s Spotify Session", color=discord.Colour.dark_gold())
+            embed.add_field(name="Current Song Started at (Time Zone UTC)", value=f"`{started_song_at}`", inline=False)
+            embed.add_field(name="Song Time Stamp Now", value=song_duration, inline=False)
+            embed.add_field(name="Song Name", value=song_name, inline=True)
+            embed.add_field(name="Song Duration", value=song_total_duration, inline=True)
+            embed.add_field(name="Song Artist(s)", value=artists, inline=False)
+            embed.add_field(name="Album Name", value=album, inline=False)
+            embed.add_field(name="Song ID on Spotify", value=song_id, inline=False)
+            embed.set_thumbnail(url=album_url)
+
+            author_name = str(ctx.author)
+            embed.set_footer(text=f'Requested by {author_name}.', icon_url=ctx.author.avatar_url)
+            await ctx.send(embed=embed)
+    except Exception as x:
+        await ctx.send(f"{x}\nApparently, {member.name} is not doing any activity right now.")
+
+
+@client.command(aliases=['nick'])
+@commands.has_permissions(change_nickname=True)
+async def set_nick(ctx,member:discord.Member,*,newNick=None):
+    await member.edit(nick=newNick)
+    await ctx.message.add_reaction("✅")
+
+
 #TODO-false ----------------------------------------------- Fun Commands --------------------------------------------------#
 
 @client.command(aliases = ['fax'])
@@ -558,7 +709,7 @@ async def suspicious(ctx,member: discord.Member = None):
     await ctx.send(f'{member.mention} {susStr}')
 
 
-@client.command(aliases = ["dvc"])
+@client.command(aliases = ["platform"])
 async def device(ctx,member:discord.Member = None):
     member = ctx.author if not member else member
 

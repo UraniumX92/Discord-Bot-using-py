@@ -17,3 +17,24 @@
 26-07-2021 14:41:26 --> Yagami#0869: $dmid alkdjfasd --Guild : "STRUGGLES OF NOOB" -- Channel: #general
 26-07-2021 14:42:27 --> Yagami#0869: $dmid <@!841587302584418305> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
 26-07-2021 14:42:38 --> Yagami#0869: $dmid <@!259708868144136202> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+27-07-2021 20:51:45 --> Uranium#4939: $dmid 425833927517798420 Hello , This is from bot to bot --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+27-07-2021 20:54:06 --> Uranium#4939: $dmid 425833927517798420 Hello , This is from bot to bot --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+27-07-2021 21:07:27 --> Uranium#4939: $dmid 425833927517798420 Hello , This is from bot to bot --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+27-07-2021 21:08:17 --> Uranium#4939: $dmid 425833927517798420 Hello , This is from bot to bot --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+27-07-2021 21:13:29 --> Uranium#4939: $dmid 425833927517798420 Hello , This is from bot to bot --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+27-07-2021 21:50:34 --> Uranium#4939: $pn aa --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+27-07-2021 22:47:32 --> Uranium#4939: $pin --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+27-07-2021 23:02:20 --> Uranium#4939: $unpin --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+27-07-2021 23:03:02 --> Uranium#4939: $unpin --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+27-07-2021 23:21:38 --> Uranium#4939: $dmid 425833927517798420 Hello , This is from bot to bot --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+28-07-2021 00:51:30 --> Uranium#4939: $kick <@!259708868144136202> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+28-07-2021 01:18:51 --> Uranium#4939: $act --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+28-07-2021 01:37:19 --> Uranium#4939: $act <@!865957146051346463> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+28-07-2021 15:16:27 --> Uranium#4939: $jvc Hello world --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+28-07-2021 15:17:08 --> Uranium#4939: $jvc Hello World, this is testing of vc --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+28-07-2021 15:38:08 --> Uranium#4939: $jvc --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+29-07-2021 18:15:54 --> Uranium#4939: $nick test --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+29-07-2021 18:16:41 --> Uranium#4939: $nick <@!155149108183695360> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+29-07-2021 18:18:48 --> Uranium#4939: $nick  <@!155149108183695360> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+29-07-2021 18:25:00 --> Uranium#4939: $nick <@!259708868144136202> possible? --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+29-07-2021 18:53:41 --> Uranium#4939: $vc <@!259708868144136202> --Guild : "STRUGGLES OF NOOB" -- Channel: #general

@@ -20,7 +20,10 @@ commandsDescription_dict = {
     'dvc'       : "sends a funny message depending on the platform mentioned-user is active on (Mobile | PC)",
     'dm'        : "sends dm to mentioned user, message = message of command author in command. \n\t(limitation: only users who are in guild can get these messages from bot).",
     'dmid'      : "same as {direct_anonymous|dm} but takes user-id instead of user mention,\n\tWorks even if user is not in guild , but should have DM\'s open.",
-    'avatar'    : "Shows Avatar of mentioned user, if not mentioned, then shows user\'s avatar."
+    'avatar'    : "Shows Avatar of mentioned user, if not mentioned, then shows user\'s avatar.",
+    'react'     : "reply a message with $react (emoji/emoji_name) to make bot react with emoji on referenced message",
+    'activity'  : "Shows the activity and its details of mentioned user, if not mentioned then shows activity of command user, Spotify activity has separate format and details.",
+    'nick'      : "set nick name of mentioned user"
 }
 
 modCmdDescription_dict = {
@@ -34,7 +37,10 @@ modCmdDescription_dict = {
     'filter'    : "Turn the message filter for banwords on/off using +/-",
     'pswitch'   : "Turn the 'Pin Message on Reactions' feature on/off using +/-",
     'rlimit'    : "Bot Feature 'Pin Message on Reactions' : Set the number of reactions needed to pin the message ",
-    'difflimit' : "Bot Feature 'Pin Message on Reactions' : Set the number of different reactions required to pin the message"
+    'difflimit' : "Bot Feature 'Pin Message on Reactions' : Set the number of different reactions required to pin the message",
+    'pin'       : "Reply a message with $pin to pin the referenced message",
+    'unpin'     : "Reply a message with $unpin to un-pin the referenced message",
+    'changevc'  : "use this command to move members within Voice Channels, if channel name is not provided , then it disconnects the mentioned user from VC"
 }
 
 #-------------------------- Functions to create help prompt messages using real time prefix --------------------------#

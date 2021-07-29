@@ -1,4 +1,26 @@
-# Discord Bot v2.1 :
+# Discord Bot v2.2 :
+
+***New in v.2.2 :***
+
+* **Mod Commands:**
+    * pin : Reply a message with $pin to pin the referenced message
+    * unpin : Reply a message with $unpin to un-pin the referenced message
+    * changevc : use this command to move members within Voice Channels, if channel name is not provided , then it disconnects the mentioned user from VC
+
+* **User/Utility Commands:**
+    * react : reply a message with $react (emoji/emoji_name) to make bot react with emoji on referenced message
+    * activity : Shows the activity and its details of mentioned user, if not mentioned then shows activity of command user, Spotify activity has separate format and details.
+    * nick : set nick name of mentioned user
+    
+
+***
+Rest of the content below is from v2.1
+
+v2.1 was a big update comparitively, so I decided to keep it's notes here
+
+> **Notice:** I'm dropping further development of this bot here, because I want to learn other Languages and Explore different things in programming, though I might work on this here and there if I feel like it, otherwise... This is it!
+***
+
 
 **Lots of Changes, Commands and a \*New Feature\* in this update.**
 

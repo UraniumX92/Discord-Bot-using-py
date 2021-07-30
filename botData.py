@@ -17,11 +17,11 @@ commandsDescription_dict = {
     'sneak'     : "Type this command to make bot say anything you say after command, your message will get deleted instantly.",
     'gif'       : "Gives a Random GIF from tenor - from a given category",
     'code'      : "Encloses the text given in command in a given format of code snippet.",
-    'dvc'       : "sends a funny message depending on the platform mentioned-user is active on (Mobile | PC)",
+    'device'    : "sends a funny message depending on the platform mentioned-user is active on (Mobile | PC)",
     'dm'        : "sends dm to mentioned user, message = message of command author in command. \n\t(limitation: only users who are in guild can get these messages from bot).",
     'dmid'      : "same as {direct_anonymous|dm} but takes user-id instead of user mention,\n\tWorks even if user is not in guild , but should have DM\'s open.",
     'avatar'    : "Shows Avatar of mentioned user, if not mentioned, then shows user\'s avatar.",
-    'react'     : "reply a message with $react (emoji/emoji_name) to make bot react with emoji on referenced message",
+    'react'     : "reply a message with this command (emoji/emoji_name) to make bot react with emoji on referenced message",
     'activity'  : "Shows the activity and its details of mentioned user, if not mentioned then shows activity of command user, Spotify activity has separate format and details.",
     'nick'      : "set nick name of mentioned user"
 }
@@ -38,8 +38,8 @@ modCmdDescription_dict = {
     'pswitch'   : "Turn the 'Pin Message on Reactions' feature on/off using +/-",
     'rlimit'    : "Bot Feature 'Pin Message on Reactions' : Set the number of reactions needed to pin the message ",
     'difflimit' : "Bot Feature 'Pin Message on Reactions' : Set the number of different reactions required to pin the message",
-    'pin'       : "Reply a message with $pin to pin the referenced message",
-    'unpin'     : "Reply a message with $unpin to un-pin the referenced message",
+    'pin'       : "Reply a message with this command to pin the referenced message",
+    'unpin'     : "Reply a message with this command to un-pin the referenced message",
     'changevc'  : "use this command to move members within Voice Channels, if channel name is not provided , then it disconnects the mentioned user from VC"
 }
 

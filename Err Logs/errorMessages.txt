@@ -38,3 +38,4 @@
 29-07-2021 18:18:48 --> Uranium#4939: $nick  <@!155149108183695360> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
 29-07-2021 18:25:00 --> Uranium#4939: $nick <@!259708868144136202> possible? --Guild : "STRUGGLES OF NOOB" -- Channel: #general
 29-07-2021 18:53:41 --> Uranium#4939: $vc <@!259708868144136202> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+30-07-2021 19:34:58 --> Uranium#4939: $pin --Guild : "STRUGGLES OF NOOB" -- Channel: #general

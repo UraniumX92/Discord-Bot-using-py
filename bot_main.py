@@ -134,7 +134,12 @@ async def on_message(message):
                                        file=msglogfile)
             return
 
-    if message.content.startswith(f"<@!{client.user.id}>"):
+    bot_mentions = [
+        f"<@!{client.user.id}>", # Mention on PC
+        f"<@{client.user.id}>"   # Mention on Mobile
+    ]
+
+    if any(mention in message.content for mention in bot_mentions):
         await message.add_reaction("👍")
         await message.channel.send(f"Yes {message.author.mention}, Im up and running!")
         return
@@ -197,7 +202,7 @@ async def on_message(message):
             await message.channel.send(modStr)
             return
 
-        except Exception as x:
+        except:
             modStr = (f'{user.mention}, That\'s not the way to use this command\n'
                       f'correct usage:\n'
                       f'```\n'
@@ -477,6 +482,8 @@ async def unban(ctx,*,member):
 async def pin(ctx):
     ref_message_id =  ctx.message.reference.message_id
     ref_msg = await ctx.channel.fetch_message(ref_message_id)
+    if ref_msg.pinned:
+        return await ctx.send("Referenced Message is already Pinned!")
     await ref_msg.pin()
     await ref_msg.add_reaction("📌")
     await ctx.message.add_reaction("✅")
@@ -514,10 +521,8 @@ async def change_voice_channel(ctx,member:discord.Member,*,vcName=None):
         await member.edit(voice_channel=vcName)
         return await ctx.send(f"{member.name} was Disconnected from `{joined_vc.name}` ")
 
-
-    temp_vcName = vcName.lower()
     for vc in guild_VC_list:
-        if vc.name.lower() == temp_vcName:
+        if vc.name.lower() == vcName.lower():
             voice_channel = vc
             await member.edit(voice_channel=voice_channel)
             return await ctx.send(f"{member.name} was moved from `{joined_vc.name}` to `{voice_channel.name}`")
@@ -615,7 +620,7 @@ async def react(ctx,emoji):
         await ctx.message.add_reaction("✅")
     except: # For Guild Emojis which are Animated
         for g_emoji in ctx.guild.emojis:
-            if g_emoji.name == emoji:
+            if g_emoji.name.lower() == emoji.lower():
                 r_emoji = g_emoji
                 await ref_msg.add_reaction(r_emoji)
                 await ctx.message.add_reaction("✅")
@@ -631,25 +636,7 @@ async def activity(ctx, member: discord.Member = None):
     member = ctx.author if not member else member
     try:
         activT = member.activity
-        if str(activT) != "Spotify":
-            activT_type = botFuncs.capFistChar(str(activT.type).split('.')[1])
-            activT_application = botFuncs.capFistChar(str(activT.name))
-            activT_duration = str(datetime.now() - activT.created_at).split(".")[0]
-
-            embed = discord.Embed(title=f"{member.name}'s Activity:", color=discord.Colour.dark_gold())
-            embed.set_thumbnail(url=member.avatar_url)
-            embed.add_field(name="Activity Type", value=f"{activT_type}", inline=False)
-            embed.add_field(name="Application", value=f"{activT_application}", inline=False)
-            embed.add_field(name="Duration",value=activT_duration,inline=False)
-            if activT.details:
-                activT_details = botFuncs.capFistChar(str(activT.details))
-                embed.add_field(name="Details", value=f"{activT_details}", inline=False)
-
-            author_name = str(ctx.author)
-            embed.set_footer(text=f'Requested by {author_name}.', icon_url=ctx.author.avatar_url)
-            await ctx.send(embed=embed)
-
-        else:
+        if str(activT) == "Spotify":
             spotify = member.activity
 
             started_song_at = str(spotify.created_at.strftime("%d-%m-%Y %H:%M:%S")).split(".")[0]
@@ -675,6 +662,34 @@ async def activity(ctx, member: discord.Member = None):
             author_name = str(ctx.author)
             embed.set_footer(text=f'Requested by {author_name}.', icon_url=ctx.author.avatar_url)
             await ctx.send(embed=embed)
+        else:
+            activT_type = botFuncs.capFistChar(str(activT.type).split('.')[1])
+            activT_application = botFuncs.capFistChar(str(activT.name))
+            activT_duration = str(datetime.now() - activT.created_at).split(".")[0]
+
+            embed = discord.Embed(title=f"{member.name}'s Activity:", color=discord.Colour.dark_gold())
+            try:
+                acttivT_url = activT.large_image_url
+                if acttivT_url:
+                    embed.set_thumbnail(url=acttivT_url)
+                else:
+                    embed.set_thumbnail(url=member.avatar_url)
+            except:
+                pass
+            embed.add_field(name="Activity Type", value=f"{activT_type}", inline=False)
+            embed.add_field(name="Application", value=f"{activT_application}", inline=False)
+            embed.add_field(name="Duration",value=activT_duration,inline=False)
+            try:
+                activT_details = botFuncs.capFistChar(str(activT.details))
+                if activT_details:
+                    embed.add_field(name="Details", value=f"{activT_details}", inline=False)
+            except:
+                pass
+            author_name = str(ctx.author)
+            embed.set_footer(text=f'Requested by {author_name}.', icon_url=ctx.author.avatar_url)
+            await ctx.send(embed=embed)
+
+
     except Exception as x:
         await ctx.send(f"{x}\nApparently, {member.name} is not doing any activity right now.")
 
@@ -736,6 +751,6 @@ async def dm_withID(ctx,memberID:int,*,message):
     await ctx.send("Successfully sent.")
 
 #-------------------------------------------------------------------------------------------------------------------#
-BOT_TOKEN = os.environ['BOT_TOKEN']
+BOT_TOKEN = os.environ['BOTTOKEN']
 
 client.run(BOT_TOKEN)

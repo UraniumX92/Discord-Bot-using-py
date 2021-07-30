@@ -47,3 +47,4 @@
 29-07-2021 18:18:48 --> Command raised an exception: Forbidden: 403 Forbidden (error code: 50013): Missing Permissions -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
 29-07-2021 18:25:00 --> Command raised an exception: Forbidden: 403 Forbidden (error code: 50013): Missing Permissions -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
 29-07-2021 18:53:41 --> Command raised an exception: AttributeError: 'NoneType' object has no attribute 'channel' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+30-07-2021 19:34:58 --> Command raised an exception: AttributeError: 'NoneType' object has no attribute 'message_id' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939

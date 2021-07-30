@@ -3,8 +3,8 @@
 ***New in v.2.2 :***
 
 * **Mod Commands:**
-    * pin : Reply a message with $pin to pin the referenced message
-    * unpin : Reply a message with $unpin to un-pin the referenced message
+    * pin : Reply a message with this command to pin the referenced message
+    * unpin : Reply a message with this command to un-pin the referenced message
     * changevc : use this command to move members within Voice Channels, if channel name is not provided , then it disconnects the mentioned user from VC
 
 * **User/Utility Commands:**

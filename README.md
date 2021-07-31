@@ -1,7 +1,28 @@
-# Discord Bot v2.2 :
+# Discord Bot v2.3 :
 
-***New in v.2.2 :***
+***New in v.2.3 :***
 
+
+ * ***New Featrue :***
+   * **Commands will get triggered on edited messages in this version**
+ * File Renaming 
+    * Changes all `.data` files to `.json`
+    
+* New Features :
+    * Get Deleted message by using `snipe` command within 1 minute of event
+    * Get History of Edited message by using `snipe` command within 1 minute of event
+    * new `siwtch` command which consist of sub commands which controls all the data in `switches&data.json`
+    * Mod Command:
+        * `role` command group to add remove or show from a member's roles
+    
+* Fixed some other minor bugs.
+    
+
+***
+Rest of the content below is from v2.2 - v2.1
+> **Notice:** I'm dropping further development of this bot here, because I want to learn other Languages and Explore different things in programming, though I might work on this here and there if I feel like it, otherwise... This is it!
+***
+***v2.2 :***
 * **Mod Commands:**
     * pin : Reply a message with this command to pin the referenced message
     * unpin : Reply a message with this command to un-pin the referenced message
@@ -12,15 +33,9 @@
     * activity : Shows the activity and its details of mentioned user, if not mentioned then shows activity of command user, Spotify activity has separate format and details.
     * nick : set nick name of mentioned user
     
-
 ***
-Rest of the content below is from v2.1
-
-v2.1 was a big update comparitively, so I decided to keep it's notes here
-
-> **Notice:** I'm dropping further development of this bot here, because I want to learn other Languages and Explore different things in programming, though I might work on this here and there if I feel like it, otherwise... This is it!
-***
-
+    
+***v2.1 :***
 
 **Lots of Changes, Commands and a \*New Feature\* in this update.**
 

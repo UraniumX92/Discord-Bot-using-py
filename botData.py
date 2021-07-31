@@ -23,24 +23,31 @@ commandsDescription_dict = {
     'avatar'    : "Shows Avatar of mentioned user, if not mentioned, then shows user\'s avatar.",
     'react'     : "reply a message with this command (emoji/emoji_name) to make bot react with emoji on referenced message",
     'activity'  : "Shows the activity and its details of mentioned user, if not mentioned then shows activity of command user, Spotify activity has separate format and details.",
-    'nick'      : "set nick name of mentioned user"
+    'nick'      : "set nick name of mentioned user",
+    'snipe'     : "Get the deleted or edited message history by replying within 1 minute of deletion or Edition of message"
 }
 
 modCmdDescription_dict = {
-    'purge'     : "Deletes the speci    fied number of messages from the channel.",
-    'banword'   : "Type this command to add , remove banned words , can also show list of banwords",
-    'mute'      : "If User is having higher role than muted role, then bot moves the muted role above user\'s highest role \n\tand then mutes the user.",
-    'unmute'    : "Unmutes the user.",
-    'kick'      : "Kicks the user from guild.",
-    'ban'       : "Bans the user from guild.",
-    'unban'     : "Un-bans the user form guild.",
-    'filter'    : "Turn the message filter for banwords on/off using +/-",
-    'pswitch'   : "Turn the 'Pin Message on Reactions' feature on/off using +/-",
-    'rlimit'    : "Bot Feature 'Pin Message on Reactions' : Set the number of reactions needed to pin the message ",
-    'difflimit' : "Bot Feature 'Pin Message on Reactions' : Set the number of different reactions required to pin the message",
-    'pin'       : "Reply a message with this command to pin the referenced message",
-    'unpin'     : "Reply a message with this command to un-pin the referenced message",
-    'changevc'  : "use this command to move members within Voice Channels, if channel name is not provided , then it disconnects the mentioned user from VC"
+    'purge'             : "Deletes the specified number of messages from the channel.",
+    'banword'           : "Type this command to add , remove banned words , can also show list of banwords",
+    'mute'              : "If User is having higher role than muted role, then bot moves the muted role above user\'s highest role \n\tand then mutes the user.",
+    'unmute'            : "Unmutes the user.",
+    'kick'              : "Kicks the user from guild.",
+    'ban'               : "Bans the user from guild.",
+    'unban'             : "Un-bans the user form guild.",
+    'switch'            : "shows the Switches and data",
+    'switch filter'     : "Turn the message filter for banwords on/off using +/-",
+    'switch pswitch'    : "Turn the 'Pin Message on Reactions' feature on/off using +/-",
+    'switch rlimit'     : "Bot Feature 'Pin Message on Reactions' : Set the number of reactions needed to pin the message ",
+    'switch difflimit'  : "Bot Feature 'Pin Message on Reactions' : Set the number of different reactions required to pin the message",
+    'switch delsnipe'   : "Bot Feature 'delete message snipe' : on/off",
+    'switch editsnipe'  : "Bot Feature 'edit message snipe' : on/off",
+    'pin'               : "Reply a message with this command to pin the referenced message",
+    'unpin'             : "Reply a message with this command to un-pin the referenced message",
+    'changevc'          : "use this command to move members within Voice Channels, if channel name is not provided , then it disconnects the mentioned user from VC",
+    'role add'          : "use this command to add role to mentioned user",
+    'role remove'       : "use this command to remove role from mentioned user",
+    'role show'         : "use this command to show the list of roles of mentioned user"
 }
 
 #-------------------------- Functions to create help prompt messages using real time prefix --------------------------#
@@ -49,13 +56,11 @@ def helpPromt_func(member : discord.Member, client : commands.Bot):
     embed = discord.Embed(title="User Commands:", color=discord.Colour.dark_gold())
     embed.set_thumbnail(url=client.user.avatar_url)
     for command,description in commandsDescription_dict.items():
-        embed.add_field(name=command,value=botFuncs.capFistChar(description),inline=False)
+        embed.add_field(name=command,value=botFuncs.capFistChar(description),inline=True)
     embed.add_field(name="Note:",value="For mod commands, type this: mod_help or mh")
 
-    member_name = str(member.name) + '#' + str(member.discriminator)
-    embed.set_footer(text=f"Requested by {member_name}", icon_url=member.avatar_url)
+    embed.set_footer(text=f"Requested by {member}", icon_url=member.avatar_url)
     return embed
-
 
 
 def modHlelpPromt_func(member : discord.Member, client : commands.Bot):
@@ -63,10 +68,9 @@ def modHlelpPromt_func(member : discord.Member, client : commands.Bot):
     embed = discord.Embed(title="Mod Commands:", color=discord.Colour.dark_gold())
     embed.set_thumbnail(url=client.user.avatar_url)
     for command,description in modCmdDescription_dict.items():
-        embed.add_field(name=command,value=botFuncs.capFistChar(description),inline=False)
+        embed.add_field(name=command,value=botFuncs.capFistChar(description),inline=True)
 
-    member_name = str(member.name) + '#' + str(member.discriminator)
-    embed.set_footer(text=f"Requested by {member_name}", icon_url=member.avatar_url)
+    embed.set_footer(text=f"Requested by {member}", icon_url=member.avatar_url)
     return embed
 
 

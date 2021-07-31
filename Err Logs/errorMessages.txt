@@ -39,3 +39,14 @@
 29-07-2021 18:25:00 --> Uranium#4939: $nick <@!259708868144136202> possible? --Guild : "STRUGGLES OF NOOB" -- Channel: #general
 29-07-2021 18:53:41 --> Uranium#4939: $vc <@!259708868144136202> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
 30-07-2021 19:34:58 --> Uranium#4939: $pin --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+31-07-2021 00:11:18 --> Uranium#4939: $ban <@!418842777720193037> not for free users anymore --Guild : "INSTINCT" -- Channel: #logs
+31-07-2021 14:45:04 --> Uranium#4939: $switch --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+31-07-2021 14:45:59 --> Uranium#4939: $switch --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+31-07-2021 16:33:56 --> Uranium#4939: $role + <@!865957146051346463> admin --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+31-07-2021 16:51:36 --> Uranium#4939: $m <@!391870232135860224> --Guild : "INSTINCT" -- Channel: #logs
+31-07-2021 16:53:55 --> Uranium#4939: $m <@!391870232135860224> --Guild : "INSTINCT" -- Channel: #logs
+31-07-2021 16:54:50 --> Uranium#4939: $m <@!391870232135860224> --Guild : "INSTINCT" -- Channel: #logs
+31-07-2021 18:16:31 --> Uranium#4939: $roles show <@!841587302584418305> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+31-07-2021 18:18:56 --> Uranium#4939: $roles show <@!259708868144136202> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+31-07-2021 18:19:34 --> Uranium#4939: $roles show <@!259708868144136202> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+31-07-2021 18:23:46 --> Uranium#4939: $roles show <@!259708868144136202> --Guild : "STRUGGLES OF NOOB" -- Channel: #general

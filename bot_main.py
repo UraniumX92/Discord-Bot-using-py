@@ -14,9 +14,9 @@ dotenv.load_dotenv()
 #------------------------------------------------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------------------------------------------------#
 cwd = os.getcwd()
-banWordFile = (cwd+"/Data Files/bannedWords.data")
-prefixFile = (cwd+"/Data Files/prefix.data")
-switchesFile = (cwd+"/Data Files/switches&data.data")
+banWordFile = (cwd+"/Data Files/bannedWords.json")
+prefixFile = (cwd+"/Data Files/prefix.json")
+switchesFile = (cwd+"/Data Files/switches&data.json")
 #------------------------------------------------ Error Logging Files ---------------------------------------------------#
 errorsLogFile = (cwd+"/Err Logs/errorLogs.txt")
 errMessageLogFile = (cwd+"/Err Logs/errorMessages.txt")
@@ -39,6 +39,48 @@ async def on_ready():
 
 
 @client.event
+async def on_message_delete(message):
+    def check(msg:discord.Message):
+        return msg.channel.id == message.channel.id
+
+    dSwitch = botFuncs.loadJson(switchesFile)['del_snipe_switch']
+
+    try:
+        respMsg = await client.wait_for(event='message',check=check,timeout=60)
+    except asyncio.TimeoutError:
+        pass
+    else:
+        if respMsg.content == f"{bot_prefix}snipe" and dSwitch:
+            del_msg_author = message.author
+            embed = discord.Embed(title=f"{del_msg_author}'s Message Delete Snipe",description=f"{del_msg_author}: {message.content}",color=discord.Colour.dark_gold())
+            return await respMsg.channel.send(embed=embed)
+
+
+@client.event
+async def on_message_edit(before,after):
+    def check(msg:discord.Message):
+        return msg.channel.id == before.channel.id
+
+    eSwitch = botFuncs.loadJson(switchesFile)['edit_snipe_switch']
+    await client.process_commands(after)
+    """
+    Client will process the edited message for commands, this is for ease of use for commands which are having more text, 
+    just editing and adjusting the command right way will be enough to use command instead of writing same command again
+    """
+    try:
+        respMsg = await client.wait_for(event='message',check=check,timeout=60)
+    except asyncio.TimeoutError:
+        pass
+    else:
+        if respMsg.content == f"{bot_prefix}snipe" and eSwitch:
+            edit_msg_author = after.author
+            embed = discord.Embed(title=f"{edit_msg_author}'s Message edit Snipe",color=discord.Colour.dark_gold())
+            embed.add_field(name="Previous:",value=f"{before.content}",inline=False)
+            embed.add_field(name="Edited:",value=f"{after.content}",inline=False)
+            return await respMsg.channel.send(embed=embed)
+
+
+@client.event
 async def on_raw_reaction_add(payload):
     """
     if `number_of_reactions` reaches `react_limit_toPin`, and `number_of_diff_reactions` reaches `diff_reaction_limit`,
@@ -57,7 +99,7 @@ async def on_raw_reaction_add(payload):
         number_of_reactions >= react_limit_to_pin
         number_of_diff_reactions >= diff_reaction_limit
 
-        All three attributes `pinSwitch` , `react_limit_to_pin` and `diff_reaction_limit` are extracted from file 'switches&data.data' in '/Data Files/'
+        All three attributes `pinSwitch` , `react_limit_to_pin` and `diff_reaction_limit` are extracted from file 'switches&data.json' in '/Data Files/'
         and all of them can be controlled using their respective commands.
     """
     react_limit_to_pin = botFuncs.loadJson(switchesFile)['reactLimit']
@@ -139,7 +181,7 @@ async def on_message(message):
         f"<@{client.user.id}>"   # Mention on Mobile
     ]
 
-    if any(mention in message.content for mention in bot_mentions):
+    if any(mention in fullMsgList[0] for mention in bot_mentions):
         await message.add_reaction("👍")
         await message.channel.send(f"Yes {message.author.mention}, Im up and running!")
         return
@@ -222,19 +264,30 @@ async def on_message(message):
 @client.event
 async def on_command_error(ctx,error):
     author = ctx.author
+    del_after = 10
 
     if isinstance(error,commands.MissingPermissions):
-        await ctx.send(f"{author.mention}, You don't have permissions to use that command!", delete_after = 4)
+        await ctx.send(f"{author.mention}, You don't have permissions to use that command!", delete_after=del_after)
     elif isinstance(error,commands.CommandNotFound):
-        await ctx.send(f"{author.mention}, There is no such command!",delete_after = 4)
+        pseudo_commands = [f"{bot_prefix}snipe"]
+        """
+        Pseudo Commands , these are command like messages used in `on_message_edit()` and `on_message_delete()` events,
+        so if any user uses this pseudo command, then this error handler should ignore it
+        """
+        if not any(command in ctx.message.content for command in pseudo_commands):
+            await ctx.send((f"{author.mention}, There is no such command!\n"
+                            f"though you can edit the message and bot will execute if it is a valid command"),
+                           delete_after=del_after)
     elif isinstance(error,commands.MemberNotFound):
-        await ctx.send(f"{author.mention}, You are supposed to mention a valid Discord user.",delete_after = 4)
+        await ctx.send(f"{author.mention}, You are supposed to mention a valid Discord user.",delete_after=del_after)
     elif isinstance(error,commands.MissingRequiredArgument):
-        await ctx.send(f"{author.mention}, Please provide all the arguments Required for the command.",delete_after = 4)
+        await ctx.send(f"{author.mention}, Please provide all the arguments Required for the command.\n", delete_afte=del_after)
+    elif isinstance(error,commands.RoleNotFound):
+        await ctx.send(f"Can't find a Role with name : `{error.argument}`")
     else:
         channel_name = ctx.channel
         logTime = botFuncs.getDateTime()
-        deleteAfter = 5*60 # time in seconds
+        deleteAfter = 2*60 # time in seconds
         owner = client.get_user(client.owner_id)
         await ctx.message.add_reaction("❗")
         try:
@@ -329,55 +382,85 @@ async def banword(ctx,*args):
     await ctx.send(banwStr)
 
 
-@client.command(aliases = ['filter','fswitch','fltr'])
-@commands.has_permissions(manage_guild = True)
+#TODO-false ---------------------------------------------------------- Switches Group Commands -----------------------------------------------------------------#
+
+@client.group(invoke_without_command=True,aliases=['switches','swt'])
+@commands.has_permissions(manage_guild=True)
+async def switch(ctx):
+    fullDict = botFuncs.loadJson(switchesFile)
+    embed = discord.Embed(title="Displaying Switches and data".title(),color=discord.Colour.dark_gold())
+    for key,value in fullDict.items():
+        embed.add_field(name=f"{key}",value=f"{value}",inline=False)
+    embed.set_footer(text=f"Requested by {ctx.author}",icon_url=ctx.author.avatar_url)
+    return await ctx.send(embed=embed)
+
+@switch.command(aliases = ['filter','fswitch'])
 async def filter_switch(ctx,operator):
     fullDict = botFuncs.loadJson(switchesFile)
     if operator == '+':
         fullDict['filterSwitch'] = True
         botFuncs.dumpJson(fullDict,switchesFile)
-        await ctx.send(f'Message scanning for filtered words is Activated!', delete_after = 3)
+        await ctx.send(f'Message scanning for filtered words is Activated!', delete_after = 6)
         await asyncio.sleep(5)
         await ctx.message.delete()
     elif operator == '-':
         fullDict['filterSwitch'] = False
         botFuncs.dumpJson(fullDict,switchesFile)
-        await ctx.send(f'Message scanning for filtered words is turned off.', delete_after = 3)
+        await ctx.send(f'Message scanning for filtered words is turned off.', delete_after = 6)
         await asyncio.sleep(5)
         await ctx.message.delete()
 
-
-@client.command(aliases = ['pswitch','psw'])
-@commands.has_permissions(manage_channels = True)
+@switch.command(aliases = ['pswitch','psw'])
 async def p_switch(ctx,operator):
     fullDict = botFuncs.loadJson(switchesFile)
     if operator == '+':
         fullDict['pinSwitch'] = True
         botFuncs.dumpJson(fullDict,switchesFile)
-        await ctx.send(f"Bot feature 'Pin on Reactions' Activated!",delete_after = 4)
+        await ctx.send(f"Bot feature 'Pin on Reactions' Activated!",delete_after = 6)
     elif operator == '-':
         fullDict['pinSwitch'] = False
         botFuncs.dumpJson(fullDict,switchesFile)
-        await ctx.send(f"Bot feature 'Pin on Reactions' Deactivated!",delete_after = 4)
+        await ctx.send(f"Bot feature 'Pin on Reactions' Deactivated!",delete_after = 6)
 
+@switch.command(aliases=['delsnipe','dsnipe'])
+async def del_snipe_switch(ctx,operator):
+    fullDict = botFuncs.loadJson(switchesFile)
+    if operator == '+':
+        fullDict['del_snipe_switch'] = True
+        botFuncs.dumpJson(fullDict,switchesFile)
+        await ctx.send(f"Bot feature 'Snipe Deleted Message' Activated!",delete_after = 6)
+    elif operator == '-':
+        fullDict['del_snipe_switch'] = False
+        botFuncs.dumpJson(fullDict,switchesFile)
+        await ctx.send(f"Bot feature 'Snipe Deleted Message' Deactivated!",delete_after = 6)
 
-@client.command(aliases = ['reactlimit','rlimit'])
-@commands.has_permissions(manage_channels = True)
+@switch.command(aliases=['editsnipe','esnipe'])
+async def edit_snipe_switch(ctx,operator):
+    fullDict = botFuncs.loadJson(switchesFile)
+    if operator == '+':
+        fullDict['edit_snipe_switch'] = True
+        botFuncs.dumpJson(fullDict,switchesFile)
+        await ctx.send(f"Bot feature 'Snipe Edited Message' Activated!",delete_after = 6)
+    elif operator == '-':
+        fullDict['edit_snipe_switch'] = False
+        botFuncs.dumpJson(fullDict,switchesFile)
+        await ctx.send(f"Bot feature 'Snipe Edited Message' Deactivated!",delete_after = 6)
+
+@switch.command(aliases = ['reactlimit','rlimit'])
 async def reactionsLimit_setter(ctx,limit: int):
     fullDict = botFuncs.loadJson(switchesFile)
     fullDict['reactLimit'] = limit
     botFuncs.dumpJson(fullDict,switchesFile)
     await ctx.send(f"Pin on Reactions : Reaction Limit changed to `{limit} reactions`")
 
-
-@client.command(aliases = ['drlimit','diffreact','difflimit'])
-@commands.has_permissions(manage_channels = True)
+@switch.command(aliases = ['drlimit','diffreact','difflimit'])
 async def diffReactionsLimit_setter(ctx,limit:int):
     fullDict = botFuncs.loadJson(switchesFile)
     fullDict['diffReactLimit'] = limit
     botFuncs.dumpJson(fullDict,switchesFile)
     await ctx.send(f"Pin on Reactions : Number of different reactions limit changed to `{limit} Different reactions`")
 
+#Todo-false-------------------------------------------------------- END of Switches Group Commands ---------------------------------------------------------------#
 
 @client.command(aliases = ["p"])
 @commands.has_permissions(manage_messages = True)
@@ -400,10 +483,15 @@ async def mute(ctx,member: discord.Member):
     # Getting the position of highest role of -user to be muted-
     highestMemberRole_pos = listMemberRoles[len(listMemberRoles)-1].position
 
+    muted_role = None
     for role in listOfGuildRoles:
         if role.name.lower() == 'muted':
             muted_role = role
             break
+
+    if not muted_role:
+        raise commands.RoleNotFound(argument='Muted')
+
     m_pos = muted_role.position
 
     # Puts the muted role just above user's highes role , if user's highest role is above muted role
@@ -421,10 +509,14 @@ async def mute(ctx,member: discord.Member):
 async def unmute(ctx,member: discord.Member):
     listOfGuildRoles = ctx.guild.roles
 
-    for role in listOfGuildRoles:
+    muted_role = None
+    for role in member.roles:
         if role.name.lower() == 'muted':
             muted_role = role
             break
+
+    if not muted_role:
+        return await ctx.send(f"{member.name} is not Muted!")
 
     await member.remove_roles(muted_role)
     await ctx.message.add_reaction("✅")
@@ -437,9 +529,9 @@ async def kick(ctx,member: discord.Member,*,reason = "No Reason Provided"):
     try:
         await member.send(f'You were kicked from `{ctx.guild.name}`, Reason : `{reason}`')
         await member.kick(reason=reason)
+        await ctx.send("Sent DM to kicked user", delete_after=5)
     except:
         pass
-
     await member.kick(reason=reason)
     await ctx.message.add_reaction("✅")
     await ctx.send(f'`{member.name}` was Kicked from `{ctx.guild.name}, Reason = `{reason}`.')
@@ -451,6 +543,7 @@ async def ban(ctx,member: discord.Member,*,reason = "No Reason Provided"):
     try:
         await member.send(f'You were banned from `{ctx.guild.name}`, Reason : `{reason}`')
         await member.ban(reason=reason)
+        await ctx.send("Sent DM to banned user",delete_after=5)
     except:
         pass
     await member.ban(reason=reason)
@@ -483,7 +576,7 @@ async def pin(ctx):
     ref_message_id =  ctx.message.reference.message_id
     ref_msg = await ctx.channel.fetch_message(ref_message_id)
     if ref_msg.pinned:
-        return await ctx.send("Referenced Message is already Pinned!")
+        return await ctx.send("Referenced Message is already Pinned!",delete_after=5)
     await ref_msg.pin()
     await ref_msg.add_reaction("📌")
     await ctx.message.add_reaction("✅")
@@ -529,9 +622,53 @@ async def change_voice_channel(ctx,member:discord.Member,*,vcName=None):
 
     return await ctx.send(f"Voice Channel with name `{vcName}` Not found.")
 
+#todo-false ----------------------------------------------- Role Command Group -----------------------------------------------------------#
+
+@client.group(invoke_without_command=True,aliases=['roles'])
+@commands.has_permissions(manage_roles=True)
+async def role(ctx):
+    await ctx.send("Command Usage:\n"
+                   f"`{bot_prefix}role (add|remove) (user) (role)`")
+
+@role.command(aliases=['+'])
+async def add(ctx,member:discord.Member,*,grole:discord.Role):
+    await member.add_roles(grole)
+    await ctx.send(f"Given `{grole.name}` Role to `{member}`")
+
+@role.command(aliases=['-'])
+async def remove(ctx,member:discord.Member,*,trole:discord.Role):
+    await member.remove_roles(trole)
+    await ctx.send(f"Taken `{trole.name}` Role from `{member}`")
+
+@role.command(aliases=['*'])
+async def show(ctx,member:discord.Member):
+
+    embed = discord.Embed(title=f"{member.name} Roles List",color=discord.Colour.dark_gold())
+    embed.set_thumbnail(url=member.avatar_url)
+    mentionable_roles = []
+    nonMentionable_roles = []
+
+    for role in member.roles:
+        if role.name == "@everyone":
+            embed.add_field(name="Default Role",value=f"{role.name}")
+        elif role.mentionable:
+            mentionable_roles.append(f"{role.mention}")
+        else:
+            nonMentionable_roles.append(f"{role.mention}")
+
+    if len(mentionable_roles)>0:
+        mentioables = "\n".join(mentionable_roles)
+        embed.add_field(name="Mentionable Roles:",value=mentioables,inline=False)
+    if len(nonMentionable_roles)>0:
+        non_mentionables = "\n".join(nonMentionable_roles)
+        embed.add_field(name="Non-Mentionable Roles:",value=non_mentionables,inline=False)
+
+    embed.set_footer(text=f"Requested by {ctx.author}",icon_url=ctx.author.avatar_url)
+    await ctx.send(embed=embed)
+
+#todo-false --------------------------------------------- END of Role Command Group ------------------------------------------------------#
 
 #TODO-false ------------------------------------------- Commands For Users ------------------------------------------------#
-
 #TODO-false ------------------------------------------- Utility Commands --------------------------------------------------#
 @client.command(aliases = ['ref'])
 async def regfind(ctx,emailORdisctag,operator,*,text):
@@ -751,6 +888,6 @@ async def dm_withID(ctx,memberID:int,*,message):
     await ctx.send("Successfully sent.")
 
 #-------------------------------------------------------------------------------------------------------------------#
-BOT_TOKEN = os.environ['BOTTOKEN']
+BOT_TOKEN = os.environ['BOT_TOKEN']
 
 client.run(BOT_TOKEN)

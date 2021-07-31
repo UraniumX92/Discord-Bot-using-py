@@ -48,3 +48,25 @@
 29-07-2021 18:25:00 --> Command raised an exception: Forbidden: 403 Forbidden (error code: 50013): Missing Permissions -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
 29-07-2021 18:53:41 --> Command raised an exception: AttributeError: 'NoneType' object has no attribute 'channel' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
 30-07-2021 19:34:58 --> Command raised an exception: AttributeError: 'NoneType' object has no attribute 'message_id' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+31-07-2021 00:11:18 --> Command raised an exception: Forbidden: 403 Forbidden (error code: 50013): Missing Permissions -- In Guild : "INSTINCT" -- Command User : Uranium#4939
+31-07-2021 14:45:04 --> Command raised an exception: TypeError: add_field() missing 1 required keyword-only argument: 'name' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+31-07-2021 14:45:59 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
+In embed.fields.0.name: This field is required
+In embed.fields.1.name: This field is required
+In embed.fields.2.name: This field is required
+In embed.fields.3.name: This field is required
+In embed.fields.4.name: This field is required
+In embed.fields.5.name: This field is required -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+31-07-2021 16:33:56 --> Role "admin" not found. -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+31-07-2021 16:51:36 --> Command raised an exception: UnboundLocalError: local variable 'muted_role' referenced before assignment -- In Guild : "INSTINCT" -- Command User : Uranium#4939
+31-07-2021 16:53:55 --> Command raised an exception: AttributeError: 'NoneType' object has no attribute 'position' -- In Guild : "INSTINCT" -- Command User : Uranium#4939
+31-07-2021 16:54:50 --> Command raised an exception: TypeError: __init__() missing 1 required positional argument: 'argument' -- In Guild : "INSTINCT" -- Command User : Uranium#4939
+31-07-2021 18:16:31 --> Command raised an exception: TypeError: add_field() missing 1 required keyword-only argument: 'value' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+31-07-2021 18:18:56 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
+In embed.fields.0.value: This field is required
+In embed.footer.icon_url: Scheme "{<asset url='/avatars/259708868144136202/c9221dd0eb11cf6d5f11a05035f51c2c.webp?size=1024'>}" is not supported. Scheme must be one of ('http', 'https'). -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+31-07-2021 18:19:34 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
+In embed.fields.0.value: This field is required
+In embed.footer.icon_url: Scheme "{<asset url='/avatars/259708868144136202/c9221dd0eb11cf6d5f11a05035f51c2c.webp?size=1024'>}" is not supported. Scheme must be one of ('http', 'https'). -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+31-07-2021 18:23:46 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
+In embed.footer.icon_url: Scheme "{<asset url='/avatars/259708868144136202/c9221dd0eb11cf6d5f11a05035f51c2c.webp?size=1024'>}" is not supported. Scheme must be one of ('http', 'https'). -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939

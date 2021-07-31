@@ -7,12 +7,12 @@ from datetime import datetime
 
 cwd = os.getcwd()
 # ----------------------------------------------#
-banWordFile = (cwd+"/Data Files/bannedWords.data")
-prefixFile = (cwd+"/Data Files/prefix.data")
-modListFile = (cwd+"/Data Files/modList.data")
-switchesFile = (cwd+"/Data Files/switches&data.data")
+banWordFile = (cwd+"/Data Files/bannedWords.json")
+prefixFile = (cwd+"/Data Files/prefix.json")
+modListFile = (cwd+"/Data Files/modList.json")
+switchesFile = (cwd+"/Data Files/switches&data.json")
 # ----------------------------------------------#
-susStringFile = (cwd+"/Data Files/susString.data")
+susStringFile = (cwd+"/Data Files/susString.json")
 # ----------------------------------------------#
 default_prefix = "$"
 # ----------------------------------------------#
@@ -51,6 +51,7 @@ def createFile_snippet(fileName,typeOfObject,textToWrite = ""):
     else:
         with open(fileName,"w") as f:
             f.write(textToWrite)
+
 
 def createFiles():
 
@@ -149,6 +150,6 @@ if __name__ == '__main__':
     x = 'b'
     while(x != 'a'):
         x = input("enter text for isDiscTag func test: ")
-        if x == getDateTime.__name__:
-            print(getDateTime())
-
+        if x == getTenorList.__name__:
+            codet = getTenorList.__code__
+            print(codet.co_varnames)

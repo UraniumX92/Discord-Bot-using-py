@@ -50,3 +50,6 @@
 31-07-2021 18:18:56 --> Uranium#4939: $roles show <@!259708868144136202> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
 31-07-2021 18:19:34 --> Uranium#4939: $roles show <@!259708868144136202> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
 31-07-2021 18:23:46 --> Uranium#4939: $roles show <@!259708868144136202> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+01-08-2021 13:35:50 --> Uranium#4939: $m <@!391870232135860224> --Guild : "INSTINCT" -- Channel: #logs
+01-08-2021 13:36:14 --> Uranium#4939: $m <@!391870232135860224> --Guild : "INSTINCT" -- Channel: #logs
+01-08-2021 13:36:36 --> Uranium#4939: $role add <@!865957146051346463> Admin --Guild : "INSTINCT" -- Channel: #logs

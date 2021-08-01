@@ -24,7 +24,7 @@ commandsDescription_dict = {
     'react'     : "reply a message with this command (emoji/emoji_name) to make bot react with emoji on referenced message",
     'activity'  : "Shows the activity and its details of mentioned user, if not mentioned then shows activity of command user, Spotify activity has separate format and details.",
     'nick'      : "set nick name of mentioned user",
-    'snipe'     : "Get the deleted or edited message history by replying within 1 minute of deletion or Edition of message"
+    'snipe'     : "Get the deleted or edited message history by using this command within 1 minute of Deletion or Edition of message"
 }
 
 modCmdDescription_dict = {

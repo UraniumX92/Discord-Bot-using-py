@@ -43,7 +43,7 @@ async def on_message_delete(message):
     def check(msg:discord.Message):
         return msg.channel.id == message.channel.id
 
-    dSwitch = botFuncs.loadJson(switchesFile)['del_snipe_switch']
+    delSwitch = botFuncs.loadJson(switchesFile)['del_snipe_switch']
 
     try:
         respMsg = await client.wait_for(event='message',check=check,timeout=60)
@@ -61,12 +61,21 @@ async def on_message_edit(before,after):
     def check(msg:discord.Message):
         return msg.channel.id == before.channel.id
 
-    eSwitch = botFuncs.loadJson(switchesFile)['edit_snipe_switch']
-    await client.process_commands(after)
+    editSwitch = botFuncs.loadJson(switchesFile)['edit_snipe_switch']
+
+    pinned_or_unPinned = before.pinned != after.pinned
     """
-    Client will process the edited message for commands, this is for ease of use for commands which are having more text, 
-    just editing and adjusting the command right way will be enough to use command instead of writing same command again
+    pinning and un-pinning the message will also count as message edit and will trigger this event, 
+    so, in order to avoid the command triggering if the message got pinned or un-pinned, we make this condition `pinned_or_unPinned`
+    it checks if message got pinned or unpinned
     """
+    if not pinned_or_unPinned:
+        """
+        Client will process the edited message for commands, this is for ease of use for commands which are having more text, 
+        just editing and adjusting the command right way will be enough to use command instead of writing same command again
+        """
+        await client.process_commands(after)
+
     try:
         respMsg = await client.wait_for(event='message',check=check,timeout=60)
     except asyncio.TimeoutError:
@@ -113,14 +122,11 @@ async def on_raw_reaction_add(payload):
 
     for reaction in react_message.reactions:
         reaxn_users = await reaction.users().flatten()
-
-        for member in reaxn_users:
-            if member.bot:
-                reaxn_users.remove(member)
-
+        reaxn_users = [user for user in reaxn_users if not user.bot]
         if len(reaxn_users) > 1:
             number_of_reactions += len(reaxn_users)
 
+    # This Condition is explained in docstring of this event function above
     pin_condition = number_of_reactions >= react_limit_to_pin and number_of_diff_reacions >= diff_reaction_limit
 
     if (not payload.member.bot) and pinSwitch:
@@ -657,9 +663,11 @@ async def show(ctx,member:discord.Member):
             nonMentionable_roles.append(f"{role.mention}")
 
     if len(mentionable_roles)>0:
+        mentionable_roles = mentionable_roles[::-1]
         mentioables = "\n".join(mentionable_roles)
         embed.add_field(name="Mentionable Roles:",value=mentioables,inline=False)
     if len(nonMentionable_roles)>0:
+        nonMentionable_roles = nonMentionable_roles[::-1]
         non_mentionables = "\n".join(nonMentionable_roles)
         embed.add_field(name="Non-Mentionable Roles:",value=non_mentionables,inline=False)
 

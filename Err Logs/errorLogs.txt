@@ -70,3 +70,6 @@ In embed.fields.0.value: This field is required
 In embed.footer.icon_url: Scheme "{<asset url='/avatars/259708868144136202/c9221dd0eb11cf6d5f11a05035f51c2c.webp?size=1024'>}" is not supported. Scheme must be one of ('http', 'https'). -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
 31-07-2021 18:23:46 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
 In embed.footer.icon_url: Scheme "{<asset url='/avatars/259708868144136202/c9221dd0eb11cf6d5f11a05035f51c2c.webp?size=1024'>}" is not supported. Scheme must be one of ('http', 'https'). -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+01-08-2021 13:35:50 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50013): Missing Permissions -- In Guild : "INSTINCT" -- Command User : Uranium#4939
+01-08-2021 13:36:14 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50013): Missing Permissions -- In Guild : "INSTINCT" -- Command User : Uranium#4939
+01-08-2021 13:36:36 --> Command raised an exception: Forbidden: 403 Forbidden (error code: 50013): Missing Permissions -- In Guild : "INSTINCT" -- Command User : Uranium#4939

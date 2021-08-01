@@ -6,7 +6,7 @@
  * ***New Featrue :***
    * **Commands will get triggered on edited messages in this version**
  * File Renaming 
-    * Changes all `.data` files to `.json`
+    * Changed format of all `.data` files to `.json`
     
 * New Features :
     * Get Deleted message by using `snipe` command within 1 minute of event

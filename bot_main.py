@@ -12,7 +12,6 @@ import botData
 import dotenv
 dotenv.load_dotenv()
 #------------------------------------------------------------------------------------------------------------------------#
-#------------------------------------------------------------------------------------------------------------------------#
 cwd = os.getcwd()
 banWordFile = (cwd+"/Data Files/bannedWords.json")
 prefixFile = (cwd+"/Data Files/prefix.json")
@@ -26,16 +25,25 @@ bot_prefix = "$"
 operatorList = ["+","-","*"] # --> List of operators used in different commands to add , remove and show respectively
 #------------------------------------------------------------------------------------------------------------------------#
 owner_id = int(os.environ['MY_DISCORD_USER_ID'])
-client = commands.Bot(command_prefix=bot_prefix ,
+
+activity = discord.Activity(type=discord.ActivityType.listening,
+                            name=" your Commands 🙂",
+                            start=datetime.now(),
+                            )
+
+client = commands.Bot(command_prefix=bot_prefix,
                       help_command=None,
+                      activity=activity,
                       owner_id=owner_id,
-                      intents=discord.Intents.all())
+                      intents=discord.Intents.all()
+                      )
 
 
 @client.event
 async def on_ready():
     print(f'{client.user} is online and ready to go.')
     print(f'Current Bot prefix is : {bot_prefix}')
+    print(f"Bot went online on : [{botFuncs.getDateTime()}]")
 
 
 @client.event
@@ -50,7 +58,7 @@ async def on_message_delete(message):
     except asyncio.TimeoutError:
         pass
     else:
-        if respMsg.content == f"{bot_prefix}snipe" and dSwitch:
+        if respMsg.content == f"{bot_prefix}snipe" and delSwitch:
             del_msg_author = message.author
             embed = discord.Embed(title=f"{del_msg_author}'s Message Delete Snipe",description=f"{del_msg_author}: {message.content}",color=discord.Colour.dark_gold())
             return await respMsg.channel.send(embed=embed)
@@ -81,7 +89,7 @@ async def on_message_edit(before,after):
     except asyncio.TimeoutError:
         pass
     else:
-        if respMsg.content == f"{bot_prefix}snipe" and eSwitch:
+        if respMsg.content == f"{bot_prefix}snipe" and editSwitch:
             edit_msg_author = after.author
             embed = discord.Embed(title=f"{edit_msg_author}'s Message edit Snipe",color=discord.Colour.dark_gold())
             embed.add_field(name="Previous:",value=f"{before.content}",inline=False)
@@ -187,9 +195,9 @@ async def on_message(message):
         f"<@{client.user.id}>"   # Mention on Mobile
     ]
 
-    if any(mention in fullMsgList[0] for mention in bot_mentions):
+    if any(mention in fullMsgList for mention in bot_mentions):
         await message.add_reaction("👍")
-        await message.channel.send(f"Yes {message.author.mention}, Im up and running!")
+        await message.channel.send(f"Yes {message.author.mention}, Im up and running!, type `{bot_prefix}help` to know more 🙂")
         return
 
     # TODO-false------------------------------------------------ Bot-MOD COMMAND >> 'mod' command to add or remove Bot-Moderators ------------------------------------------------#
@@ -809,7 +817,7 @@ async def activity(ctx, member: discord.Member = None):
             await ctx.send(embed=embed)
         else:
             activT_type = botFuncs.capFistChar(str(activT.type).split('.')[1])
-            activT_application = botFuncs.capFistChar(str(activT.name))
+            activT_application = botFuncs.capFistChar(activT.name)
             activT_duration = str(datetime.now() - activT.created_at).split(".")[0]
 
             embed = discord.Embed(title=f"{member.name}'s Activity:", color=discord.Colour.dark_gold())
@@ -834,9 +842,8 @@ async def activity(ctx, member: discord.Member = None):
             embed.set_footer(text=f'Requested by {author_name}.', icon_url=ctx.author.avatar_url)
             await ctx.send(embed=embed)
 
-
-    except Exception as x:
-        await ctx.send(f"{x}\nApparently, {member.name} is not doing any activity right now.")
+    except:
+        await ctx.send(f"Apparently, {member.name} is not doing any activity right now.")
 
 
 @client.command(aliases=['nick'])

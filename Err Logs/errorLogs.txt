@@ -73,3 +73,33 @@ In embed.footer.icon_url: Scheme "{<asset url='/avatars/259708868144136202/c9221
 01-08-2021 13:35:50 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50013): Missing Permissions -- In Guild : "INSTINCT" -- Command User : Uranium#4939
 01-08-2021 13:36:14 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50013): Missing Permissions -- In Guild : "INSTINCT" -- Command User : Uranium#4939
 01-08-2021 13:36:36 --> Command raised an exception: Forbidden: 403 Forbidden (error code: 50013): Missing Permissions -- In Guild : "INSTINCT" -- Command User : Uranium#4939
+07-08-2021 18:32:26 --> Expected closing ». -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+07-08-2021 20:50:04 --> Command raised an exception: IndexError: tuple index out of range -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+07-08-2021 20:53:56 --> Command raised an exception: ValueError: invalid literal for int() with base 10: 'hello' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+07-08-2021 22:13:16 --> Command raised an exception: AttributeError: 'NoneType' object has no attribute 'message_id' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+07-08-2021 22:26:44 --> Command raised an exception: TypeError: 'NoneType' object is not subscriptable -- In Guild : "The Raid Gang" -- Command User : Uranium#4939
+07-08-2021 22:40:16 --> Command raised an exception: UnboundLocalError: local variable 'selected_activity' referenced before assignment -- In Guild : "The Raid Gang" -- Command User : Uranium#4939
+07-08-2021 22:41:29 --> Command raised an exception: UnboundLocalError: local variable 'selected_activity' referenced before assignment -- In Guild : "The Raid Gang" -- Command User : Yagami#0869
+07-08-2021 22:56:14 --> Command raised an exception: UnboundLocalError: local variable 'selected_activity' referenced before assignment -- In Guild : "The Raid Gang" -- Command User : Uranium#4939
+07-08-2021 23:27:45 --> Converting to "int" failed for parameter "amount". -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+08-08-2021 00:18:52 --> Command raised an exception: ValueError: Invalid format string -- In Guild : "The Raid Gang" -- Command User : Uranium#4939
+08-08-2021 00:28:42 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
+In embed.thumbnail.url: Scheme "none" is not supported. Scheme must be one of ('http', 'https'). -- In Guild : "The Raid Gang" -- Command User : Uranium#4939
+08-08-2021 12:55:30 --> Command raised an exception: NameError: name 'disctag' is not defined -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+08-08-2021 13:05:57 --> Command raised an exception: TypeError: __init__() missing 1 required positional argument: 'missing_perms' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+08-08-2021 14:15:59 --> Command raised an exception: TypeError: __init__() missing 1 required positional argument: 'missing_perms' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+08-08-2021 14:16:33 --> Command raised an exception: AttributeError: 'Command' object has no attribute 'channel' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+08-08-2021 14:17:33 --> Command raised an exception: NameError: name 'fUserName' is not defined -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+08-08-2021 14:36:45 --> Command raised an exception: Forbidden: 403 Forbidden (error code: 50013): Missing Permissions -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+08-08-2021 14:47:21 --> Command raised an exception: HTTPException: 400 Bad Request (error code: 50013): Missing Permissions -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+08-08-2021 14:50:04 --> Command raised an exception: TypeError: __init__() missing 1 required positional argument: 'missing_perms' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+09-08-2021 17:22:36 --> Command raised an exception: FileNotFoundError: [Errno 2] No such file or directory: 'D:/Data' -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+09-08-2021 17:23:14 --> Command raised an exception: FileNotFoundError: [Errno 2] No such file or directory: 'D:\\Data' -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+09-08-2021 17:26:57 --> Command raised an exception: FileNotFoundError: [Errno 2] No such file or directory: 'D:\\Syed Usama\\1 Programming\\Discord Botaldkj' -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+09-08-2021 17:30:46 --> Command raised an exception: FileNotFoundError: [Errno 2] No such file or directory: 'D:\\Syed Usama\\1 Programming\\Discord Botlkajdfadlk' -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+09-08-2021 17:39:04 --> Command raised an exception: PermissionError: [Errno 13] Permission denied: 'D:\\Syed Usama\\1 Programming\\Discord Bot\\.git' -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+09-08-2021 17:41:13 --> Command raised an exception: PermissionError: [Errno 13] Permission denied: 'D:\\Syed Usama\\1 Programming\\Discord Bot\\.git' -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+09-08-2021 17:51:37 --> Command raised an exception: FileNotFoundError: [WinError 3] The system cannot find the path specified: 'D:/Data Files' -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+09-08-2021 17:53:00 --> Command raised an exception: FileNotFoundError: [WinError 3] The system cannot find the path specified: 'D:/Data Files' -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+09-08-2021 17:58:11 --> Command raised an exception: ValueError: list.remove(x): x not in list -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+09-08-2021 19:26:14 --> Command raised an exception: UnboundLocalError: local variable 'currentDir' referenced before assignment -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939

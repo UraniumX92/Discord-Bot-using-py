@@ -1,6 +1,34 @@
-# Discord Bot v2.3 :
+# Discord Bot v3.0 :
 
-***New in v.2.3 :***
+***New in v3.0:***
+
+***Major update for bot-dev(s) : new command category : bot-devs commands, other bug fixes and better error handling done in user commands and mod commands***
+* **Guild specific bot Prefixes can be used and set from this version**
+
+
+* **Mod Commands :**
+  * `banwords` command : grouped the commands to show , add or remove.
+* **Utility Commands :**
+  * `activity` command : Shows the list of activities performed by user if user is doing more than 1 activity, then the command author is prompted to select the activity from list to display details.
+   If user is doing only 1 activity, then bot directly displays the details of that activity
+* ***Developer Commands :***
+  * Whole new set of developers command in groups:
+    * `dev | devs` command : Group , add remove or display from list of bot-devs
+      * bot owner is added as a default bot-dev and cannot be removed from list
+    * `log | logs` command : Group , shows the log file
+      * `message` sub command : shows the message log file
+    * `getf` command : use this command to get the list of files which can be fetched using this command
+      * enter the name of file or directory path - file to get the file as `discord.File`
+  
+***
+
+>**Note: If you want to build this bot together with me, then please contact me on discord `Uranium#4939`, Thank you!!**
+
+***
+Rest of the content below is from v2.3 - v2.1
+> **Note:** I'm dropping further development of this bot here, because I want to learn other Languages and Explore different things in programming, though I might work on this here and there if I feel like it, otherwise... This is it!
+***
+***v.2.3 :***
 
 
  * ***New Featrue :***
@@ -18,9 +46,6 @@
 * Fixed some other minor bugs.
     
 
-***
-Rest of the content below is from v2.2 - v2.1
-> **Notice:** I'm dropping further development of this bot here, because I want to learn other Languages and Explore different things in programming, though I might work on this here and there if I feel like it, otherwise... This is it!
 ***
 ***v2.2 :***
 * **Mod Commands:**

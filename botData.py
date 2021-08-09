@@ -4,7 +4,7 @@ from discord.ext import commands
 
 #-------------------------------- Bot Commands Data ----------------------------------#
 bannedWords = botFuncs.loadJson(botFuncs.banWordFile)
-modsList = botFuncs.loadJson(botFuncs.modListFile)
+devsList = botFuncs.loadJson(botFuncs.devsListFile)
 #-------------------------------- Fun Commands Data ----------------------------------#
 susList = botFuncs.loadJson(botFuncs.susStringFile)
 reactionsList = ['😂','🤮','💀','🤡','💩']
@@ -51,13 +51,13 @@ modCmdDescription_dict = {
 }
 
 #-------------------------- Functions to create help prompt messages using real time prefix --------------------------#
-def helpPromt_func(member : discord.Member, client : commands.Bot):
+def helpPromt_func(member : discord.Member, client : commands.Bot,prefix):
     """Takes commandsList form botData and makes a Embed message for help command"""
     embed = discord.Embed(title="User Commands:", color=discord.Colour.dark_gold())
     embed.set_thumbnail(url=client.user.avatar_url)
     for command,description in commandsDescription_dict.items():
         embed.add_field(name=command,value=botFuncs.capFistChar(description),inline=True)
-    embed.add_field(name="Note:",value="For mod commands, type this: mod_help or mh")
+    embed.add_field(name="Note:",value=f"For mod commands, type this: **{prefix}mod_help** or **{prefix}mh**",inline=False)
 
     embed.set_footer(text=f"Requested by {member}", icon_url=member.avatar_url)
     return embed

@@ -2,19 +2,20 @@ import json
 import os
 import random
 import re
+import discord
 import requests
 from datetime import datetime
 
 cwd = os.getcwd()
 # ----------------------------------------------#
 banWordFile = (cwd+"/Data Files/bannedWords.json")
-prefixFile = (cwd+"/Data Files/prefix.json")
-modListFile = (cwd+"/Data Files/modList.json")
+prefixesFile = (cwd+"/Data Files/prefixes.json")
+devsListFile = (cwd+"/Data Files/developers.json")
 switchesFile = (cwd+"/Data Files/switches&data.json")
 # ----------------------------------------------#
 susStringFile = (cwd+"/Data Files/susString.json")
 # ----------------------------------------------#
-default_prefix = "$"
+default_bot_prefix = "$"
 # ----------------------------------------------#
 
 def genRand(randRange=100):
@@ -36,8 +37,7 @@ def dumpJson(pyObj,fileName):
 
 def loadJson(fileName):
     with open(fileName,"r") as load:
-        pyObj = json.load(load)
-    return pyObj
+        return json.load(load)
 
 
 def createFile_snippet(fileName,typeOfObject,textToWrite = ""):
@@ -57,13 +57,7 @@ def createFiles():
 
     createFile_snippet(banWordFile,list(),'[]')
     # --------------------------------------------------------------- #
-    createFile_snippet(modListFile,list(),'[]')
-    # --------------------------------------------------------------- #
-    createFile_snippet(prefixFile,str(),default_prefix)
-    # --------------------------------------------------------------- #
     createFile_snippet(susStringFile,list(),'[]')
-    # --------------------------------------------------------------- #
-    createFile_snippet(switchesFile,dict(),'{}')
 
     print("Done with file creation.")
 
@@ -144,6 +138,18 @@ def isDiscTag(stringDiscTag):
         return True,matches[0]
     else:
         return False,None
+
+
+def get_local_prefix(message:discord.Message):
+    """
+    takes discord.Message as argument and returns the prefix for the guild which message belongs to
+    returns default prefix of bot if command is used in DM of Bot
+    """
+    try:
+        return loadJson(prefixesFile)[str(message.guild.id)]
+    except AttributeError:
+        """If commands are used in dm , only default bot prefix can be used"""
+        return default_bot_prefix
 
 
 if __name__ == '__main__':

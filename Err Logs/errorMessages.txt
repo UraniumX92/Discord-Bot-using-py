@@ -53,3 +53,32 @@
 01-08-2021 13:35:50 --> Uranium#4939: $m <@!391870232135860224> --Guild : "INSTINCT" -- Channel: #logs
 01-08-2021 13:36:14 --> Uranium#4939: $m <@!391870232135860224> --Guild : "INSTINCT" -- Channel: #logs
 01-08-2021 13:36:36 --> Uranium#4939: $role add <@!865957146051346463> Admin --Guild : "INSTINCT" -- Channel: #logs
+07-08-2021 18:32:26 --> Uranium#4939: *pfx « --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+07-08-2021 20:50:04 --> Uranium#4939: .activ --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+07-08-2021 20:53:56 --> Uranium#4939: .activ --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+07-08-2021 22:13:16 --> Uranium#4939: $pin --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+07-08-2021 22:26:44 --> Uranium#4939: -activ <@!841587302584418305> --Guild : "The Raid Gang" -- Channel: #bot_commands
+07-08-2021 22:40:16 --> Uranium#4939: -activ --Guild : "The Raid Gang" -- Channel: #bot_commands
+07-08-2021 22:41:29 --> Yagami#0869: -activ --Guild : "The Raid Gang" -- Channel: #bot_commands
+07-08-2021 22:56:14 --> Uranium#4939: -activ --Guild : "The Raid Gang" -- Channel: #bot_commands
+07-08-2021 23:27:45 --> Uranium#4939: -clear hello --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+08-08-2021 00:18:52 --> Uranium#4939: -activ --Guild : "The Raid Gang" -- Channel: #bot_commands
+08-08-2021 00:28:42 --> Uranium#4939: -activ <@!310473349900009474> --Guild : "The Raid Gang" -- Channel: #bot_commands
+08-08-2021 12:55:30 --> Uranium#4939: %dev --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+08-08-2021 13:05:57 --> Uranium#4939: %dev --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+08-08-2021 14:15:59 --> Uranium#4939: $logs --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+08-08-2021 14:16:33 --> Uranium#4939: $logs message --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+08-08-2021 14:17:33 --> Uranium#4939: $logs message --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+08-08-2021 14:36:45 --> Uranium#4939: $unm <@!259708868144136202> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+08-08-2021 14:47:21 --> Uranium#4939: $m <@!259708868144136202> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+08-08-2021 14:50:04 --> Uranium#4939: $m <@!259708868144136202> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+09-08-2021 17:22:36 --> Uranium#4939: $getf /Data Files/prefixes.json  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+09-08-2021 17:23:14 --> Uranium#4939: $getf \Data Files\prefixes.json  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+09-08-2021 17:26:57 --> Uranium#4939: $getf aldkj  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+09-08-2021 17:30:46 --> Uranium#4939: $getf lkajdfadlk  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+09-08-2021 17:39:04 --> Uranium#4939: $getf .git  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+09-08-2021 17:41:13 --> Uranium#4939: $getf .git  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+09-08-2021 17:51:37 --> Uranium#4939: $getf  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+09-08-2021 17:53:00 --> Uranium#4939: $getf  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+09-08-2021 17:58:11 --> Uranium#4939: $getf  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+09-08-2021 19:26:14 --> Uranium#4939: $getf Data Files/prefixes.json  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939

@@ -14,26 +14,34 @@ dotenv.load_dotenv()
 #------------------------------------------------------------------------------------------------------------------------#
 cwd = os.getcwd()
 banWordFile = (cwd+"/Data Files/bannedWords.json")
-prefixFile = (cwd+"/Data Files/prefix.json")
+prefixesFile = (cwd+"/Data Files/prefixes.json")
 switchesFile = (cwd+"/Data Files/switches&data.json")
 #------------------------------------------------ Error Logging Files ---------------------------------------------------#
 errorsLogFile = (cwd+"/Err Logs/errorLogs.txt")
 errMessageLogFile = (cwd+"/Err Logs/errorMessages.txt")
 #------------------------------------------------------------------------------------------------------------------------#
 botFuncs.createFiles()
-bot_prefix = "$"
+default_bot_prefix = "$"
 operatorList = ["+","-","*"] # --> List of operators used in different commands to add , remove and show respectively
 #------------------------------------------------------------------------------------------------------------------------#
+def get_prefix(client,message):
+    try:
+        prefixes = botFuncs.loadJson(prefixesFile)
+        return prefixes[str(message.guild.id)]
+    except AttributeError:
+        """If commands are used in dm , only default bot prefix can be used"""
+        return default_bot_prefix
+
 owner_id = int(os.environ['MY_DISCORD_USER_ID'])
 
-activity = discord.Activity(type=discord.ActivityType.listening,
-                            name=" your Commands 🙂",
-                            start=datetime.now(),
-                            )
+client_activity = discord.Activity(type=discord.ActivityType.listening,
+                                   name=" your Commands 🙂",
+                                   start=datetime.now()
+                                   )
 
-client = commands.Bot(command_prefix=bot_prefix,
+client = commands.Bot(command_prefix=get_prefix,
                       help_command=None,
-                      activity=activity,
+                      activity=client_activity,
                       owner_id=owner_id,
                       intents=discord.Intents.all()
                       )
@@ -41,13 +49,28 @@ client = commands.Bot(command_prefix=bot_prefix,
 
 @client.event
 async def on_ready():
+    global owner_id
+    owner = await client.fetch_user(owner_id)
+    devsList = botData.devsList
+    if owner_id not in devsList.keys():
+        devsList[str(owner_id)] = str(owner)
+        botFuncs.dumpJson(devsList,botFuncs.devsListFile)
+
     print(f'{client.user} is online and ready to go.')
-    print(f'Current Bot prefix is : {bot_prefix}')
     print(f"Bot went online on : [{botFuncs.getDateTime()}]")
 
 
 @client.event
+async def on_guild_join(guild):
+    global default_bot_prefix
+    prefixesData = botFuncs.loadJson(prefixesFile)
+    prefixesData[str(guild.id)] = default_bot_prefix
+    botFuncs.dumpJson(prefixesData,prefixesFile)
+
+
+@client.event
 async def on_message_delete(message):
+    bot_prefix = botFuncs.get_local_prefix(message)
     def check(msg:discord.Message):
         return msg.channel.id == message.channel.id
 
@@ -61,11 +84,14 @@ async def on_message_delete(message):
         if respMsg.content == f"{bot_prefix}snipe" and delSwitch:
             del_msg_author = message.author
             embed = discord.Embed(title=f"{del_msg_author}'s Message Delete Snipe",description=f"{del_msg_author}: {message.content}",color=discord.Colour.dark_gold())
-            return await respMsg.channel.send(embed=embed)
+            return await respMsg.channel.send(embed=embed,
+                                              reference=respMsg.author,
+                                              mention_author=False)
 
 
 @client.event
 async def on_message_edit(before,after):
+    bot_prefix = botFuncs.get_local_prefix(after)
     def check(msg:discord.Message):
         return msg.channel.id == before.channel.id
 
@@ -94,7 +120,9 @@ async def on_message_edit(before,after):
             embed = discord.Embed(title=f"{edit_msg_author}'s Message edit Snipe",color=discord.Colour.dark_gold())
             embed.add_field(name="Previous:",value=f"{before.content}",inline=False)
             embed.add_field(name="Edited:",value=f"{after.content}",inline=False)
-            return await respMsg.channel.send(embed=embed)
+            return await respMsg.channel.send(embed=embed,
+                                              reference=respMsg.author,
+                                              mention_author=False)
 
 
 @client.event
@@ -123,31 +151,36 @@ async def on_raw_reaction_add(payload):
     pinSwitch = botFuncs.loadJson(switchesFile)['pinSwitch']
     diff_reaction_limit = botFuncs.loadJson(switchesFile)['diffReactLimit']
 
-    react_channel = client.get_channel(payload.channel_id)
-    react_message = await react_channel.fetch_message(payload.message_id)
-    number_of_reactions = 0
-    number_of_diff_reacions = len(react_message.reactions)
+    try:
+        react_channel = client.get_channel(payload.channel_id)
+        react_message = await react_channel.fetch_message(payload.message_id)
+        number_of_reactions = 0
+        number_of_diff_reacions = len(react_message.reactions)
 
-    for reaction in react_message.reactions:
-        reaxn_users = await reaction.users().flatten()
-        reaxn_users = [user for user in reaxn_users if not user.bot]
-        if len(reaxn_users) > 1:
-            number_of_reactions += len(reaxn_users)
+        for reaction in react_message.reactions:
+            reaxn_users = await reaction.users().flatten()
+            reaxn_users = [user for user in reaxn_users if not user.bot]
+            if len(reaxn_users) > 1:
+                number_of_reactions += len(reaxn_users)
 
-    # This Condition is explained in docstring of this event function above
-    pin_condition = number_of_reactions >= react_limit_to_pin and number_of_diff_reacions >= diff_reaction_limit
+        # This Condition is explained in docstring of this event function above
+        pin_condition = number_of_reactions >= react_limit_to_pin and number_of_diff_reacions >= diff_reaction_limit
 
-    if (not payload.member.bot) and pinSwitch:
-    # If reaction is added by a bot, it won't pin the message.
-        if pin_condition:
-            await react_message.pin(reason=f'Pinned on {payload.member.name}\'s reaction')
-            await react_message.add_reaction("📌")
+        if (not payload.member.bot) and pinSwitch:
+        # If reaction is added by a bot, it won't pin the message.
+            if pin_condition:
+                await react_message.pin(reason=f'Pinned on {payload.member.name}\'s reaction')
+                await react_message.add_reaction("📌")
+    except AttributeError:
+        """If reaction is added in DM , then there will be no discord.Member attribute and no discord.TextChannel, so we silently handle the error"""
+        pass
 
 
 #TODO-false -------------------------------------------------- On Message - Event -------------------------------------------------- #
 @client.event
 async def on_message(message):
-    global bot_prefix
+    global default_bot_prefix
+
     filterSwitch = botFuncs.loadJson(switchesFile)['filterSwitch']
 
     # Data to extract from each message
@@ -158,12 +191,23 @@ async def on_message(message):
     lowerMsgList = [word.lower() for word in fullMsgList]
     channelName = str(message.channel)
 
+    prefixes = botFuncs.loadJson(prefixesFile)
+    if message.guild is not None:
+        if str(message.guild.id) not in prefixes.keys():
+            """
+            If bot is already joined in guild, but guild prefix is not set
+            in other words, auto set guild's prefix as default prefix when bot goes active after v2.3+ (2.3 not included) 
+            """
+            prefixes[str(message.guild.id)] = default_bot_prefix
+            botFuncs.dumpJson(prefixes,prefixesFile)
+
+    bot_prefix = botFuncs.get_local_prefix(message)
+
     if message.author == client.user:
         return
 
-
     #TODO-false------------------------------------------------ Banned Words Warning -------------------------------------------------#
-    banword_aliases = [f'{bot_prefix}banword', f'{bot_prefix}bw']
+    banword_aliases = [f'{bot_prefix}banwords', f'{bot_prefix}bw', f'{bot_prefix}banword']
     if (not fullMsgList[0] in banword_aliases) and filterSwitch:
         # If user is using banword command or filterSwitch is False, then this code won't execute.
 
@@ -171,117 +215,170 @@ async def on_message(message):
             await message.add_reaction("❗")
             await message.channel.send(f"{userName} Watch your language!")
 
-
-    #TODO-false------- Only Bot-Mods can use these Commands -- Users who are in "/Data Files/modsList.data"
-    if fUserName in botData.modsList:
-
-        # Sends the errorsLogFile as discord.File in response
-        if fullMsgList[0] == f"{bot_prefix}show-logs":
-            fileName = "errorLogs.txt"
-            logfile = discord.File(errorsLogFile,fileName)
-            await message.channel.send(content=f"`{fileName}` Requested by `{fUserName}`\nFetched at time: `{botFuncs.getDateTime()}`",
-                                       file=logfile)
-            return
-        # Sends errMessageLogFile as discord.File in response
-        elif fullMsgList[0] == f"{bot_prefix}show-msglogs":
-            fileName = "errorMessages.txt"
-            msglogfile = discord.File(errMessageLogFile,fileName)
-            await message.channel.send(content =f"`{fileName}` Requested by `{fUserName}`\nFetched at time : `{botFuncs.getDateTime()}`",
-                                       file=msglogfile)
-            return
-
     bot_mentions = [
         f"<@!{client.user.id}>", # Mention on PC
         f"<@{client.user.id}>"   # Mention on Mobile
     ]
 
-    if any(mention in fullMsgList for mention in bot_mentions):
+    if any(mention in fullMsgList[0] for mention in bot_mentions):
         await message.add_reaction("👍")
-        await message.channel.send(f"Yes {message.author.mention}, Im up and running!, type `{bot_prefix}help` to know more 🙂")
+        await message.channel.send(f"Hey {message.author.mention}!! Im up and running! type `{bot_prefix}help` to know my commands 🙂")
         return
 
-    # TODO-false------------------------------------------------ Bot-MOD COMMAND >> 'mod' command to add or remove Bot-Moderators ------------------------------------------------#
-    # can add , remove Mod to/from modsList | can show the list of Mods
-    if fullMsgList[0] == (f'{bot_prefix}mod'):
-        if fUserName not in botData.modsList:
-            return
-        modToAdd = " ".join(fullMsgList[2:])
-        try:
-            operator_mod = fullMsgList[1]
-            if modToAdd.isnumeric():
-                try:
-                    newBotMod = await client.fetch_user(modToAdd)
-                    nameToAdd = str(newBotMod)
-                except:
-                    await message.channel.send("Can't find any user with given ID.")
-                    return
-            elif botFuncs.isDiscTag(modToAdd)[0]:
-                nameToAdd = botFuncs.isDiscTag(modToAdd)[1]
-            elif modToAdd == 'show':
-                nameToAdd = fullMsgList[2]
-            else:
-                raise ValueError
-
-            if nameToAdd == "Uranium#4939":
-                await message.add_reaction("😂")
-                await message.channel.send(f'HAHA Nice Try! `{nameToAdd}` is Owner of this Bot and this bot is not a public bot, so u cant add or remove them from Mod list')
-                return
-
-            if operator_mod == "*" and nameToAdd == "show":
-                modStr = (f'```\n'
-                          f'Displaying List of bot\'s moderators:\n')
-                i = 1
-                for mod in botData.modsList:
-                    modStr += f'Mod - {i} : {mod}\n'
-                    i += 1
-                modStr += f'```'
-                await message.add_reaction("✅")
-
-            elif operator_mod == "+" and botFuncs.isDiscTag(nameToAdd):
-                if nameToAdd in botData.modsList:
-                    await message.channel.send(f'{nameToAdd} is already in Mods list!')
-                    return
-                botData.modsList.append(nameToAdd)
-                botFuncs.dumpJson(botData.modsList, botFuncs.modListFile)
-                modStr = (f'Successfully added `{nameToAdd}` in bot\'s Mod list.')
-                await message.add_reaction("✅")
-
-            elif operator_mod == "-" and botFuncs.isDiscTag(nameToAdd):
-                if nameToAdd not in botData.modsList:
-                    await message.channel.send('Cant remove something which doesn\'nt exist.')
-                    return
-                botData.modsList.remove(nameToAdd)
-                botFuncs.dumpJson(botData.modsList, botFuncs.modListFile)
-                modStr = (f'Successfully removed `{nameToAdd}` from bot\'s Mod list.')
-                await message.add_reaction("✅")
-
-            await message.channel.send(modStr)
-            return
-
-        except:
-            modStr = (f'{user.mention}, That\'s not the way to use this command\n'
-                      f'correct usage:\n'
-                      f'```\n'
-                      f'{bot_prefix}mod {{operator}} {{`user#1234`}} | {{user_id}}\n'
-                      f'operators:\n'
-                      f'+ = add\n- = remove\n'
-                      f'to show list of mods, type this:\n'
-                      f'{bot_prefix}mod * show\n'
-                      f'```')
-            await message.channel.send(modStr)
-            return
-
     await client.process_commands(message=message)
+
+#todo-false ------------------------------------------------- Dev Commands ------------------------------------------------- #
+
+#todo-false ------------------------------------------- Developer -- command group -------------------------------------------- #
+# display, add or remove a user from bot-dev list
+
+@client.group(invoke_without_command=True,aliases=['dev','devs'])
+async def bot_developers(ctx):
+    devsList = botData.devsList
+    if str(ctx.author.id) not in devsList.keys():
+        raise commands.MissingPermissions('Not a bot dev')
+        raise commands.CommandInvokeError()
+
+    devStr = ""
+    i=1
+    for id,discTag in devsList.items():
+        devStr += f"**{i}.  `{discTag}` -- `{id}`**\n"
+        i+=1
+    embed = discord.Embed(title="List of Bot Developers",description=devStr,color=discord.Colour.dark_gold())
+    embed.set_thumbnail(url=client.user.avatar_url)
+    embed.set_footer(text=f"Requested by {ctx.author}",icon_url=ctx.author.avatar_url)
+    await ctx.send(embed=embed,reference=ctx.message,mention_author=False)
+
+@bot_developers.command(aliases=['+'])
+async def add(ctx,member:discord.Member):
+    global owner_id
+    if member.id == owner_id and ctx.author.id != owner_id:
+        return await ctx.send(f"Haha nice try {ctx.author.name}, I am loyal to my owner, i won't do that",reference=ctx.message,mention_author=True)
+
+    devsList = botData.devsList
+    if str(member.id) in devsList.keys():
+        return await ctx.send(f"`{member}` is already in Bot-devs list!",
+                              reference=ctx.message,
+                              mention_author=False)
+    else:
+        devsList[str(member.id)] = str(member)
+        botFuncs.dumpJson(devsList,botFuncs.devsListFile)
+        return await ctx.send(f"`{member}` Succesfully added to Bot-Devs list!",reference=ctx.message,mention_author=False)
+
+@bot_developers.command(aliases=['-'])
+async def remove(ctx,member:discord.Member):
+    global owner_id
+    if member.id == owner_id and ctx.author.id != owner_id:
+        await ctx.message.add_reaction("😂")
+        return await ctx.send(f"Haha nice try {ctx.author.name}, I am loyal to my Owner, I won't do that!",
+                              reference=ctx.message,
+                              mention_author=True)
+
+    devsList = botData.devsList
+    if str(member.id) in devsList.keys():
+        devsList.pop(str(member.id))
+        botFuncs.dumpJson(devsList,botFuncs.devsListFile)
+        return await ctx.send(f"`{member}` was succesfully removed from Bot-devs list!",
+                              reference=ctx.message,
+                              mention_author=False)
+    else:
+        return await ctx.send(f"`{member}` was not found in Bot-devs list!",reference=ctx.message,mention_author=False)
+
+#todo-false ----------------------------------------- END of Developer command group -------------------------------------------------- #
+# ------------------------------------------------------------------------------------------------------------------------------------- #
+#todo-false --------------------------------------------------- Logs command group ---------------------------------------------------- #
+@client.group(invoke_without_command=True)
+async def logs(ctx):
+    if str(ctx.author.id) not in botData.devsList.keys():
+        raise commands.MissingPermissions('Not a bot dev')
+    # Sends the errorLogs.txt file as a discord.File
+    fileName = "errorLogs.txt"
+    logfile = discord.File(errorsLogFile, fileName)
+    return await ctx.send(content=f"`{fileName}` Requested by `{ctx.author}`\nFetched at time: `{botFuncs.getDateTime()}`",
+                               file=logfile,
+                               reference=ctx.message,
+                               mention_author=False)
+
+@logs.command(aliases=['msg'])
+async def message(ctx):
+    if str(ctx.author.id) not in botData.devsList.keys():
+        raise commands.MissingPermissions('Not a bot dev')
+    # Sends the errorMessages.txt file as discord.File
+    fileName = "errorMessages.txt"
+    msglogfile = discord.File(errMessageLogFile, fileName)
+    return await ctx.send(content=f"`{fileName}` Requested by `{ctx.author}`\nFetched at time : `{botFuncs.getDateTime()}`",
+                               file=msglogfile,
+                               reference=ctx.message,
+                               mention_author=False)
+
+#todo-false -------------------------------------------------- END of Logs command group ------------------------------------------------ #
+
+#todo-false -------------------------------------------------- get files command -------------------------------------------------- #
+@client.group(invoke_without_command=True,aliases=['getf'])
+async def get_files(ctx,*,path=None):
+    if str(ctx.author.id) not in botData.devsList.keys():
+        raise commands.MissingPermissions('Not a bot dev')
+
+    currentDir = str(os.getcwd())
+    if path is None:
+        listdir = os.listdir(os.getcwd())
+        to_remove = ['pyDiscBot.code-workspace','__pycache__']
+        listdir = [x for x in listdir if x[0] != "." and x not in to_remove]
+
+        fileStr = ""
+        for item in listdir:
+            fileStr += f"**`{item}`**\n"
+
+        dataStr = ""
+        dataFiles_listdir = os.listdir(currentDir+"\\Data Files")
+        for item in dataFiles_listdir:
+            dataStr += f"**`{item}`**\n"
+
+        errStr = ""
+        errLogs_listdir = os.listdir(currentDir+"\\Err Logs")
+        for item in errLogs_listdir:
+            errStr += f"**`{item}`**\n"
+
+
+        embed = discord.Embed(title="List of files in Bot's Source Code Repository",color=discord.Colour.dark_gold())
+        embed.add_field(name="Main Directory:",value=fileStr,inline=False)
+        embed.add_field(name="/Data Files :",value=dataStr,inline=False)
+        embed.add_field(name="/Err Logs :",value=errStr,inline=False)
+        return await ctx.send(embed=embed,
+                              reference=ctx.message,
+                              mention_author=False)
+    else:
+        try:
+            file_path = f"{currentDir}\\{path}"
+            file_to_send = discord.File(file_path)
+            if file_to_send is None:
+                raise FileNotFoundError
+
+            return await ctx.send(file=file_to_send,
+                                  reference=ctx.message,
+                                  mention_author=False)
+        except Exception as error:
+            if isinstance(error,FileNotFoundError):
+                return await ctx.send(f"No such file or directory: `{path}`\n",
+                                      reference=ctx.message,
+                                      mention_author=False)
+            elif isinstance(error,PermissionError):
+                return await ctx.send(f"Permission Denied by system, can't send that file",
+                                      reference=ctx.message,
+                                      mention_author=False)
+            else:
+                raise error
 
 
 #TODO-false ------------------------------- Exception Handling for commands ------------------------------- #
 @client.event
 async def on_command_error(ctx,error):
+    bot_prefix = botFuncs.get_local_prefix(ctx.message)
     author = ctx.author
     del_after = 10
 
     if isinstance(error,commands.MissingPermissions):
-        await ctx.send(f"{author.mention}, You don't have permissions to use that command!", delete_after=del_after)
+        await ctx.send(f"{ctx.author.mention}, Either you, or Bot is Missing Permission to perform the task.",delete_after=del_after)
     elif isinstance(error,commands.CommandNotFound):
         pseudo_commands = [f"{bot_prefix}snipe"]
         """
@@ -295,9 +392,11 @@ async def on_command_error(ctx,error):
     elif isinstance(error,commands.MemberNotFound):
         await ctx.send(f"{author.mention}, You are supposed to mention a valid Discord user.",delete_after=del_after)
     elif isinstance(error,commands.MissingRequiredArgument):
-        await ctx.send(f"{author.mention}, Please provide all the arguments Required for the command.\n", delete_afte=del_after)
+        await ctx.send(f"{author.mention}, Please provide all the arguments Required for the command.\n",delete_after=del_after)
     elif isinstance(error,commands.RoleNotFound):
         await ctx.send(f"Can't find a Role with name : `{error.argument}`")
+    elif isinstance(error,commands.BadArgument):
+        await ctx.send(f"Incorrect usage of the command! check what your command does by using `{bot_prefix}help`",delete_after=del_after)
     else:
         channel_name = ctx.channel
         logTime = botFuncs.getDateTime()
@@ -314,7 +413,7 @@ async def on_command_error(ctx,error):
 
             await ctx.send(f"{author.mention}, Either bot doesn't have permission to do the task or you used the command incorrectly\n"
                            f"an error has occurred, Please contact the Bot Dev `{owner}` with this info :\n ```{logTime} --> {error}``` \n"
-                           f"This message will be Deleted automatically after {deleteAfter/60} minutes, make sure you copy the error info before this gets deleted", delete_after=deleteAfter)
+                           f"This message will be Deleted automatically after {deleteAfter/60} minutes, make sure you copy the error info before this gets deleted",delete_after=deleteAfter)
         except Exception as error_in_handling :
             with open(errorsLogFile, "a") as erf:
                 erf.write(f"{logTime} --> {error} -- In Channel : {channel_name} -- Command User : {author}\n")
@@ -323,77 +422,91 @@ async def on_command_error(ctx,error):
 
             await ctx.send(f"{author.mention}, Either bot doesn't have permission to do the task or you used the command incorrectly\n"
                            f"an error has occurred, Please contact the Bot Dev `{owner}` with this info :\n ```{logTime} --> {error_in_handling}``` \n"
-                           f"This message will be Deleted automatically after {deleteAfter/60} minutes, make sure you copy the error info before this gets deleted", delete_after=deleteAfter)
+                           f"This message will be Deleted automatically after {deleteAfter/60} minutes, make sure you copy the error info before this gets deleted",delete_after=deleteAfter)
         raise error
 
 
 #TODO-false ---------------------------------------- Help Commands ---------------------------------------- #
 @client.command()
 async def help(ctx):
-    help_Embed = botData.helpPromt_func(ctx.author,client)
-    await ctx.send(embed=help_Embed)
+    bot_prefix = botFuncs.get_local_prefix(ctx.message)
+    help_Embed = botData.helpPromt_func(ctx.author,client,bot_prefix)
+    await ctx.send(embed=help_Embed,
+                       reference=ctx.message,
+                       mention_author=False)
 
 
 @client.command(aliases = ["mh"])
 @commands.has_permissions(manage_guild = True)
 async def mod_help(ctx):
     modHelp_Embed = botData.modHlelpPromt_func(ctx.author,client)
-    await ctx.send(embed=modHelp_Embed)
+    await ctx.send(embed=modHelp_Embed,
+                       reference=ctx.message,
+                       mention_author=False)
 
 #TODO-false ----------------------------------------- MOD COMMANDS -----------------------------------------#
-
-@client.command(aliases = ["bw"])
+#todo-false ----------------------------------------- Banwords command group ------------------------------------------- #
+@client.group(invoke_without_command=True,aliases = ["bw","banword"])
 @commands.has_permissions(manage_guild = True)
-async def banword(ctx,*args):
-    try:
-        operator = args[0]
-        banWord = args[1].lower()
-        cmdWord = args[1].lower()
+async def banwords(ctx):
+    banwStr = ""
+    for word in botData.bannedWords:
+        banwStr += f"**{word}**\n"
 
-        if operator not in operatorList:
+    embed = discord.Embed(title="List of Prohibited words",description=banwStr,color=discord.Colour.dark_gold())
+    embed.set_footer(text=f"Requested by {ctx.author}",icon_url=ctx.author.avatar_url)
+    return await ctx.send(embed=embed,
+                          reference=ctx.message,
+                          mention_author=False)
+
+@banwords.command(aliases=['+'])
+async def add(ctx,*,word):
+    if word in botData.bannedWords:
+        return await ctx.send(f"`{word}` is already in list of banned words",
+                              reference=ctx.message,
+                              mention_author=False)
+    else:
+        botData.bannedWords.append(word)
+        botFuncs.dumpJson(botData.bannedWords,banWordFile)
+        return await ctx.send(f"Successfully added `{word}` to list of banned words",
+                              reference=ctx.message,
+                              mention_author=False)
+
+@banwords.command(aliases=['-'])
+async def remove(ctx,*,word):
+    if word in botData.bannedWords:
+        botData.bannedWords.remove(word)
+        botFuncs.dumpJson(botData.bannedWords,banWordFile)
+        return await ctx.send(f"Successfully removed `{word}` from list of banned words",
+                              reference=ctx.message,
+                              mention_author=False)
+    else:
+        return await ctx.send(f"`{word}` was not found in list of banned words!",
+                              reference=ctx.message,
+                              mention_author=False)
+
+#todo-false ------------------------------------------ END of banwords command group ----------------------------------- #
+
+@client.command(aliases=['pfx'])
+@commands.has_permissions(manage_guild=True)
+async def prefix(ctx,prefix):
+    try:
+        if len(prefix) > 3 or not prefix.isascii() :
             raise ValueError
 
-        if operator == "+":
-            if banWord not in botData.bannedWords:
-                botData.bannedWords.append(banWord.lower())
-                botFuncs.dumpJson(botData.bannedWords, banWordFile)
-                banwStr = f'Added {banWord} to banned list.'
-                await ctx.message.add_reaction("✅")
-            else:
-                banwStr = f'{banWord} is already in banned words list.'
-        elif operator == "-":
-            if banWord in botData.bannedWords:
-                botData.bannedWords.remove(banWord)
-                botFuncs.dumpJson(botData.bannedWords, banWordFile)
-                banwStr = f'Removed {banWord} from the banned words list.'
-                await ctx.message.add_reaction("✅")
-            else:
-                banwStr = f"can't delete something which is not in banned words' list."
-        elif operator == "*" and cmdWord == "show":
-            banwStr = '```\nList of Banned words:\n'
-            i = 1
-            for bword in botData.bannedWords:
-                banwStr += f'{i}. {bword}\n'
-                i += 1
-            banwStr += '```'
-            await ctx.message.add_reaction("✅")
+        prefixes = botFuncs.loadJson(prefixesFile)
+        prefixes[str(ctx.guild.id)] = prefix
+        botFuncs.dumpJson(prefixes,prefixesFile)
+        await ctx.send(f"Successfully set `{prefix}` as prefix for this guild!",
+                       reference=ctx.message,
+                       mention_author=False)
+    except ValueError:
+        responseStr = (f"Maximum length of prefix should be 3 characters! No special characters allowed except ASCII characters\n"
+                       f"if you dont know what ASCII characters are, please Google it.")
+        await ctx.send(responseStr,
+                       reference=ctx.message,
+                       mention_author=False)
 
-    except:
-        banwStr = (f'{ctx.author.mention}, That\'s not the way to use this command\n'
-                   f'correct usage:\n'
-                   f'```\n'
-                   f'{bot_prefix}banword {{opertaor}} {{word}}\n'
-                   f'operator : + , -\n'
-                   f'+ to add the word to banned words list\n'
-                   f'- to remove the word from banned words list\n'
-                   f'Util:\n'
-                   f'{bot_prefix}banword * show\n'
-                   f'shows all banned words'
-                   f'```')
-        await ctx.send(banwStr)
-        return
-
-    await ctx.send(banwStr)
 
 
 #TODO-false ---------------------------------------------------------- Switches Group Commands -----------------------------------------------------------------#
@@ -406,7 +519,9 @@ async def switch(ctx):
     for key,value in fullDict.items():
         embed.add_field(name=f"{key}",value=f"{value}",inline=False)
     embed.set_footer(text=f"Requested by {ctx.author}",icon_url=ctx.author.avatar_url)
-    return await ctx.send(embed=embed)
+    return await ctx.send(embed=embed,
+                          reference=ctx.message,
+                          mention_author=False)
 
 @switch.command(aliases = ['filter','fswitch'])
 async def filter_switch(ctx,operator):
@@ -414,13 +529,17 @@ async def filter_switch(ctx,operator):
     if operator == '+':
         fullDict['filterSwitch'] = True
         botFuncs.dumpJson(fullDict,switchesFile)
-        await ctx.send(f'Message scanning for filtered words is Activated!', delete_after = 6)
+        await ctx.send(f'Message scanning for filtered words is Activated!',delete_after=6,
+                       reference=ctx.message,
+                       mention_author=False)
         await asyncio.sleep(5)
         await ctx.message.delete()
     elif operator == '-':
         fullDict['filterSwitch'] = False
         botFuncs.dumpJson(fullDict,switchesFile)
-        await ctx.send(f'Message scanning for filtered words is turned off.', delete_after = 6)
+        await ctx.send(f'Message scanning for filtered words is turned off.',delete_after=6,
+                       reference=ctx.message,
+                       mention_author=False)
         await asyncio.sleep(5)
         await ctx.message.delete()
 
@@ -430,11 +549,15 @@ async def p_switch(ctx,operator):
     if operator == '+':
         fullDict['pinSwitch'] = True
         botFuncs.dumpJson(fullDict,switchesFile)
-        await ctx.send(f"Bot feature 'Pin on Reactions' Activated!",delete_after = 6)
+        await ctx.send(f"Bot feature 'Pin on Reactions' Activated!",delete_after=6,
+                       reference=ctx.message,
+                       mention_author=False)
     elif operator == '-':
         fullDict['pinSwitch'] = False
         botFuncs.dumpJson(fullDict,switchesFile)
-        await ctx.send(f"Bot feature 'Pin on Reactions' Deactivated!",delete_after = 6)
+        await ctx.send(f"Bot feature 'Pin on Reactions' Deactivated!",delete_after=6,
+                       reference=ctx.message,
+                       mention_author=False)
 
 @switch.command(aliases=['delsnipe','dsnipe'])
 async def del_snipe_switch(ctx,operator):
@@ -442,11 +565,15 @@ async def del_snipe_switch(ctx,operator):
     if operator == '+':
         fullDict['del_snipe_switch'] = True
         botFuncs.dumpJson(fullDict,switchesFile)
-        await ctx.send(f"Bot feature 'Snipe Deleted Message' Activated!",delete_after = 6)
+        await ctx.send(f"Bot feature 'Snipe Deleted Message' Activated!",delete_after = 6,
+                       reference=ctx.message,
+                       mention_author=False)
     elif operator == '-':
         fullDict['del_snipe_switch'] = False
         botFuncs.dumpJson(fullDict,switchesFile)
-        await ctx.send(f"Bot feature 'Snipe Deleted Message' Deactivated!",delete_after = 6)
+        await ctx.send(f"Bot feature 'Snipe Deleted Message' Deactivated!",delete_after = 6,
+                       reference=ctx.message,
+                       mention_author=False)
 
 @switch.command(aliases=['editsnipe','esnipe'])
 async def edit_snipe_switch(ctx,operator):
@@ -454,29 +581,37 @@ async def edit_snipe_switch(ctx,operator):
     if operator == '+':
         fullDict['edit_snipe_switch'] = True
         botFuncs.dumpJson(fullDict,switchesFile)
-        await ctx.send(f"Bot feature 'Snipe Edited Message' Activated!",delete_after = 6)
+        await ctx.send(f"Bot feature 'Snipe Edited Message' Activated!",delete_after = 6,
+                       reference=ctx.message,
+                       mention_author=False)
     elif operator == '-':
         fullDict['edit_snipe_switch'] = False
         botFuncs.dumpJson(fullDict,switchesFile)
-        await ctx.send(f"Bot feature 'Snipe Edited Message' Deactivated!",delete_after = 6)
+        await ctx.send(f"Bot feature 'Snipe Edited Message' Deactivated!",delete_after = 6,
+                       reference=ctx.message,
+                       mention_author=False)
 
 @switch.command(aliases = ['reactlimit','rlimit'])
 async def reactionsLimit_setter(ctx,limit: int):
     fullDict = botFuncs.loadJson(switchesFile)
     fullDict['reactLimit'] = limit
     botFuncs.dumpJson(fullDict,switchesFile)
-    await ctx.send(f"Pin on Reactions : Reaction Limit changed to `{limit} reactions`")
+    await ctx.send(f"Pin on Reactions : Reaction Limit changed to `{limit} reactions`",
+                       reference=ctx.message,
+                       mention_author=False)
 
 @switch.command(aliases = ['drlimit','diffreact','difflimit'])
 async def diffReactionsLimit_setter(ctx,limit:int):
     fullDict = botFuncs.loadJson(switchesFile)
     fullDict['diffReactLimit'] = limit
     botFuncs.dumpJson(fullDict,switchesFile)
-    await ctx.send(f"Pin on Reactions : Number of different reactions limit changed to `{limit} Different reactions`")
+    await ctx.send(f"Pin on Reactions : Number of different reactions limit changed to `{limit} Different reactions`",
+                       reference=ctx.message,
+                       mention_author=False)
 
 #Todo-false-------------------------------------------------------- END of Switches Group Commands ---------------------------------------------------------------#
 
-@client.command(aliases = ["p"])
+@client.command(aliases = ["clear","p"])
 @commands.has_permissions(manage_messages = True)
 async def purge(ctx,amount: int = 1 ):
     if amount < 0:
@@ -491,50 +626,70 @@ async def purge(ctx,amount: int = 1 ):
 @client.command(aliases = ["m"])
 @commands.has_permissions(manage_channels = True)
 async def mute(ctx,member: discord.Member):
-    listOfGuildRoles = ctx.guild.roles
-    listMemberRoles = member.roles
+    try:
+        listOfGuildRoles = ctx.guild.roles
+        listMemberRoles = member.roles
 
-    # Getting the position of highest role of -user to be muted-
-    highestMemberRole_pos = listMemberRoles[len(listMemberRoles)-1].position
+        # Getting the position of highest role of -user to be muted-
+        highestMemberRole_pos = listMemberRoles[len(listMemberRoles)-1].position
 
-    muted_role = None
-    for role in listOfGuildRoles:
-        if role.name.lower() == 'muted':
-            muted_role = role
-            break
+        muted_role = None
+        for role in listOfGuildRoles:
+            if role.name.lower() == 'muted':
+                muted_role = role
+                break
 
-    if not muted_role:
-        raise commands.RoleNotFound(argument='Muted')
+        if not muted_role:
+            raise commands.RoleNotFound(argument='Muted')
 
-    m_pos = muted_role.position
+        m_pos = muted_role.position
 
-    # Puts the muted role just above user's highes role , if user's highest role is above muted role
-    if m_pos < highestMemberRole_pos:
-        await muted_role.edit(position = highestMemberRole_pos)
-        await ctx.send("Moved Muted role.")
+        # Puts the muted role just above user's highes role , if user's highest role is above muted role
+        if m_pos < highestMemberRole_pos:
+            await muted_role.edit(position = highestMemberRole_pos)
+            await ctx.send("Moved Muted role.",
+                       reference=ctx.message,
+                       mention_author=False)
 
-    await member.add_roles(muted_role)
-    await ctx.message.add_reaction("✅")
-    await ctx.send(f'{member.mention} was Muted!')
+        await member.add_roles(muted_role)
+        await ctx.message.add_reaction("✅")
+        await ctx.send(f'{member.mention} was Muted!',
+                       reference=ctx.message,
+                       mention_author=False)
+    except:
+        """
+        If command raises a CommandInvokeError : Forbidden/HTTP : Missing Permissions
+        we are converting the error to commands.MissingPermissions
+        """
+        raise commands.MissingPermissions('Missing Permission')
 
 
 @client.command(aliases = ["unm"])
 @commands.has_permissions(manage_channels = True)
 async def unmute(ctx,member: discord.Member):
-    listOfGuildRoles = ctx.guild.roles
+    try:
+        listOfGuildRoles = ctx.guild.roles
 
-    muted_role = None
-    for role in member.roles:
-        if role.name.lower() == 'muted':
-            muted_role = role
-            break
+        muted_role = None
+        for role in member.roles:
+            if role.name.lower() == 'muted':
+                muted_role = role
+                break
 
-    if not muted_role:
-        return await ctx.send(f"{member.name} is not Muted!")
+        if not muted_role:
+            return await ctx.send(f"{member.name} is not Muted!")
 
-    await member.remove_roles(muted_role)
-    await ctx.message.add_reaction("✅")
-    await ctx.send(f'{member.mention} was Unmuted!')
+        await member.remove_roles(muted_role)
+        await ctx.message.add_reaction("✅")
+        await ctx.send(f'{member.mention} was Unmuted!',
+                       reference=ctx.message,
+                       mention_author=False)
+    except:
+        """
+        If command raises a CommandInvokeError : Forbidden/HTTP : Missing Permissions
+        we are converting the error to commands.MissingPermissions
+        """
+        raise commands.MissingPermissions('Missing Permission')
 
 
 @client.command(aliases = ["k"])
@@ -546,9 +701,18 @@ async def kick(ctx,member: discord.Member,*,reason = "No Reason Provided"):
         await ctx.send("Sent DM to kicked user", delete_after=5)
     except:
         pass
-    await member.kick(reason=reason)
-    await ctx.message.add_reaction("✅")
-    await ctx.send(f'`{member.name}` was Kicked from `{ctx.guild.name}, Reason = `{reason}`.')
+    try:
+        await member.kick(reason=reason)
+        await ctx.message.add_reaction("✅")
+        await ctx.send(f'`{member.name}` was Kicked from `{ctx.guild.name}, Reason = `{reason}`.',
+                       reference=ctx.message,
+                       mention_author=False)
+    except:
+        """
+        If command raises a CommandInvokeError : Forbidden/HTTP : Missing Permissions
+        we are converting the error to commands.MissingPermissions
+        """
+        raise commands.MissingPermissions('Missing Permission')
 
 
 @client.command(aliases = ["b"])
@@ -560,9 +724,18 @@ async def ban(ctx,member: discord.Member,*,reason = "No Reason Provided"):
         await ctx.send("Sent DM to banned user",delete_after=5)
     except:
         pass
-    await member.ban(reason=reason)
-    await ctx.message.add_reaction("✅")
-    await ctx.send(f'`{member.mention}` was banned from `{ctx.guild.name}, Reason = `{reason}`.')
+    try:
+        await member.ban(reason=reason)
+        await ctx.message.add_reaction("✅")
+        await ctx.send(f'`{member.mention}` was banned from `{ctx.guild.name}, Reason = `{reason}`.',
+                       reference=ctx.message,
+                       mention_author=False)
+    except:
+        """
+        If command raises a CommandInvokeError : Forbidden/HTTP : Missing Permissions
+        we are converting the error to commands.MissingPermissions
+        """
+        raise commands.MissingPermissions('Missing Permission')
 
 
 @client.command(aliases = ["unb"])
@@ -576,19 +749,29 @@ async def unban(ctx,*,member):
         if (user.name,user.discriminator) == (member_name,member_disc):
             await ctx.guild.unban(user)
             await ctx.message.add_reaction("✅")
-            await ctx.send(f'{user} was Unbanned!')
+            await ctx.send(f'{user} was Unbanned!',
+                       reference=ctx.message,
+                       mention_author=False)
             return
 
     await ctx.message.add_reaction("❌")
-    await ctx.send(f'{member} not found in this guild\'s banned list.')
+    await ctx.send(f'{member} not found in this guild\'s banned list.',
+                       reference=ctx.message,
+                       mention_author=False)
     return
 
 
 @client.command()
 @commands.has_permissions(manage_guild=True)
 async def pin(ctx):
-    ref_message_id =  ctx.message.reference.message_id
-    ref_msg = await ctx.channel.fetch_message(ref_message_id)
+    try:
+        ref_message_id =  ctx.message.reference.message_id
+        ref_msg = await ctx.channel.fetch_message(ref_message_id)
+    except AttributeError:
+        return await ctx.send(f"{ctx.author.name}, You were supposed to reference a message (reply) with this command!",
+                       reference=ctx.message,
+                       mention_author=False)
+
     if ref_msg.pinned:
         return await ctx.send("Referenced Message is already Pinned!",delete_after=5)
     await ref_msg.pin()
@@ -599,8 +782,14 @@ async def pin(ctx):
 @client.command()
 @commands.has_permissions(manage_guild=True)
 async def unpin(ctx):
-    ref_message_id =  ctx.message.reference.message_id
-    ref_msg = await ctx.channel.fetch_message(ref_message_id)
+    try:
+        ref_message_id =  ctx.message.reference.message_id
+        ref_msg = await ctx.channel.fetch_message(ref_message_id)
+    except AttributeError:
+        return await ctx.send(f"{ctx.author.name}, You were supposed to reference a message (reply) with this command!",
+                       reference=ctx.message,
+                       mention_author=False)
+
     if ref_msg.pinned:
         await ref_msg.unpin()
     else:
@@ -617,42 +806,59 @@ async def change_voice_channel(ctx,member:discord.Member,*,vcName=None):
     bot_owner = client.get_user(client.owner_id)
 
     if member == bot_owner and ctx.author != bot_owner:
-        return await ctx.send(f"HAHA Nice try {ctx.author.name}, I am Loyal to my Owner, i won't do that to him. Better Luck next time :wink:")
+        return await ctx.send(f"HAHA Nice try {ctx.author.name}, I am Loyal to my Owner, i won't do that to him. Better Luck next time :wink:",
+                       reference=ctx.message,
+                       mention_author=False)
 
     try:
         joined_vc = member.voice.channel
     except:
-        return await ctx.send(f"{member.name} is currently not in any VC.")
+        return await ctx.send(f"{member.name} is currently not in any VC.",
+                       reference=ctx.message,
+                       mention_author=False)
 
     if not vcName:
         await member.edit(voice_channel=vcName)
-        return await ctx.send(f"{member.name} was Disconnected from `{joined_vc.name}` ")
+        return await ctx.send(f"{member.name} was Disconnected from `{joined_vc.name}` ",
+                       reference=ctx.message,
+                       mention_author=False)
 
     for vc in guild_VC_list:
         if vc.name.lower() == vcName.lower():
             voice_channel = vc
             await member.edit(voice_channel=voice_channel)
-            return await ctx.send(f"{member.name} was moved from `{joined_vc.name}` to `{voice_channel.name}`")
+            return await ctx.send(f"{member.name} was moved from `{joined_vc.name}` to `{voice_channel.name}`",
+                       reference=ctx.message,
+                       mention_author=False)
 
-    return await ctx.send(f"Voice Channel with name `{vcName}` Not found.")
+    return await ctx.send(f"Voice Channel with name `{vcName}` Not found.",
+                       reference=ctx.message,
+                       mention_author=False)
 
 #todo-false ----------------------------------------------- Role Command Group -----------------------------------------------------------#
 
 @client.group(invoke_without_command=True,aliases=['roles'])
 @commands.has_permissions(manage_roles=True)
 async def role(ctx):
+    bot_prefix = botFuncs.get_local_prefix(ctx.message)
     await ctx.send("Command Usage:\n"
-                   f"`{bot_prefix}role (add|remove) (user) (role)`")
+                   f"`{bot_prefix}role (add|remove) (user) (role)`",
+                       reference=ctx.message,
+                       mention_author=False)
 
 @role.command(aliases=['+'])
 async def add(ctx,member:discord.Member,*,grole:discord.Role):
     await member.add_roles(grole)
-    await ctx.send(f"Given `{grole.name}` Role to `{member}`")
+    await ctx.send(f"Given `{grole.name}` Role to `{member}`",
+                       reference=ctx.message,
+                       mention_author=False)
 
 @role.command(aliases=['-'])
 async def remove(ctx,member:discord.Member,*,trole:discord.Role):
     await member.remove_roles(trole)
-    await ctx.send(f"Taken `{trole.name}` Role from `{member}`")
+    await ctx.send(f"Taken `{trole.name}` Role from `{member}`",
+                       reference=ctx.message,
+                       mention_author=False)
 
 @role.command(aliases=['*'])
 async def show(ctx,member:discord.Member):
@@ -680,7 +886,9 @@ async def show(ctx,member:discord.Member):
         embed.add_field(name="Non-Mentionable Roles:",value=non_mentionables,inline=False)
 
     embed.set_footer(text=f"Requested by {ctx.author}",icon_url=ctx.author.avatar_url)
-    await ctx.send(embed=embed)
+    await ctx.send(embed=embed,
+                   reference=ctx.message,
+                   mention_author=False)
 
 #todo-false --------------------------------------------- END of Role Command Group ------------------------------------------------------#
 
@@ -688,7 +896,7 @@ async def show(ctx,member:discord.Member):
 #TODO-false ------------------------------------------- Utility Commands --------------------------------------------------#
 @client.command(aliases = ['ref'])
 async def regfind(ctx,emailORdisctag,operator,*,text):
-
+    bot_prefix = botFuncs.get_local_prefix(ctx.message)
     toFind = emailORdisctag.lower()
     operator_present = operator == "--"
     find_in = text
@@ -696,7 +904,7 @@ async def regfind(ctx,emailORdisctag,operator,*,text):
     try:
         if command_ok and operator_present:
             if toFind == "email":
-                matches = re.findall(r'[\w%./-]+@[a-zA-Z0-9]+[-]*[a-zA-Z0-9]*\.com', find_in)
+                matches = re.findall(r'[\w%./-]+@[a-zA-Z]+[-]*[a-zA-Z]*\.com', find_in)
                 toFind = "Email"
             elif toFind == "disctag":
                 matches = re.findall(r'[\w%!.&*-]+#\d{4}',find_in)
@@ -710,7 +918,9 @@ async def regfind(ctx,emailORdisctag,operator,*,text):
             regResponseStr += '```'
         else:
             raise ValueError
-        await ctx.send(regResponseStr)
+        await ctx.send(regResponseStr,
+                       reference=ctx.message,
+                       mention_author=False)
     except:
         regResponseStr = ('Incorrect usage of command `regfind`\n'
                           f'{ctx.author.name}, correct usage is:\n'
@@ -720,6 +930,9 @@ async def regfind(ctx,emailORdisctag,operator,*,text):
                           f'| --> or\n'
                           '{} exclude the brackets\n'
                           '```')
+        await ctx.send(regResponseStr,
+                       reference=ctx.message,
+                       mention_author=False)
 
 
 @client.command(aliases = ['gif'])
@@ -734,7 +947,9 @@ async def tenorgif(ctx,*,category):
     embed.set_thumbnail(url = via_tenor_URL)
     author_name = str(ctx.author)
     embed.set_footer(text=f'Requested by {author_name}.', icon_url= ctx.author.avatar_url)
-    await ctx.send(embed = embed)
+    await ctx.send(embed = embed,
+                   reference=ctx.message,
+                   mention_author=False)
 
 
 @client.command(aliases = ['pfp','pic'])
@@ -746,7 +961,9 @@ async def avatar(ctx,member: discord.Member = None):
     embed.set_image(url=member.avatar_url)
     embed.set_footer(text=f'Requested by {author_tag}.', icon_url=ctx.author.avatar_url)
 
-    await ctx.send(embed=embed)
+    await ctx.send(embed=embed,
+                   reference=ctx.message,
+                   mention_author=False)
 
 
 @client.command()
@@ -758,15 +975,22 @@ async def code(ctx,format,*,code):
 
     with open(tempFileName, "rb") as ft:
         codeFile = discord.File(ft,f'{ctx.author.name}Code.{format}')
-        await ctx.send(file=codeFile)
+        await ctx.send(file=codeFile,
+                       reference=ctx.message,
+                       mention_author=False)
 
     os.remove(os.path.join(os.getcwd(),tempFileName))
 
 
 @client.command(aliases=['r'])
 async def react(ctx,emoji):
-    ref_message_id =  ctx.message.reference.message_id
-    ref_msg = await ctx.channel.fetch_message(ref_message_id)
+    try:
+        ref_message_id =  ctx.message.reference.message_id
+        ref_msg = await ctx.channel.fetch_message(ref_message_id)
+    except AttributeError:
+        return await ctx.send(f"{ctx.author.name}, You were supposed to reference a message (reply) with this command!",
+                       reference=ctx.message,
+                       mention_author=False)
 
     try: # For default Emojis (Unicode characters) and Guild image emojis
         await ref_msg.add_reaction(emoji)
@@ -787,12 +1011,48 @@ async def react(ctx,emoji):
 @client.command(aliases=['activ'])
 async def activity(ctx, member: discord.Member = None):
     member = ctx.author if not member else member
-    try:
-        activT = member.activity
-        if str(activT) == "Spotify":
-            spotify = member.activity
+    activities = member.activities
+    activity_menu_shown = False
+    if len(activities) > 1:
+        activity_menu_shown = True
+        embed = discord.Embed(title=f'List of {member.name}\'s activities',color=discord.Colour.dark_gold())
+        actStr = ""
+        i=1
+        for activity in activities:
+            actStr += f"**{i}. {activity.name}**\n"
+            i+=1
+        embed.add_field(name='Activities:',value=actStr,inline=False)
+        embed.add_field(name='\u200b',value="**Enter the number corresponding to Activity to show the activity**",inline=False)
+        embed.set_thumbnail(url=member.avatar_url)
+        embed.set_footer(text=f"Requested by {ctx.author}",icon_url=ctx.author.avatar_url)
+        act_message = await ctx.send(embed=embed)
+        try:
+            def check(msg):
+                return msg.channel.id == ctx.channel.id and msg.author.id == ctx.message.author.id
 
-            started_song_at = str(spotify.created_at.strftime("%d-%m-%Y %H:%M:%S")).split(".")[0]
+            waitMsg = await client.wait_for(event='message',check=check,timeout=120)
+        except asyncio.TimeoutError:
+            return await act_message.delete()
+        else:
+            try:
+                if str(waitMsg.content).isnumeric():
+                    selected_activity = activities[int(waitMsg.content)-1]
+                    await waitMsg.delete()
+                    await act_message.delete()
+                else:
+                    return
+            except IndexError:
+                return await ctx.send(f"{ctx.author.name}, You were supposed to enter a number in range (1,{len(activities)})",
+                       reference=ctx.message,
+                       mention_author=False)
+    else:
+        selected_activity = activities[0]
+    try:
+        activity = selected_activity
+        if str(activity.name) == "Spotify":
+            spotify = activity
+
+            started_song_at = str(spotify.created_at.strftime("%d-%m-%Y %H:%M:%S"))
             song_name = spotify.title
             song_total_duration = str(spotify.duration)[:-3]
             artistsList = spotify.artists
@@ -803,47 +1063,58 @@ async def activity(ctx, member: discord.Member = None):
             album_url = spotify.album_cover_url
 
             embed = discord.Embed(title=f"{member.name}'s Spotify Session", color=discord.Colour.dark_gold())
-            embed.add_field(name="Current Song Started at (Time Zone UTC)", value=f"`{started_song_at}`", inline=False)
-            embed.add_field(name="Song Time Stamp Now", value=song_duration, inline=False)
-            embed.add_field(name="Song Name", value=song_name, inline=True)
-            embed.add_field(name="Song Duration", value=song_total_duration, inline=True)
-            embed.add_field(name="Song Artist(s)", value=artists, inline=False)
-            embed.add_field(name="Album Name", value=album, inline=False)
-            embed.add_field(name="Song ID on Spotify", value=song_id, inline=False)
+            embed.add_field(name="Song Name", value=song_name,inline=True)
+            embed.add_field(name="Song Duration", value=song_total_duration,inline=True)
+            embed.add_field(name="Song Artist(s)", value=artists,inline=False)
+            embed.add_field(name="Album Name", value=album,inline=False)
+            embed.add_field(name="Song ID on Spotify", value=song_id,inline=False)
             embed.set_thumbnail(url=album_url)
 
             author_name = str(ctx.author)
             embed.set_footer(text=f'Requested by {author_name}.', icon_url=ctx.author.avatar_url)
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed,
+                       reference=ctx.message,
+                       mention_author=False)
         else:
-            activT_type = botFuncs.capFistChar(str(activT.type).split('.')[1])
-            activT_application = botFuncs.capFistChar(activT.name)
-            activT_duration = str(datetime.now() - activT.created_at).split(".")[0]
+            activity_type = botFuncs.capFistChar(str(activity.type).split('.')[1])
+            activity_application = botFuncs.capFistChar(activity.name)
+            activity_duration = str(datetime.now() - activity.created_at).split(".")[0]
 
             embed = discord.Embed(title=f"{member.name}'s Activity:", color=discord.Colour.dark_gold())
             try:
-                acttivT_url = activT.large_image_url
-                if acttivT_url:
-                    embed.set_thumbnail(url=acttivT_url)
-                else:
-                    embed.set_thumbnail(url=member.avatar_url)
+                acttivT_url = activity.large_image_url
+                if acttivT_url is None:
+                    raise ValueError
+                embed.set_thumbnail(url=acttivT_url)
             except:
-                pass
-            embed.add_field(name="Activity Type", value=f"{activT_type}", inline=False)
-            embed.add_field(name="Application", value=f"{activT_application}", inline=False)
-            embed.add_field(name="Duration",value=activT_duration,inline=False)
-            try:
-                activT_details = botFuncs.capFistChar(str(activT.details))
-                if activT_details:
-                    embed.add_field(name="Details", value=f"{activT_details}", inline=False)
-            except:
-                pass
-            author_name = str(ctx.author)
-            embed.set_footer(text=f'Requested by {author_name}.', icon_url=ctx.author.avatar_url)
-            await ctx.send(embed=embed)
+                embed.set_thumbnail(url=member.avatar_url)
 
-    except:
-        await ctx.send(f"Apparently, {member.name} is not doing any activity right now.")
+            embed.add_field(name="Activity Type", value=f"{activity_type}",inline=False)
+            embed.add_field(name="Application", value=f"{activity_application}",inline=False)
+            embed.add_field(name="Duration",value=activity_duration,inline=False)
+            try:
+                activity_details = botFuncs.capFistChar(str(activity.details))
+                if activity_details:
+                    embed.add_field(name="Details", value=f"{activity_details}",inline=False)
+            except:
+                pass
+            embed.set_footer(text=f'Requested by {ctx.author}.',icon_url=ctx.author.avatar_url)
+            return await ctx.send(embed=embed,
+                       reference=ctx.message,
+                       mention_author=False)
+
+    except Exception as act_error:
+        if isinstance(act_error,TypeError):
+            if activity_menu_shown:
+                return await ctx.send(f"Can't Display details of `{selected_activity.name}` Actvity",
+                       reference=ctx.message,
+                       mention_author=False)
+            else:
+                return await ctx.send(f"Apparently, {member.name} is not doing any activity right now.",
+                       reference=ctx.message,
+                       mention_author=False)
+        else:
+            raise act_error
 
 
 @client.command(aliases=['nick'])
@@ -858,7 +1129,9 @@ async def set_nick(ctx,member:discord.Member,*,newNick=None):
 @client.command(aliases = ['fax'])
 async def funfax(ctx,thing,*,quality):
     await ctx.message.add_reaction("👀")
-    await ctx.send(f'{thing} is {botFuncs.genRand()}% {quality}!')
+    await ctx.send(f'{thing} is {botFuncs.genRand()}% {quality}!',
+                       reference=ctx.message,
+                       mention_author=False)
 
 
 @client.command(aliases = ['say'])
@@ -873,7 +1146,9 @@ async def suspicious(ctx,member: discord.Member = None):
 
     susStr = random.choice(botData.susList)
     await ctx.message.add_reaction("🤨")
-    await ctx.send(f'{member.mention} {susStr}')
+    await ctx.send(f'{member.mention} {susStr}',
+                       reference=ctx.message,
+                       mention_author=False)
 
 
 @client.command(aliases = ["platform"])
@@ -881,26 +1156,34 @@ async def device(ctx,member:discord.Member = None):
     member = ctx.author if not member else member
 
     if member.is_on_mobile():
-        await ctx.send(f'{member.mention} is a Cringe mobile user lol.')
+        await ctx.send(f'{member.mention} is a Cringe mobile user lol.',
+                       reference=ctx.message,
+                       mention_author=False)
         for reaxn in botData.reactionsList:
             await ctx.message.add_reaction(reaxn)
     else:
         await ctx.message.add_reaction("🙌")
-        await ctx.send(f'{member.mention} is a Chad PCMR member , **RESPECT!!**')
+        await ctx.send(f'{member.mention} is a Chad PCMR member , **RESPECT!!**',
+                       reference=ctx.message,
+                       mention_author=False)
 
 
 @client.command(aliases = ["dm"])
 async def direct_anonymous(ctx,member:discord.Member,*,message):
     user = member
     await user.send(message)
-    await ctx.send("Successfully sent.")
+    await ctx.send("Successfully sent.",
+                       reference=ctx.message,
+                       mention_author=False)
 
 
 @client.command(aliases = ['dmid'])
-async def dm_withID(ctx,memberID:int,*,message):
-    user = await client.fetch_user(memberID)
+async def dm_withID(ctx,userID:int,*,message):
+    user = await client.fetch_user(userID)
     await user.send(message)
-    await ctx.send("Successfully sent.")
+    await ctx.send("Successfully sent.",
+                       reference=ctx.message,
+                       mention_author=False)
 
 #-------------------------------------------------------------------------------------------------------------------#
 BOT_TOKEN = os.environ['BOT_TOKEN']

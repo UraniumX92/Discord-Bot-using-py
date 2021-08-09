@@ -85,7 +85,7 @@ async def on_message_delete(message):
             del_msg_author = message.author
             embed = discord.Embed(title=f"{del_msg_author}'s Message Delete Snipe",description=f"{del_msg_author}: {message.content}",color=discord.Colour.dark_gold())
             return await respMsg.channel.send(embed=embed,
-                                              reference=respMsg.author,
+                                              reference=respMsg,
                                               mention_author=False)
 
 
@@ -121,7 +121,7 @@ async def on_message_edit(before,after):
             embed.add_field(name="Previous:",value=f"{before.content}",inline=False)
             embed.add_field(name="Edited:",value=f"{after.content}",inline=False)
             return await respMsg.channel.send(embed=embed,
-                                              reference=respMsg.author,
+                                              reference=respMsg,
                                               mention_author=False)
 
 
@@ -330,12 +330,12 @@ async def get_files(ctx,*,path=None):
             fileStr += f"**`{item}`**\n"
 
         dataStr = ""
-        dataFiles_listdir = os.listdir(currentDir+"\\Data Files")
+        dataFiles_listdir = os.listdir(currentDir+"/Data Files")
         for item in dataFiles_listdir:
             dataStr += f"**`{item}`**\n"
 
         errStr = ""
-        errLogs_listdir = os.listdir(currentDir+"\\Err Logs")
+        errLogs_listdir = os.listdir(currentDir+"/Err Logs")
         for item in errLogs_listdir:
             errStr += f"**`{item}`**\n"
 
@@ -349,7 +349,7 @@ async def get_files(ctx,*,path=None):
                               mention_author=False)
     else:
         try:
-            file_path = f"{currentDir}\\{path}"
+            file_path = f"{currentDir}/{path}"
             file_to_send = discord.File(file_path)
             if file_to_send is None:
                 raise FileNotFoundError
@@ -1186,6 +1186,6 @@ async def dm_withID(ctx,userID:int,*,message):
                        mention_author=False)
 
 #-------------------------------------------------------------------------------------------------------------------#
-BOT_TOKEN = os.environ['BOT_TOKEN']
+BOT_TOKEN = os.environ['BOTTOKEN']
 
 client.run(BOT_TOKEN)

@@ -36,7 +36,7 @@ owner_id = int(os.environ['MY_DISCORD_USER_ID'])
 
 client_activity = discord.Activity(type=discord.ActivityType.listening,
                                    name=" your Commands 🙂",
-                                   start=datetime.now()
+                                   start=datetime.utcnow()
                                    )
 
 client = commands.Bot(command_prefix=get_prefix,
@@ -213,7 +213,9 @@ async def on_message(message):
 
         if any(bnword in lowerMsgList for bnword in botData.bannedWords):
             await message.add_reaction("❗")
-            await message.channel.send(f"{userName} Watch your language!")
+            await message.channel.send(f"{userName} Watch your language!",
+                                       reference=message,
+                                       mention_author=True)
 
     bot_mentions = [
         f"<@!{client.user.id}>", # Mention on PC
@@ -222,8 +224,9 @@ async def on_message(message):
 
     if any(mention in fullMsgList[0] for mention in bot_mentions):
         await message.add_reaction("👍")
-        await message.channel.send(f"Hey {message.author.mention}!! Im up and running! type `{bot_prefix}help` to know my commands 🙂")
-        return
+        return await message.channel.send(f"Hey {userName}!! Im up and running! type `{bot_prefix}help` to know my commands 🙂",
+                                          reference=message,
+                                          mention_author=True)
 
     await client.process_commands(message=message)
 
@@ -294,12 +297,12 @@ async def logs(ctx):
     # Sends the errorLogs.txt file as a discord.File
     fileName = "errorLogs.txt"
     logfile = discord.File(errorsLogFile, fileName)
-    return await ctx.send(content=f"`{fileName}` Requested by `{ctx.author}`\nFetched at time: `{botFuncs.getDateTime()}`",
-                               file=logfile,
-                               reference=ctx.message,
-                               mention_author=False)
+    await ctx.send(content=f"`{fileName}` Requested by `{ctx.author}`\nFetched at time: `{botFuncs.getDateTime()}`",
+                   file=logfile,
+                   reference=ctx.message,
+                   mention_author=False)
 
-@logs.command(aliases=['msg'])
+@logs.command(aliases=['msg','messages'])
 async def message(ctx):
     if str(ctx.author.id) not in botData.devsList.keys():
         raise commands.MissingPermissions('Not a bot dev')
@@ -307,9 +310,9 @@ async def message(ctx):
     fileName = "errorMessages.txt"
     msglogfile = discord.File(errMessageLogFile, fileName)
     return await ctx.send(content=f"`{fileName}` Requested by `{ctx.author}`\nFetched at time : `{botFuncs.getDateTime()}`",
-                               file=msglogfile,
-                               reference=ctx.message,
-                               mention_author=False)
+                          file=msglogfile,
+                          reference=ctx.message,
+                          mention_author=False)
 
 #todo-false -------------------------------------------------- END of Logs command group ------------------------------------------------ #
 
@@ -432,8 +435,8 @@ async def help(ctx):
     bot_prefix = botFuncs.get_local_prefix(ctx.message)
     help_Embed = botData.helpPromt_func(ctx.author,client,bot_prefix)
     await ctx.send(embed=help_Embed,
-                       reference=ctx.message,
-                       mention_author=False)
+                   reference=ctx.message,
+                   mention_author=False)
 
 
 @client.command(aliases = ["mh"])
@@ -441,8 +444,8 @@ async def help(ctx):
 async def mod_help(ctx):
     modHelp_Embed = botData.modHlelpPromt_func(ctx.author,client)
     await ctx.send(embed=modHelp_Embed,
-                       reference=ctx.message,
-                       mention_author=False)
+                   reference=ctx.message,
+                   mention_author=False)
 
 #TODO-false ----------------------------------------- MOD COMMANDS -----------------------------------------#
 #todo-false ----------------------------------------- Banwords command group ------------------------------------------- #
@@ -597,8 +600,8 @@ async def reactionsLimit_setter(ctx,limit: int):
     fullDict['reactLimit'] = limit
     botFuncs.dumpJson(fullDict,switchesFile)
     await ctx.send(f"Pin on Reactions : Reaction Limit changed to `{limit} reactions`",
-                       reference=ctx.message,
-                       mention_author=False)
+                   reference=ctx.message,
+                   mention_author=False)
 
 @switch.command(aliases = ['drlimit','diffreact','difflimit'])
 async def diffReactionsLimit_setter(ctx,limit:int):
@@ -606,8 +609,8 @@ async def diffReactionsLimit_setter(ctx,limit:int):
     fullDict['diffReactLimit'] = limit
     botFuncs.dumpJson(fullDict,switchesFile)
     await ctx.send(f"Pin on Reactions : Number of different reactions limit changed to `{limit} Different reactions`",
-                       reference=ctx.message,
-                       mention_author=False)
+                   reference=ctx.message,
+                   mention_author=False)
 
 #Todo-false-------------------------------------------------------- END of Switches Group Commands ---------------------------------------------------------------#
 
@@ -749,16 +752,14 @@ async def unban(ctx,*,member):
         if (user.name,user.discriminator) == (member_name,member_disc):
             await ctx.guild.unban(user)
             await ctx.message.add_reaction("✅")
-            await ctx.send(f'{user} was Unbanned!',
-                       reference=ctx.message,
-                       mention_author=False)
-            return
+            return await ctx.send(f'{user} was Unbanned!',
+                                  reference=ctx.message,
+                                  mention_author=False)
 
     await ctx.message.add_reaction("❌")
-    await ctx.send(f'{member} not found in this guild\'s banned list.',
-                       reference=ctx.message,
-                       mention_author=False)
-    return
+    return await ctx.send(f'{member} not found in this guild\'s banned list.',
+                          reference=ctx.message,
+                          mention_author=False)
 
 
 @client.command()
@@ -769,8 +770,8 @@ async def pin(ctx):
         ref_msg = await ctx.channel.fetch_message(ref_message_id)
     except AttributeError:
         return await ctx.send(f"{ctx.author.name}, You were supposed to reference a message (reply) with this command!",
-                       reference=ctx.message,
-                       mention_author=False)
+                              reference=ctx.message,
+                              mention_author=False)
 
     if ref_msg.pinned:
         return await ctx.send("Referenced Message is already Pinned!",delete_after=5)
@@ -787,8 +788,8 @@ async def unpin(ctx):
         ref_msg = await ctx.channel.fetch_message(ref_message_id)
     except AttributeError:
         return await ctx.send(f"{ctx.author.name}, You were supposed to reference a message (reply) with this command!",
-                       reference=ctx.message,
-                       mention_author=False)
+                              reference=ctx.message,
+                              mention_author=False)
 
     if ref_msg.pinned:
         await ref_msg.unpin()
@@ -807,33 +808,33 @@ async def change_voice_channel(ctx,member:discord.Member,*,vcName=None):
 
     if member == bot_owner and ctx.author != bot_owner:
         return await ctx.send(f"HAHA Nice try {ctx.author.name}, I am Loyal to my Owner, i won't do that to him. Better Luck next time :wink:",
-                       reference=ctx.message,
-                       mention_author=False)
+                              reference=ctx.message,
+                              mention_author=False)
 
     try:
         joined_vc = member.voice.channel
     except:
         return await ctx.send(f"{member.name} is currently not in any VC.",
-                       reference=ctx.message,
-                       mention_author=False)
+                              reference=ctx.message,
+                              mention_author=False)
 
     if not vcName:
         await member.edit(voice_channel=vcName)
         return await ctx.send(f"{member.name} was Disconnected from `{joined_vc.name}` ",
-                       reference=ctx.message,
-                       mention_author=False)
+                              reference=ctx.message,
+                              mention_author=False)
 
     for vc in guild_VC_list:
         if vc.name.lower() == vcName.lower():
             voice_channel = vc
             await member.edit(voice_channel=voice_channel)
             return await ctx.send(f"{member.name} was moved from `{joined_vc.name}` to `{voice_channel.name}`",
-                       reference=ctx.message,
-                       mention_author=False)
+                                  reference=ctx.message,
+                                  mention_author=False)
 
     return await ctx.send(f"Voice Channel with name `{vcName}` Not found.",
-                       reference=ctx.message,
-                       mention_author=False)
+                          reference=ctx.message,
+                          mention_author=False)
 
 #todo-false ----------------------------------------------- Role Command Group -----------------------------------------------------------#
 
@@ -843,22 +844,22 @@ async def role(ctx):
     bot_prefix = botFuncs.get_local_prefix(ctx.message)
     await ctx.send("Command Usage:\n"
                    f"`{bot_prefix}role (add|remove) (user) (role)`",
-                       reference=ctx.message,
-                       mention_author=False)
+                   reference=ctx.message,
+                   mention_author=False)
 
 @role.command(aliases=['+'])
 async def add(ctx,member:discord.Member,*,grole:discord.Role):
     await member.add_roles(grole)
     await ctx.send(f"Given `{grole.name}` Role to `{member}`",
-                       reference=ctx.message,
-                       mention_author=False)
+                   reference=ctx.message,
+                   mention_author=False)
 
 @role.command(aliases=['-'])
 async def remove(ctx,member:discord.Member,*,trole:discord.Role):
     await member.remove_roles(trole)
     await ctx.send(f"Taken `{trole.name}` Role from `{member}`",
-                       reference=ctx.message,
-                       mention_author=False)
+                   reference=ctx.message,
+                   mention_author=False)
 
 @role.command(aliases=['*'])
 async def show(ctx,member:discord.Member):
@@ -947,9 +948,9 @@ async def tenorgif(ctx,*,category):
     embed.set_thumbnail(url = via_tenor_URL)
     author_name = str(ctx.author)
     embed.set_footer(text=f'Requested by {author_name}.', icon_url= ctx.author.avatar_url)
-    await ctx.send(embed = embed,
-                   reference=ctx.message,
-                   mention_author=False)
+    return await ctx.send(embed = embed,
+                          reference=ctx.message,
+                          mention_author=False)
 
 
 @client.command(aliases = ['pfp','pic'])
@@ -978,7 +979,6 @@ async def code(ctx,format,*,code):
         await ctx.send(file=codeFile,
                        reference=ctx.message,
                        mention_author=False)
-
     os.remove(os.path.join(os.getcwd(),tempFileName))
 
 
@@ -1000,8 +1000,7 @@ async def react(ctx,emoji):
             if g_emoji.name.lower() == emoji.lower():
                 r_emoji = g_emoji
                 await ref_msg.add_reaction(r_emoji)
-                await ctx.message.add_reaction("✅")
-                return
+                return await ctx.message.add_reaction("✅")
         await ctx.send("Emoji Not Found.")
 
     await asyncio.sleep(4)
@@ -1059,7 +1058,7 @@ async def activity(ctx, member: discord.Member = None):
             artists = ", ".join(artistsList)
             album = spotify.album
             song_id = spotify.track_id
-            song_duration = str(datetime.now() - spotify.created_at).split(".")[0]
+            song_duration = str(datetime.utcnow() - spotify.created_at).split(".")[0]
             album_url = spotify.album_cover_url
 
             embed = discord.Embed(title=f"{member.name}'s Spotify Session", color=discord.Colour.dark_gold())
@@ -1078,7 +1077,7 @@ async def activity(ctx, member: discord.Member = None):
         else:
             activity_type = botFuncs.capFistChar(str(activity.type).split('.')[1])
             activity_application = botFuncs.capFistChar(activity.name)
-            activity_duration = str(datetime.now() - activity.created_at).split(".")[0]
+            activity_duration = str(datetime.utcnow() - activity.created_at).split(".")[0]
 
             embed = discord.Embed(title=f"{member.name}'s Activity:", color=discord.Colour.dark_gold())
             try:
@@ -1100,19 +1099,19 @@ async def activity(ctx, member: discord.Member = None):
                 pass
             embed.set_footer(text=f'Requested by {ctx.author}.',icon_url=ctx.author.avatar_url)
             return await ctx.send(embed=embed,
-                       reference=ctx.message,
-                       mention_author=False)
+                                  reference=ctx.message,
+                                  mention_author=False)
 
     except Exception as act_error:
         if isinstance(act_error,TypeError):
             if activity_menu_shown:
                 return await ctx.send(f"Can't Display details of `{selected_activity.name}` Actvity",
-                       reference=ctx.message,
-                       mention_author=False)
+                                      reference=ctx.message,
+                                      mention_author=False)
             else:
                 return await ctx.send(f"Apparently, {member.name} is not doing any activity right now.",
-                       reference=ctx.message,
-                       mention_author=False)
+                                      reference=ctx.message,
+                                      mention_author=False)
         else:
             raise act_error
 
@@ -1130,8 +1129,8 @@ async def set_nick(ctx,member:discord.Member,*,newNick=None):
 async def funfax(ctx,thing,*,quality):
     await ctx.message.add_reaction("👀")
     await ctx.send(f'{thing} is {botFuncs.genRand()}% {quality}!',
-                       reference=ctx.message,
-                       mention_author=False)
+                   reference=ctx.message,
+                   mention_author=False)
 
 
 @client.command(aliases = ['say'])
@@ -1147,8 +1146,8 @@ async def suspicious(ctx,member: discord.Member = None):
     susStr = random.choice(botData.susList)
     await ctx.message.add_reaction("🤨")
     await ctx.send(f'{member.mention} {susStr}',
-                       reference=ctx.message,
-                       mention_author=False)
+                   reference=ctx.message,
+                   mention_author=False)
 
 
 @client.command(aliases = ["platform"])
@@ -1173,8 +1172,8 @@ async def direct_anonymous(ctx,member:discord.Member,*,message):
     user = member
     await user.send(message)
     await ctx.send("Successfully sent.",
-                       reference=ctx.message,
-                       mention_author=False)
+                   reference=ctx.message,
+                   mention_author=False)
 
 
 @client.command(aliases = ['dmid'])
@@ -1182,8 +1181,8 @@ async def dm_withID(ctx,userID:int,*,message):
     user = await client.fetch_user(userID)
     await user.send(message)
     await ctx.send("Successfully sent.",
-                       reference=ctx.message,
-                       mention_author=False)
+                   reference=ctx.message,
+                   mention_author=False)
 
 #-------------------------------------------------------------------------------------------------------------------#
 BOT_TOKEN = os.environ['BOTTOKEN']

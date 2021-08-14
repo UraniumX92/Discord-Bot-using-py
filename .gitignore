@@ -3,3 +3,4 @@ todo.txt
 __pycache__/
 .idea
 pyDiscBot.code-workspace
+Cogs/__pycache__/

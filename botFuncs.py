@@ -3,17 +3,21 @@ import os
 import random
 import re
 import discord
+from discord.ext import commands
 import requests
 from datetime import datetime
 
 cwd = os.getcwd()
 # ----------------------------------------------#
-banWordFile = (cwd+"/Data Files/bannedWords.json")
-prefixesFile = (cwd+"/Data Files/prefixes.json")
-devsListFile = (cwd+"/Data Files/developers.json")
-switchesFile = (cwd+"/Data Files/switches&data.json")
+banWordFile = ("./Data Files/bannedWords.json")
+prefixesFile = ("./Data Files/prefixes.json")
+devsListFile = ("./Data Files/developers.json")
+switchesFile = ("./Data Files/switches&data.json")
 # ----------------------------------------------#
-susStringFile = (cwd+"/Data Files/susString.json")
+errorsLogFile = ("./Err Logs/errorLogs.txt")
+errMessageLogFile = ("./Err Logs/errorMessages.txt")
+# ----------------------------------------------#
+susStringFile = ("./Data Files/susString.json")
 # ----------------------------------------------#
 default_bot_prefix = "$"
 # ----------------------------------------------#
@@ -27,7 +31,7 @@ def capFistChar(string:str):
 
 
 def getDateTime():
-    return datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    return datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S")
 
 
 def dumpJson(pyObj,fileName):
@@ -38,6 +42,21 @@ def dumpJson(pyObj,fileName):
 def loadJson(fileName):
     with open(fileName,"r") as load:
         return json.load(load)
+
+
+def is_dev(ctx:commands.Context):
+    devsList = loadJson(devsListFile)
+    return str(ctx.author.id) in devsList.keys()
+
+
+def load_cogs(client:commands.Bot):
+    cog_count = 0
+    for filename in os.listdir('./Cogs'):
+        if filename.endswith('.py'):
+            extension = filename[:-3]
+            client.load_extension(f"Cogs.{extension}")
+            cog_count += 1
+    print(f"Loaded {cog_count} Cogs.")
 
 
 def createFile_snippet(fileName,typeOfObject,textToWrite = ""):

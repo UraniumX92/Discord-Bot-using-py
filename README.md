@@ -1,6 +1,24 @@
-# Discord Bot v3.0 :
+# Discord Bot v3.1 :
 
-***New in v3.0:***
+***New in v3.1 :***
+* Added Cogs, Organized the categories of commands in Cogs
+* Better Exception Handling
+* couple of new user commands, use help commnds to see them
+* Most of the changes are backgroud changes which barely effects the behaviour of Bot visually
+
+Thats it for this version 🙂
+
+***
+
+>**Note: If you want to build this bot together with me, then please contact me on discord `Uranium#4939`, Thank you!!**
+
+***
+Rest of the content below is from v3.0 - v2.1
+> **Note:** I'm dropping further development of this bot here, because I want to learn other Languages and Explore different things in programming, though I might work on this here and there if I feel like it, otherwise... This is it!
+***
+***
+
+***v3.0:***
 
 ***Major update for bot-dev(s) : new command category : bot-devs commands, other bug fixes and better error handling done in user commands and mod commands***
 * **Guild specific bot Prefixes can be used and set from this version**
@@ -20,14 +38,7 @@
     * `getf` command : use this command to get the list of files which can be fetched using this command
       * enter the name of file or directory path - file to get the file as `discord.File`
   
-***
 
->**Note: If you want to build this bot together with me, then please contact me on discord `Uranium#4939`, Thank you!!**
-
-***
-Rest of the content below is from v2.3 - v2.1
-> **Note:** I'm dropping further development of this bot here, because I want to learn other Languages and Explore different things in programming, though I might work on this here and there if I feel like it, otherwise... This is it!
-***
 ***v.2.3 :***
 
 

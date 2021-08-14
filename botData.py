@@ -1,7 +1,13 @@
+import os
+
 import botFuncs
 import discord
 from discord.ext import commands
+import os
+import dotenv
+dotenv.load_dotenv()
 
+owner_id = int(os.environ['MY_DISCORD_USER_ID'])
 #-------------------------------- Bot Commands Data ----------------------------------#
 bannedWords = botFuncs.loadJson(botFuncs.banWordFile)
 devsList = botFuncs.loadJson(botFuncs.devsListFile)
@@ -24,7 +30,9 @@ commandsDescription_dict = {
     'react'     : "reply a message with this command (emoji/emoji_name) to make bot react with emoji on referenced message",
     'activity'  : "Shows the activity and its details of mentioned user, if not mentioned then shows activity of command user, Spotify activity has separate format and details.",
     'nick'      : "set nick name of mentioned user",
-    'snipe'     : "Get the deleted or edited message history by using this command within 1 minute of Deletion or Edition of message"
+    'snipe'     : "Get the deleted or edited message history by using this command within 1 minute of Deletion or Edition of message",
+    'invite'    : "Get the invite link of bot, and invite the bot to your server!",
+    'ping'      : "Ping Pong! Get the reaction time of Bot using this command!"
 }
 
 modCmdDescription_dict = {
@@ -50,9 +58,19 @@ modCmdDescription_dict = {
     'role show'         : "use this command to show the list of roles of mentioned user"
 }
 
+devCmdDescription_dict = {
+    'devs' : "shows the list of White listed users, who can use dev commands",
+    'devs (add|remove)' : "add or remove user from devs list",
+    'logs' : "sends `errorLogs.txt` as `discord.File`",
+    'logs messages' : "sends `errorMessages.txt` as `discord.File`",
+    'logs clear' : "Enter the name of Logs file with this command to clear the specified Log File",
+    'getf' : ("Use this command to get the files from source code by entering path (path starting from main directory)\n"
+              "if path is not provided, then shows the list of files which can be fetched using command")
+}
+
 #-------------------------- Functions to create help prompt messages using real time prefix --------------------------#
-def helpPromt_func(member : discord.Member, client : commands.Bot,prefix):
-    """Takes commandsList form botData and makes a Embed message for help command"""
+def helpPrompt_func(member:discord.Member, client:commands.Bot,prefix):
+    """Takes commandsDescription_dict and returns discord.Embed for user help command"""
     embed = discord.Embed(title="User Commands:", color=discord.Colour.dark_gold())
     embed.set_thumbnail(url=client.user.avatar_url)
     for command,description in commandsDescription_dict.items():
@@ -63,12 +81,23 @@ def helpPromt_func(member : discord.Member, client : commands.Bot,prefix):
     return embed
 
 
-def modHlelpPromt_func(member : discord.Member, client : commands.Bot):
-    """Takes modCmdList from botData and makes a Embed message for mod help command"""
+def modHelpPrompt_func(member:discord.Member, client:commands.Bot):
+    """Takes modCmdDescription_dict and returns discord.Embed for mod help command"""
     embed = discord.Embed(title="Mod Commands:", color=discord.Colour.dark_gold())
     embed.set_thumbnail(url=client.user.avatar_url)
     for command,description in modCmdDescription_dict.items():
         embed.add_field(name=command,value=botFuncs.capFistChar(description),inline=True)
+
+    embed.set_footer(text=f"Requested by {member}", icon_url=member.avatar_url)
+    return embed
+
+
+def devHelpPrompt_func(member:discord.Member,client:commands.Bot):
+    """takes devCmdDescription_dict and returns discord.Embed for dev help command"""
+    embed = discord.Embed(title="Dev Commands:",color=discord.Colour.dark_gold())
+    embed.set_thumbnail(url=client.user.avatar_url)
+    for command,description in devCmdDescription_dict.items():
+        embed.add_field(name=command,value=botFuncs.capFistChar(description),inline=False)
 
     embed.set_footer(text=f"Requested by {member}", icon_url=member.avatar_url)
     return embed

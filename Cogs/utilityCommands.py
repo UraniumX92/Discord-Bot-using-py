@@ -237,6 +237,10 @@ class UtilityCommands(commands.Cog):
                     return await ctx.send(f"Apparently, {member.name} is not doing any activity right now.",
                                           reference=ctx.message,
                                           mention_author=False)
+            elif isinstance(act_error,AttributeError):
+                return await ctx.send(f"Apparently, {member.name} is not doing any activity right now.",
+                                          reference=ctx.message,
+                                          mention_author=False)
             else:
                 raise act_error
 

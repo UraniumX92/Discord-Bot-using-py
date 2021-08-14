@@ -269,7 +269,7 @@ class ModCommands(commands.Cog):
         try:
             await member.kick(reason=reason)
             await ctx.message.add_reaction("✅")
-            await ctx.send(f'`{member.name}` was Kicked from `{ctx.guild.name}`, `Reason = {reason}.`',
+            await ctx.send(f'`{member}` was Kicked from this server, `Reason = {reason}.`',
                            reference=ctx.message,
                            mention_author=False)
         except:
@@ -287,7 +287,7 @@ class ModCommands(commands.Cog):
             member_tag = str(member)
             await member.ban(reason=reason)
             await ctx.message.add_reaction("✅")
-            await ctx.send(f'`{member_tag}` was banned from `{ctx.guild.name}`, `Reason = {reason}.`',
+            await ctx.send(f'`{member_tag}` was banned from this server, `Reason = {reason}.`',
                            reference=ctx.message,
                            mention_author=False)
         except:

@@ -123,9 +123,9 @@ class DevCommands(commands.Cog):
     @commands.check(botFuncs.is_dev)
     async def get_files(self, ctx, *, path=None):
 
-        if path is None:
+        if not path:
             listdir = os.listdir('./')
-            to_remove = ['pyDiscBot.code-workspace', '__pycache__']
+            to_remove = ['pyDiscBot.code-workspace', '__pycache__','poetry.lock','pyproject.toml']
             listdir = [x for x in listdir if x[0] != "." and x not in to_remove]
 
             fileStr = ""
@@ -160,7 +160,8 @@ class DevCommands(commands.Cog):
             try:
                 file_path = f"./{path}"
                 file_to_send = discord.File(file_path)
-                if file_to_send is None:
+
+                if not file_to_send:
                     raise FileNotFoundError
 
                 return await ctx.send(file=file_to_send,

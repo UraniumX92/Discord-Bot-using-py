@@ -74,8 +74,9 @@ def helpPrompt_func(member:discord.Member, client:commands.Bot,prefix):
     embed = discord.Embed(title="User Commands:", color=discord.Colour.dark_gold())
     embed.set_thumbnail(url=client.user.avatar_url)
     for command,description in commandsDescription_dict.items():
-        embed.add_field(name=command,value=botFuncs.capFistChar(description),inline=True)
-    embed.add_field(name="Note:",value=f"For mod commands, type this: **{prefix}mod_help** or **{prefix}mh**",inline=False)
+        embed.add_field(name=command,value=botFuncs.capFistChar(description),inline=False)
+    embed.add_field(name="Note:",value=f"For mod commands, type this: **{prefix}modhelp** or **{prefix}mh**\n"
+                                       f"For Dev commands, type this: **{prefix}devhelp** or **{prefix}devh**",inline=False)
 
     embed.set_footer(text=f"Requested by {member}", icon_url=member.avatar_url)
     return embed
@@ -86,7 +87,7 @@ def modHelpPrompt_func(member:discord.Member, client:commands.Bot):
     embed = discord.Embed(title="Mod Commands:", color=discord.Colour.dark_gold())
     embed.set_thumbnail(url=client.user.avatar_url)
     for command,description in modCmdDescription_dict.items():
-        embed.add_field(name=command,value=botFuncs.capFistChar(description),inline=True)
+        embed.add_field(name=command,value=botFuncs.capFistChar(description),inline=False)
 
     embed.set_footer(text=f"Requested by {member}", icon_url=member.avatar_url)
     return embed

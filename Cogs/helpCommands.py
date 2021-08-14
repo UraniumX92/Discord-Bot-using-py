@@ -16,7 +16,7 @@ class HelpCommands(commands.Cog):
                        reference=ctx.message,
                        mention_author=False)
 
-    @commands.command(aliases=["mh"])
+    @commands.command(name='modhelp',aliases=["mh"])
     @commands.has_permissions(manage_guild=True)
     async def mod_help(self, ctx):
         modHelp_Embed = botData.modHelpPrompt_func(ctx.author, self.client)
@@ -24,7 +24,7 @@ class HelpCommands(commands.Cog):
                        reference=ctx.message,
                        mention_author=False)
 
-    @commands.command(aliases=['devhelp', 'devh'])
+    @commands.command(name='devhelp',aliases=['devh'])
     @commands.check(botFuncs.is_dev)
     async def dev_help(self, ctx):
         devHelp_Embed = botData.devHelpPrompt_func(ctx.author, self.client)

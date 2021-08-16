@@ -39,13 +39,24 @@ class FunCommands(commands.Cog):
     async def device(self, ctx, member: discord.Member = None):
         member = ctx.author if not member else member
 
+        is_offline = str(member.raw_status) == 'offline'
+
+        if is_offline:
+            return await ctx.send(f"Apparently, {member.name} seems to be offline right now, Real question is... Are they really offline though?? better find out yourself",
+                           reference=ctx.message,
+                           mention_author=False)
+
         on_desktop = str(member.desktop_status) != 'offline'
         on_mobile = str(member.mobile_status) != 'offline'
         on_web = str(member.web_status) != 'offline'
         on_all_platfoms = on_desktop and on_mobile and on_web
-        is_offline = not on_all_platfoms
-        if member.bot :
-            return await ctx.send(f"{member.name} is using Discord on Web, uhh we Bots are always on web :slight_frown:")
+        is_offline = str(member.raw_status) == 'offline'
+
+        if member.bot and not is_offline:
+            return await ctx.send(f"{member.name} is using Discord on Web, uhh we Bots are always on web :slight_frown:",
+                                  reference=ctx.message,
+                                  mention_author=False)
+
         if on_all_platfoms:
             await ctx.message.add_reaction("🤔")
             await ctx.send(f"Yoo {member.name}, Why you using discord on Desktop and Web and on cringe Mobile, idk about others, but STOP using that cringe Mobile 💀",
@@ -81,10 +92,6 @@ class FunCommands(commands.Cog):
             await ctx.message.add_reaction("😑")
             await ctx.send(f"{member.name} is using Discord on Web, BRUH who uses the web Discord except Bots these days?? 😑\n"
                            f"bruh {member.name} is such a Bot LMAO :joy:",
-                           reference=ctx.message,
-                           mention_author=False)
-        elif is_offline: # Basically like using else: statement
-            await ctx.send(f"Apparently, {member.name} seems to be offline right now, Real question is... Are they really offline though?? better find out yourself",
                            reference=ctx.message,
                            mention_author=False)
 
@@ -142,11 +149,6 @@ class FunCommands(commands.Cog):
                                    delete_after=5)
             else:
                 raise error
-
-    @commands.command(aliases=['t'])
-    async def test(self, ctx, member:discord.Member=None):
-        member = ctx.author if not member else member
-        await ctx.send(member.raw_status)
 
 
 def setup(client):

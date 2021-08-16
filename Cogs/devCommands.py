@@ -77,7 +77,7 @@ class DevCommands(commands.Cog):
     # todo-false ----------------------------------------- END of Developer command group -------------------------------------------------- #
     
     # todo-false --------------------------------------------------- Logs command group ---------------------------------------------------- #
-    @commands.group(invoke_without_command=True)
+    @commands.group(invoke_without_command=True,aliases=['log'])
     @commands.check(botFuncs.is_dev)
     async def logs(self, ctx):
         # Sends the errorLogs.txt file as a discord.File
@@ -101,7 +101,7 @@ class DevCommands(commands.Cog):
 
     @logs.command(aliases=['clear'])
     @commands.check(botFuncs.is_dev)
-    async def clear_logs(self,ctx,*,file):
+    async def clear_logs(self,ctx,*,file = None):
         errLogs_aliases = ['errorlogs','logs','errors','errorLogs.txt']
         errMessage_aliases = ['msglogs','messagelogs','errormessages','errorMessages.txt']
 

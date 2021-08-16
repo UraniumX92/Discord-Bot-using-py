@@ -288,6 +288,6 @@ async def on_command_error(ctx,error):
 
 
 #-------------------------------------------------------------------------------------------------------------------#
-BOT_TOKEN = os.environ['BOTTOKEN']
+BOT_TOKEN = os.environ['BOT_TOKEN']
 
 client.run(BOT_TOKEN)

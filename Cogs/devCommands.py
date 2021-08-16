@@ -32,7 +32,13 @@ class DevCommands(commands.Cog):
     async def add(self, ctx, member: discord.Member):
         
         if member.id == self.owner_id and ctx.author.id != self.owner_id:
-            return await ctx.send(f"Haha nice try {ctx.author.name}, I am loyal to my owner, i won't do that", reference=ctx.message, mention_author=True)
+            return await ctx.send(f"Haha nice try {ctx.author.name}, I am loyal to my owner, i won't do that",
+                                  reference=ctx.message,
+                                  mention_author=True)
+        elif member.id == self.owner_id and ctx.author.id == self.owner_id:
+            return await ctx.send("Your Position is fixed in devs list, can't add or remove you 🙂",
+                                  reference=ctx.message,
+                                  mention_author=False)
 
         devsList = botData.devsList
         if str(member.id) in devsList.keys():
@@ -53,6 +59,10 @@ class DevCommands(commands.Cog):
             return await ctx.send(f"Haha nice try {ctx.author.name}, I am loyal to my Owner, I won't do that!",
                                   reference=ctx.message,
                                   mention_author=True)
+        elif member.id == self.owner_id and ctx.author.id == self.owner_id:
+            return await ctx.send("Your Position is fixed in devs list, can't add or remove you 🙂",
+                                  reference=ctx.message,
+                                  mention_author=False)
 
         devsList = botData.devsList
         if str(member.id) in devsList.keys():

@@ -36,7 +36,8 @@ def getDateTime():
 
 def dumpJson(pyObj,fileName):
     with open(fileName,"w") as dump:
-        json.dump(pyObj,dump)
+        json.dump(pyObj,dump,
+                  indent=4)
 
 
 def loadJson(fileName):

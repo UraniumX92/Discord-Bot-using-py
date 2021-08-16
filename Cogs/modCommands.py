@@ -10,6 +10,7 @@ class ModCommands(commands.Cog):
         self.client = client
         self.owner_id = botData.owner_id
 
+
     # todo-false ----------------------------------------- Banwords command group ------------------------------------------- #
     @commands.group(invoke_without_command=True, aliases=["bw", "banword"])
     @commands.has_permissions(manage_guild=True)
@@ -26,7 +27,8 @@ class ModCommands(commands.Cog):
 
     @banwords.command(aliases=['+'])
     @commands.has_permissions(manage_guild=True)
-    async def add(ctx, *, word):
+    async def add(ctx, *, banword):
+        word = banword.lower()
         if word in botData.bannedWords:
             return await ctx.send(f"`{word}` is already in list of banned words",
                                   reference=ctx.message,
@@ -40,7 +42,8 @@ class ModCommands(commands.Cog):
 
     @banwords.command(aliases=['-'])
     @commands.has_permissions(manage_guild=True)
-    async def remove(ctx, *, word):
+    async def remove(ctx, *, banword):
+        word = banword.lower()
         if word in botData.bannedWords:
             botData.bannedWords.remove(word)
             botFuncs.dumpJson(botData.bannedWords, botFuncs.banWordFile)
@@ -457,7 +460,6 @@ class ModCommands(commands.Cog):
         await ctx.send(embed=embed,
                        reference=ctx.message,
                        mention_author=False)
-
     # todo-false --------------------------------------------- END of Role Command Group ------------------------------------------------------#
     
     

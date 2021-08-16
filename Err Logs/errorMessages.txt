@@ -1,1 +1,5 @@
 Error Message Logs Cleared at [14-08-2021 19:50:35]
+[16-08-2021 10:05:17] --> Uranium#4939: >dm <@!865957146051346463>  helloo --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[16-08-2021 10:06:44] --> Uranium#4939: >dm <@!155149108183695360> lmao dude --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[16-08-2021 11:04:25] --> Uranium#4939: >platform --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[16-08-2021 11:39:43] --> Uranium#4939: >device <@!356362721060454412> --Guild : "STRUGGLES OF NOOB" -- Channel: #general

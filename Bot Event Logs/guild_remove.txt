@@ -1,0 +1,12 @@
+[19-08-2021 07:34:22] --> Left guild : STRUGGLES OF NOOB , ID : 733370530039857232
+    Deleted all the Guild settings from Data Base
+
+[19-08-2021 12:52:55] --> Left guild : INSTINCT , ID : 700584184535842866 
+	There was something Unusual when clearing cache from Data Base
+
+[19-08-2021 14:15:09] --> Left guild : INSTINCT , ID : 700584184535842866
+	Deleted all the Guild's cache from Data Base
+
+[23-08-2021 11:49:20] --> Left guild : The Raid Gang , ID : 391261899163041803 
+	There was something Unusual when clearing cache from Data Base
+

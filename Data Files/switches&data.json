@@ -1,5 +1,5 @@
 {
-    "filterSwitch": false,
+    "filterSwitch": true,
     "reactLimit": 7,
     "pinSwitch": true,
     "diffReactLimit": 3,

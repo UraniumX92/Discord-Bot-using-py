@@ -1,0 +1,19 @@
+[19-08-2021 11:57:48] --> Added [Uranium#4939] in bot_devs collection in Data Base.
+[19-08-2021 13:30:27] --> Removed [Mike Hunt#7535] from bot_devs collection in Data Base.
+[19-08-2021 13:30:34] --> Added [Mike Hunt#7535] in bot_devs collection in Data Base.
+[19-08-2021 13:30:42] --> Added [MEE6#4876] in bot_devs collection in Data Base.
+[19-08-2021 13:30:55] --> Removed [MEE6#4876] from bot_devs collection in Data Base.
+[19-08-2021 13:33:08] --> Removed [Mike Hunt#7535] from bot_devs collection in Data Base.
+[20-08-2021 12:32:53] --> Added Uranium#4939 in bot_devs collection in Data Base.
+
+[20-08-2021 12:33:34] --> Added Uranium#4939 in bot_devs collection in Data Base.
+
+[20-08-2021 12:34:38] --> Added Uranium#4939 in bot_devs collection in Data Base.
+
+[21-08-2021 08:18:05] --> Added [Ayana#8911] in bot_devs collection in Data Base.
+[21-08-2021 08:18:35] --> Removed [Ayana#8911] from bot_devs collection in Data Base.
+[21-08-2021 18:10:21] --> Added [Python#4329] in bot_devs collection in Data Base.
+[23-08-2021 11:45:13] --> Added [Mike Hunt#7535] in bot_devs collection in Data Base.
+[23-08-2021 11:45:25] --> Added [Dyno#3861] in bot_devs collection in Data Base.
+[23-08-2021 11:46:43] --> Removed [Dyno#3861] from bot_devs collection in Data Base.
+[23-08-2021 11:46:55] --> Removed [Mike Hunt#7535] from bot_devs collection in Data Base.

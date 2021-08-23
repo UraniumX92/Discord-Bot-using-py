@@ -4,3 +4,4 @@ __pycache__/
 .idea
 pyDiscBot.code-workspace
 Cogs/__pycache__/
+mongotesting.py

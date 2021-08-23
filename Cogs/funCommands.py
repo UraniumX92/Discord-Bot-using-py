@@ -1,8 +1,11 @@
 import discord
-from discord.ext import commands
 import botFuncs
 import botData
+import mongodbUtils
 import random
+import asyncio
+from discord.ext import commands
+from asyncUtils import log_and_raise
 
 
 class FunCommands(commands.Cog):
@@ -149,6 +152,31 @@ class FunCommands(commands.Cog):
                                    delete_after=5)
             else:
                 raise error
+
+
+    async def cog_command_error(self, ctx, error):
+        """
+        Command error handler for this cog class
+        """
+        if isinstance(error, commands.CommandInvokeError):
+            error = error.original
+
+        prefix = mongodbUtils.get_local_prefix(ctx.message)
+        author = ctx.author
+        del_after = 10
+
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send(f"{ctx.author.mention}, Either you, or Bot is Missing Permission to perform the task.", delete_after=del_after)
+        elif isinstance(error, commands.MemberNotFound):
+            await ctx.send(f"{author.mention}, You are supposed to mention a valid Discord user.", delete_after=del_after)
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(f"{author.mention}, Please provide all the arguments Required for the command.\n", delete_after=del_after)
+        elif isinstance(error, commands.RoleNotFound):
+            await ctx.send(f"Can't find a Role with name : `{error.argument}`")
+        elif isinstance(error, commands.BadArgument):
+            await ctx.send(f"Incorrect usage of the command! check what your command does by using `{prefix}help`", delete_after=del_after)
+        else:
+            await log_and_raise(client=self.client,ctx=ctx,error=error)
 
 
 def setup(client):

@@ -3,3 +3,34 @@ Error Message Logs Cleared at [14-08-2021 19:50:35]
 [16-08-2021 10:06:44] --> Uranium#4939: >dm <@!155149108183695360> lmao dude --Guild : "STRUGGLES OF NOOB" -- Channel: #general
 [16-08-2021 11:04:25] --> Uranium#4939: >platform --Guild : "STRUGGLES OF NOOB" -- Channel: #general
 [16-08-2021 11:39:43] --> Uranium#4939: >device <@!356362721060454412> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[20-08-2021 12:45:44] --> Uranium#4939: >custom add hello this is testing for custom command adding --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[20-08-2021 12:52:24] --> Uranium#4939: >custom add hello this is testing for custom command adding --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[20-08-2021 12:53:19] --> Uranium#4939: >custom add hello this is testing for custom command adding --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[20-08-2021 15:27:12] --> Uranium#4939: >custom + + testing this is second testing --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[20-08-2021 19:33:27] --> Uranium#4939: >custom --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[20-08-2021 19:41:14] --> Uranium#4939: >custom s+nopre test testing user no pre --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[20-08-2021 19:44:49] --> Uranium#4939: >custom-optout --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[21-08-2021 08:18:48] --> Uranium#4939: >dev +id 185476724627210241343 --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[21-08-2021 08:41:08] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[21-08-2021 08:42:39] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[21-08-2021 09:08:00] --> Uranium#4939: >custom self --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[21-08-2021 10:02:47] --> Uranium#4939: >custom removeself pretest --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[21-08-2021 18:12:35] --> Uranium#4939: >devs + --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[21-08-2021 18:13:13] --> Uranium#4939: $devs +  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+[21-08-2021 18:15:04] --> Uranium#4939: $devs +  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+[21-08-2021 18:15:29] --> Uranium#4939: $devs +  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+[21-08-2021 18:15:45] --> Uranium#4939: >devs + --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[21-08-2021 21:24:43] --> Uranium#4939: $cmd- lala  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+[22-08-2021 10:24:38] --> Uranium#4939: >meme --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[22-08-2021 10:25:41] --> Uranium#4939: >meme --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[22-08-2021 14:37:53] --> Uranium#4939: >reddit sub rocketleague not --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[22-08-2021 14:40:47] --> Uranium#4939: >reddit sub rocketleague not --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[22-08-2021 15:19:12] --> Uranium#4939: >reddit sub 023894023984dkajdlf --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[22-08-2021 15:24:14] --> Uranium#4939: >reddit sub rocketleague hot 10 --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[22-08-2021 15:32:01] --> Uranium#4939: >reddit sub rocketleague --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[22-08-2021 15:44:55] --> Uranium#4939: >reddit sub askprogramming --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[23-08-2021 10:21:13] --> Uranium#4939: >help custom --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[23-08-2021 10:25:16] --> Uranium#4939: >help custom --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[23-08-2021 10:26:22] --> Uranium#4939: >help custom --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[23-08-2021 10:27:13] --> Uranium#4939: >help custom --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[23-08-2021 10:27:39] --> Uranium#4939: >custom --Guild : "STRUGGLES OF NOOB" -- Channel: #general

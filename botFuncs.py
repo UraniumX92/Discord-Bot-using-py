@@ -1,23 +1,14 @@
-import json
-import os
-import random
 import re
+import os
+from dotenv import load_dotenv
+import json
+import random
 import discord
 from discord.ext import commands
 import requests
 from datetime import datetime
 
-cwd = os.getcwd()
-# ----------------------------------------------#
-banWordFile = ("./Data Files/bannedWords.json")
-prefixesFile = ("./Data Files/prefixes.json")
-devsListFile = ("./Data Files/developers.json")
-switchesFile = ("./Data Files/switches&data.json")
-# ----------------------------------------------#
-errorsLogFile = ("./Err Logs/errorLogs.txt")
-errMessageLogFile = ("./Err Logs/errorMessages.txt")
-# ----------------------------------------------#
-susStringFile = ("./Data Files/susString.json")
+load_dotenv()
 # ----------------------------------------------#
 default_bot_prefix = "$"
 # ----------------------------------------------#
@@ -45,9 +36,9 @@ def loadJson(fileName):
         return json.load(load)
 
 
-def is_dev(ctx:commands.Context):
-    devsList = loadJson(devsListFile)
-    return str(ctx.author.id) in devsList.keys()
+def is_owner(ctx:commands.Context):
+    owner_id = os.environ['MY_DISCORD_USER_ID']
+    return str(ctx.author.id) == owner_id
 
 
 def load_cogs(client:commands.Bot):
@@ -60,26 +51,10 @@ def load_cogs(client:commands.Bot):
     print(f"Loaded {cog_count} Cogs.")
 
 
-def createFile_snippet(fileName,typeOfObject,textToWrite = ""):
-    if os.path.exists(os.path.join(os.getcwd(),fileName)):
-        try:
-            if type(loadJson(fileName)) == type(typeOfObject):
-                pass
-        except:
-            with open(fileName,"w") as f:
-                f.write(textToWrite)
-    else:
-        with open(fileName,"w") as f:
-            f.write(textToWrite)
-
-
-def createFiles():
-
-    createFile_snippet(banWordFile,list(),'[]')
-    # --------------------------------------------------------------- #
-    createFile_snippet(susStringFile,list(),'[]')
-
-    print("Done with file creation.")
+def log_func(log_string:str, file_name, newlines:int=2):
+    new_lines = newlines if newlines >= 1 else 1
+    with open(file_name,"a") as logf:
+        logf.write(f"{log_string}"+"\n"*new_lines)
 
 
 def getTenorList(category):
@@ -144,9 +119,7 @@ def getTenorList(category):
                     urlsList.append(xdict['gif']['url'])
                 except:
                     pass
-
         return urlsList
-
     else:
         return None
 
@@ -158,18 +131,6 @@ def isDiscTag(stringDiscTag):
         return True,matches[0]
     else:
         return False,None
-
-
-def get_local_prefix(message:discord.Message):
-    """
-    takes discord.Message as argument and returns the prefix for the guild which message belongs to
-    returns default prefix of bot if command is used in DM of Bot
-    """
-    try:
-        return loadJson(prefixesFile)[str(message.guild.id)]
-    except AttributeError:
-        """If commands are used in dm , only default bot prefix can be used"""
-        return default_bot_prefix
 
 
 if __name__ == '__main__':

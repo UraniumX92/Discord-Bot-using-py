@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 import botFuncs
 import botData
+import mongodbUtils
+from asyncUtils import log_and_raise
 import asyncio
 import os
 import re
@@ -16,7 +18,7 @@ class UtilityCommands(commands.Cog):
 
     @commands.command(aliases=['regf'])
     async def regfind(self, ctx, emailORdisctag, operator, *, text):
-        bot_prefix = botFuncs.get_local_prefix(ctx.message)
+        prefix = mongodbUtils.get_local_prefix(ctx.message)
         toFind = emailORdisctag.lower()
         operator_present = operator == "--"
         find_in = text
@@ -45,7 +47,7 @@ class UtilityCommands(commands.Cog):
             regResponseStr = ('Incorrect usage of command `regfind`\n'
                               f'{ctx.author.name}, correct usage is:\n'
                               f'```\n'
-                              f'{bot_prefix}regfind {{email | disctag}} -- {{Your text here}}\n'
+                              f'{prefix}regfind {{email | disctag}} -- {{Your text here}}\n'
                               f'\nUsage:\n'
                               f'| --> or\n'
                               '{} exclude the brackets\n'
@@ -60,6 +62,11 @@ class UtilityCommands(commands.Cog):
         Gets a Random GIF from tenor, in a requested Category
         """
         gifsList = botFuncs.getTenorList(category)
+        if not gifsList:
+            return await ctx.send(f"There was some problem with connecting Bot client to Tenor GIF services, Please try again.",
+                                  reference=ctx.message,
+                                  mention_author=False)
+
         embed = discord.Embed(title=f"Random GIF from '{category.title()}' Category.", color=discord.Colour.gold())
         via_tenor_URL = 'https://www.gstatic.com/tenor/web/attribution/PB_tenor_logo_blue_vertical.png'
         embed.set_image(url=random.choice(gifsList))
@@ -279,6 +286,31 @@ class UtilityCommands(commands.Cog):
         await ctx.send(f"Pong! Time taken : `{int(latency_in_ms)} ms`",
                        reference=ctx.message,
                        mention_author=False)
+
+
+    async def cog_command_error(self, ctx, error):
+        """
+        Command error handler for this cog class
+        """
+        if isinstance(error, commands.CommandInvokeError):
+            error = error.original
+
+        prefix = mongodbUtils.get_local_prefix(ctx.message)
+        author = ctx.author
+        del_after = 10
+
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send(f"{ctx.author.mention}, Either you, or Bot is Missing Permission to perform the task.", delete_after=del_after)
+        elif isinstance(error, commands.MemberNotFound):
+            await ctx.send(f"{author.mention}, You are supposed to mention a valid Discord user.", delete_after=del_after)
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(f"{author.mention}, Please provide all the arguments Required for the command.\n", delete_after=del_after)
+        elif isinstance(error, commands.RoleNotFound):
+            await ctx.send(f"Can't find a Role with name : `{error.argument}`")
+        elif isinstance(error, commands.BadArgument):
+            await ctx.send(f"Incorrect usage of the command! check what your command does by using `{prefix}help`", delete_after=del_after)
+        else:
+            await log_and_raise(client=self.client,ctx=ctx,error=error)
 
 
 def setup(client):

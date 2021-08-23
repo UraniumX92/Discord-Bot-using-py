@@ -1,6 +1,6 @@
 # Discord Bot v4.0 :
 
-##Major Update:
+## Major Update:
  **Until last update, Bot was using universal settings for all servers (from json file)**
  
 **From now on, all server specific settings, and server specific prefixes are stored in data base using MongoDB

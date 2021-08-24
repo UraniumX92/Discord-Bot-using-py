@@ -48,8 +48,7 @@ async def user_commands_listener(message:discord.Message):
     returns a bool, True if command found and response was given , False otherwise
     """
     prefix = mongodbUtils.get_local_prefix(message)
-    first_word = message.content
-    possible_command = first_word.split(prefix)[-1]
+    first_word = message.content.split(" ")[0]
 
     opted , user_doc = mongodbUtils.is_user_custom_opted(message.author)
     if not opted:
@@ -63,7 +62,7 @@ async def user_commands_listener(message:discord.Message):
 
         flag = False
         for dictx in custom_commands:
-            if dictx['command'] == possible_command:
+            if dictx['command'] in first_word:
                 response = dictx['response']
                 need_prefix = dictx['need_prefix']
                 flag = True
@@ -78,7 +77,7 @@ async def user_commands_listener(message:discord.Message):
         we check if the prefix is in the first word (possible command word) and if prefix is there, we check if it matches with `need_prefix` condition,
         if this condition is True , then we respond with `response` or else we return
         """
-        prefix_condition = (prefix in first_word) == (need_prefix)
+        prefix_condition = (first_word.startswith(prefix)) == (need_prefix)
 
         if prefix_condition:
             await message.channel.send(content=response,
@@ -95,9 +94,8 @@ async def guild_command_listener(message:discord.Message):
     returns a bool, True if command found and response was given, False otherwise
     """
     prefix = mongodbUtils.get_local_prefix(message)
-    first_word = message.content
-    possible_command = first_word.split(prefix)[-1]
-    guild :discord.Guild = message.guild
+    first_word = message.content.split(" ")[0]
+    guild : discord.Guild = message.guild
 
     if not guild:
         # If message is not sent in a server, we return
@@ -106,14 +104,13 @@ async def guild_command_listener(message:discord.Message):
     guild_cmd_coll = mongodbUtils.db['guild_custom_commands']
     guild_doc = guild_cmd_coll.find_one({"guild_id": guild.id})
     custom_commands = guild_doc['custom_commands']
-
     if len(custom_commands) == 0:
         # If the server is not having any custom commands yet, we return
         return False
 
     flag = False
     for dictx in custom_commands:
-        if dictx['command'] == possible_command:
+        if dictx['command'] in first_word:
             response = dictx['response']
             need_prefix = dictx['need_prefix']
             flag = True
@@ -128,7 +125,7 @@ async def guild_command_listener(message:discord.Message):
         we check if the prefix is in the first word (possible command word) and if prefix is there, we check if it matches with `need_prefix` condition,
         if this condition is True , then we respond with `response` or else we return
         """
-        prefix_condition = (prefix in first_word) == (need_prefix)
+        prefix_condition = (first_word.startswith(prefix)) == (need_prefix)
 
         if prefix_condition:
             await message.channel.send(content=response,
@@ -143,7 +140,7 @@ async def change_presence(client:commands.Bot):
     """
     Background Task for bot, keeps changing Bot's presence every set amount of time
     """
-    wait_time = 6
+    wait_time = 4*60
     await client.wait_until_ready()
     no_of_guilds = len(client.guilds)
     while not client.is_closed():

@@ -200,6 +200,9 @@ async def on_message(message):
     global default_bot_prefix
     bot_prefix = mongodbUtils.get_local_prefix(message)
 
+    if message.author == client.user:
+        return
+
     try:
         switches_collection = mongodbUtils.db["guild_switches"]
         local_switches = switches_collection.find_one({"guild_id": message.guild.id}, {"_id": 0, "guild_id": 0, "guild_name": 0})
@@ -224,9 +227,6 @@ async def on_message(message):
     fullMsgList = str(message.content).split(" ")
     lowerMsgList = [word.lower() for word in fullMsgList]
     channelName = str(message.channel)
-
-    if message.author == client.user:
-        return
 
     bot_mentions = [
         f"<@!{client.user.id}>", # Mention on PC

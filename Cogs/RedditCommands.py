@@ -124,13 +124,13 @@ class RedditCommands(commands.Cog):
         else:
             media_link_added = False
             content_needed = False
+            emb_title_limit = 256
             selected_post = posts_list[int(wait_msg.content)-1]
-            post_embed = discord.Embed(title=selected_post.title,description=f"[Link to the Reddit post]({selected_post.url})",color=discord.Colour.dark_gold())
+            embed_title = selected_post.title if len(selected_post.title) < emb_title_limit else f"{selected_post.title[:emb_title_limit-10]}..."
+            post_embed = discord.Embed(title=embed_title,description=f"[Link to the Reddit post]({selected_post.url})",color=discord.Colour.dark_gold())
             if selected_post.selftext:
-                if len(selected_post.selftext) < embed_field_character_limit:
-                    post_embed.add_field(name='\u200b',value=selected_post.selftext,inline=False)
-                else:
-                    post_embed.add_field(name='\u200b',value="Description Text is too long to put in Discord Embed message, check the post using link.",inline=False)
+                description_text = selected_post.selftext if len(selected_post.selftext) < (embed_field_character_limit-1) else f"{selected_post.selftext[:embed_field_character_limit-60]}....\n**`To read the remaining Text, use post Link`**"
+                post_embed.add_field(name="Description Text:",value=description_text,inline=False)
             try:
                 post_embed.set_image(url=selected_post.url)
                 if post_embed.image:

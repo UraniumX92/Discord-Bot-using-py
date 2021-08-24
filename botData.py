@@ -30,6 +30,12 @@ devsList = botFuncs.loadJson(devsListFile)
 susList = botFuncs.loadJson(susStringFile)
 reactionsList = ['😂','🤮','💀','🤡','💩']
 default_bot_prefix = "$"
+#-------------------------------------- Embed Limits --------------------------------------#
+embed_title_limit = 256 #same for field name
+embed_field_value_limit = 1024
+embed_description_limit = 4096
+embed_footertext_limit = embed_description_limit
+embed_fields_limit = 25
 #---------------------------------- {Commands : Description}  Dictionaries ----------------------------------#
 help_cmd_dict = {
     'help fun' : "Shows the help for Fun Commands",

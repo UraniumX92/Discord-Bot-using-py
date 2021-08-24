@@ -43,6 +43,19 @@ and these settings will be implemented on each server**
   * *New Improvement :*
     * Now Bot checks if the user is on Mobile , Desktop or Web version of Discord
     * Also checks if the user is active on multiple platforms, and responds accordingly
+
+
+
+* **Hotfix Update:**
+  * **In Custom commands, show commands were Improved**
+    * If the number of commands exceeds the limit for number of fields for an Embed, bot will split the comands data into several parts based on the total number of commands present
+    * 2 emojis for next and previous are reacted by bot, if the user who called the command reacts on these emojis , then the commands page will go to next, previous based on the reaction added by command author
+    * after 1 minutes of inactivity , these reactions will get cleared and a No Entry emoji is added as reaction indicating that bot will not take any response
+    * ***All of this was built pretty much from scratch, took me 1 complete day to make algorithm for splitting and then creating a menu logic, while handling the IndexError***
+  * **In Reddit Commands, get sub command got Improved**
+    * previously it would display `Description Text is too long to display in Embed...` 
+    * Now this problem got solved, Instead, now the description text is sliced till the discord.Embed field limit
+    * same goes with titles
     
 
 That's it for this Update, Took me lots of effort in this one, Learning to use a Data Base, learning to use Python Reddit API Wrapper (PRAW) and Implenting these concepts was **Something!**

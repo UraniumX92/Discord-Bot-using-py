@@ -42,3 +42,25 @@ In embed.fields.0.value: Must be 1024 or fewer in length. -- In Guild : "STRUGGL
 In embed.fields.0.value: Must be 1024 or fewer in length. -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
 [23-08-2021 10:27:39] --> 400 Bad Request (error code: 50035): Invalid Form Body
 In embed.fields.0.value: Must be 1024 or fewer in length. -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 14:28:21] --> 'Embed' object has no attribute 're' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 17:07:20] --> 'Embed' object has no attribute 're' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 17:08:20] --> Object of type Message is not JSON serializable -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 17:12:20] --> 400 Bad Request (error code: 50035): Invalid Form Body
+In embed: Embed size exceeds maximum size of 6000 -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 17:19:47] --> 400 Bad Request (error code: 50035): Invalid Form Body
+In embed: Embed size exceeds maximum size of 6000 -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 17:21:55] --> 'coroutine' object has no attribute 'add_reaction' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 17:22:32] --> 'NoneType' object has no attribute 'add_reaction' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 17:33:15] --> bad operand type for unary -: 'str' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 17:37:08] --> bad operand type for unary -: 'str' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 17:51:54] --> bad operand type for unary -: 'str' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 17:56:30] --> bad operand type for unary -: 'str' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 18:06:22] --> bad operand type for unary -: 'str' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 18:39:20] --> list index out of range -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 18:42:55] --> list index out of range -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 18:58:18] --> list index out of range -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 19:15:41] --> 'bool' object has no attribute 'to_dict' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 19:41:36] --> 'Context' object has no attribute 'messageu' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 20:10:06] --> name 'guild_cmd_coll' is not defined -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 20:27:22] --> remove_reaction() missing 1 required positional argument: 'member' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[24-08-2021 20:35:40] --> 'bool' object has no attribute 'to_dict' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939

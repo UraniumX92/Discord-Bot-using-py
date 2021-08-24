@@ -34,3 +34,23 @@ Error Message Logs Cleared at [14-08-2021 19:50:35]
 [23-08-2021 10:26:22] --> Uranium#4939: >help custom --Guild : "STRUGGLES OF NOOB" -- Channel: #general
 [23-08-2021 10:27:13] --> Uranium#4939: >help custom --Guild : "STRUGGLES OF NOOB" -- Channel: #general
 [23-08-2021 10:27:39] --> Uranium#4939: >custom --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 14:28:21] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 17:07:20] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 17:08:20] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 17:12:20] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 17:19:47] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 17:21:55] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 17:22:32] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 17:33:15] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 17:37:08] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 17:51:54] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 17:56:30] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 18:06:22] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 18:39:20] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 18:42:55] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 18:58:18] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 19:15:41] --> Uranium#4939: >custom server --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 19:41:36] --> Uranium#4939: >custom server nopre --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 20:10:06] --> Uranium#4939: >custom self --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 20:27:22] --> Uranium#4939: >custom self nopre --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[24-08-2021 20:35:40] --> Uranium#4939: >custom self nopre --Guild : "STRUGGLES OF NOOB" -- Channel: #general

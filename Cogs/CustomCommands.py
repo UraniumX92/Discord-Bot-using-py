@@ -6,6 +6,8 @@ import mongodbUtils
 from asyncUtils import log_and_raise
 import asyncio
 import os
+from datetime import datetime
+from typing import Union
 
 
 class CustomGroup(commands.Cog):
@@ -36,8 +38,10 @@ class CustomGroup(commands.Cog):
         optin_optout =  ("`$custom optin` --> *opts in user for user exclusive commands*\n"
                         "`$custom optout` --> *opts user out from user exclusive commands*\n")
 
-        show_cmds = ("`$custom server` --> *shows the list of custom commands for your server*\n"
-                     "`$custom self` --> *shows the list of user's exclusive custom commands*\n")
+        show_cmds = ("`$custom server` --> *shows the list of custom commands which requires prefix for your server*\n"
+                     "`$custom server (noprefix | nopre)` --> *shows the list of custom commands which doesn't require prefix for your server\n"
+                     "`$custom self` --> *shows the list of user's exclusive custom commands which requires prefix*\n"
+                     "`$custom self (noprefix | nopre)` --> *shows the list of user's exclusive custom commands which doesn't require prefix*\n")
 
         server_cmds = ("`$custom (add | +) <command_name> <command_response>`\n --> *adds a custom command for your server which requires prefix to be used*\n"
                        "`$custom (add.nopre | +nopre) <command_name> <command_response>`\n --> *adds a custom command for your server which doesn't require prefix to be used*\n"
@@ -67,87 +71,456 @@ class CustomGroup(commands.Cog):
                               mention_author=False)
 
 
-    @custom_main.command(name="server")
+    @custom_main.group(invoke_without_command=True,name="server")
+    @commands.guild_only()
     async def guild_show(self,ctx):
         """
-        Displays the list of guild specific commands and their repsonses, for the guild in which command was used.
+        Displays the list of guild specific commands which requires Prefix and their repsonses, for the guild in which command was used.
         """
         prefix = mongodbUtils.get_local_prefix(ctx.message)
         guild_cmd_coll = self.db['guild_custom_commands']
         guild_doc = guild_cmd_coll.find_one({"guild_id":ctx.guild.id})
-        custom_commands = guild_doc['custom_commands']
+        all_cmds = guild_doc['custom_commands']
+        custom_commands = []
+        found_atleast_one = False
 
-        if len(custom_commands) == 0:
+        if len(all_cmds) == 0:
             """If guild is not having any custom commands added, this will execute"""
             return await ctx.send(f"Your server is not having any custom commands currently, use `{prefix}help custom` command to know about how to add the custom commands.",
                                   reference=ctx.message,
                                   mention_author=False)
 
-        embed = discord.Embed(title=f"Custom Commands for Server : {ctx.guild.name}",colour=discord.Colour.dark_gold())
-        str_prefix_true = ""
-        str_prefix_false = ""
+        for dictt in all_cmds:
+            if dictt['need_prefix']:
+                found_atleast_one = True
+                custom_commands.append(dictt)
 
-        for dictx in custom_commands:
-            command = dictx['command']
-            response = dictx['response']
-            command_author = dictx['user_tag']
-            if dictx['need_prefix']:
-                str_prefix_true += (f"Command: `{command}` - Response: `{response}`\nCredit: `{command_author}`\n\n")
-            else:
-                str_prefix_false += (f"Command: `{command}` - Response: `{response}`\nCredit: `{command_author}`\n\n")
+        if not found_atleast_one:
+            return await ctx.send("There aren't any commands which requires prefix for this server",
+                                  reference=ctx.message,
+                                  mention_author=False)
 
-        if len(str_prefix_true) > 0:
-            embed.add_field(name="Commands which requires prefix :",value=str_prefix_true,inline=False)
-        if len(str_prefix_false) > 0:
-            embed.add_field(name="Commands which does not require prefix :",value=str_prefix_false,inline=False)
+        embed = discord.Embed(title=f"Custom Commands for Server : {ctx.guild.name}",description=f"***Custom Commands Which Requires Prefix***",colour=discord.Colour.dark_gold())
+        if len(custom_commands) < botData.embed_fields_limit:
+            for dictx in custom_commands:
+                command = dictx['command'] if len(dictx['command']) < (botData.embed_title_limit - 145) else f"{dictx['command'][:botData.embed_title_limit-150]}..."
+                response = dictx['response'] if len(dictx['response']) < (botData.embed_field_value_limit - 695) else f"{dictx['response'][:botData.embed_field_value_limit-700]}..."
+                command_author = dictx['user_tag']
+                time_stamp = dictx['time_stamp']
+                if dictx['need_prefix']:
+                    str_cmd_data = (f"Response: `{response}`\n"
+                                    f"Credit: `{command_author}`\n"
+                                    f"Added at Time (UTC) : {time_stamp}")
+                    embed.add_field(name=f"Command : {command}",value=str_cmd_data,inline=False)
 
-        embed.set_thumbnail(url=ctx.guild.icon_url)
-        embed.set_footer(text=f"Requested by {ctx.author}",icon_url=ctx.author.avatar_url)
+            embed.set_thumbnail(url=ctx.guild.icon_url)
+            embed.set_footer(text=f"Requested by {ctx.author}",icon_url=ctx.author.avatar_url)
 
-        return await ctx.send(embed=embed,
-                              reference=ctx.message,
-                              mention_author=False)
+            return await ctx.send(embed=embed,
+                                  reference=ctx.message,
+                                  mention_author=False)
+        else:
+            start = 0
+            end = botData.embed_fields_limit
+            temp_list = []
+
+            while end <= len(custom_commands):
+                temp_list.append(custom_commands[start:end])
+                start += botData.embed_fields_limit
+                end += botData.embed_fields_limit
+                if (len(custom_commands) - (end - botData.embed_fields_limit)) % botData.embed_fields_limit == 0 and temp_list[-1][-1] == custom_commands[-1]:
+                    break
+            if (len(custom_commands) - (end - botData.embed_fields_limit)) % botData.embed_fields_limit != 0:
+                temp_list.append(custom_commands[(end - botData.embed_fields_limit):])
+
+            cmd_msg :discord.Message = await ctx.send("Loading Commands... please be patient")
+            react_emojis = ['\U000025C0','\U000025B6']
+            def check(r:discord.Reaction,u: Union[discord.Member,discord.User]):
+                reactions_check = str(r.emoji) in react_emojis
+                user_msg_check = u.id == ctx.author.id and r.message.id == cmd_msg.id
+                return reactions_check and user_msg_check
+
+            ini_timestamp = int(datetime.now().timestamp())
+            index = 0
+            while True:
+                embed = discord.Embed(title=f"Custom Commands for Server : {ctx.guild.name}",description=f"***Custom Commands Which Requires Prefix***\n***Page : {index+1}/{len(temp_list)}***",colour=discord.Colour.dark_gold())
+                cmd_list = temp_list[index]
+
+                for dictx in cmd_list:
+                    command = dictx['command'] if len(dictx['command']) < (botData.embed_title_limit - 145) else f"{dictx['command'][:botData.embed_title_limit-150]}..."
+                    response = dictx['response'] if len(dictx['response']) < (botData.embed_field_value_limit - 695) else f"{dictx['response'][:botData.embed_field_value_limit-700]}..."
+                    command_author = dictx['user_tag']
+                    time_stamp = dictx['time_stamp']
+                    if dictx['need_prefix']:
+                        str_cmd_data = (f"Response: `{response}`\n"
+                                        f"Credit: `{command_author}`\n"
+                                        f"Added at Time (UTC) : `[{time_stamp}]`")
+                        embed.add_field(name=f"Command : {command}",value=str_cmd_data,inline=False)
+
+                embed.set_thumbnail(url=ctx.guild.icon_url)
+                embed.set_footer(text=f"Page : {index+1}/{len(temp_list)} \nRequested by {ctx.author}",icon_url=ctx.author.avatar_url)
+
+                await asyncio.sleep(2)
+                await cmd_msg.edit(embed=embed,
+                                   content=None)
+                await cmd_msg.add_reaction(react_emojis[0])
+                await cmd_msg.add_reaction(react_emojis[1])
+
+                try:
+                    reaction,user = await self.client.wait_for(event='reaction_add',check=check,timeout=60)
+                except asyncio.TimeoutError:
+                    await cmd_msg.remove_reaction(react_emojis[0],self.client.user)
+                    await cmd_msg.remove_reaction(react_emojis[1],self.client.user)
+                    await cmd_msg.add_reaction("\U0001F6AB")
+                    return
+                else:
+                    await cmd_msg.remove_reaction(reaction,user)
+                    if str(reaction.emoji) == react_emojis[1]:
+                        index += 1
+                    elif str(reaction.emoji) == react_emojis[0]:
+                        index -= 1
+                # Handling Index out of range while keeping the embed rotation logic working
+                if index == -1:
+                    index = len(temp_list)-1
+                elif index == len(temp_list):
+                    index = 0
 
 
-    @custom_main.command(name="self", aliases=['mycommands'])
+    @guild_show.command(name="noprefix",aliases=["nopre"])
+    async def guild_show_no_prefix(self,ctx):
+        """
+        Displays the list of guild specific commands which doesn't requires Prefix and their repsonses, for the guild in which command was used.
+        """
+        prefix = mongodbUtils.get_local_prefix(ctx.message)
+        guild_cmd_coll = self.db['guild_custom_commands']
+        guild_doc = guild_cmd_coll.find_one({"guild_id":ctx.guild.id})
+        all_cmds = guild_doc['custom_commands']
+        custom_commands = []
+        found_atleast_one = False
+
+        if len(all_cmds) == 0:
+            """If guild is not having any custom commands added, this will execute"""
+            return await ctx.send(f"Your server is not having any custom commands currently, use `{prefix}help custom` command to know about how to add the custom commands.",
+                                  reference=ctx.message,
+                                  mention_author=False)
+
+        for dictt in all_cmds:
+            if not dictt['need_prefix']:
+                found_atleast_one = True
+                custom_commands.append(dictt)
+
+        if not found_atleast_one:
+            return await ctx.send("There aren't any commands which doesn't require prefix for this server",
+                                  reference=ctx.message,
+                                  mention_author=False)
+
+        embed = discord.Embed(title=f"Custom Commands for Server : {ctx.guild.name}",description=f"***Custom Commands Which Doesn't Require Prefix***",colour=discord.Colour.dark_gold())
+        if len(custom_commands) < botData.embed_fields_limit:
+            for dictx in custom_commands:
+                command = dictx['command'] if len(dictx['command']) < (botData.embed_title_limit - 145) else f"{dictx['command'][:botData.embed_title_limit-150]}..."
+                response = dictx['response'] if len(dictx['response']) < (botData.embed_field_value_limit - 695) else f"{dictx['response'][:botData.embed_field_value_limit-700]}..."
+                command_author = dictx['user_tag']
+                time_stamp = dictx['time_stamp']
+                if not dictx['need_prefix']:
+                    str_cmd_data = (f"Response: `{response}`\n"
+                                    f"Credit: `{command_author}`\n"
+                                    f"Added at Time (UTC) : {time_stamp}")
+                    embed.add_field(name=f"Command : {command}",value=str_cmd_data,inline=False)
+
+            embed.set_thumbnail(url=ctx.guild.icon_url)
+            embed.set_footer(text=f"Requested by {ctx.author}",icon_url=ctx.author.avatar_url)
+
+            return await ctx.send(embed=embed,
+                                  reference=ctx.message,
+                                  mention_author=False)
+        else:
+            start = 0
+            end = botData.embed_fields_limit
+            temp_list = []
+
+            while end <= len(custom_commands):
+                temp_list.append(custom_commands[start:end])
+                start += botData.embed_fields_limit
+                end += botData.embed_fields_limit
+                if (len(custom_commands) - (end - botData.embed_fields_limit)) % botData.embed_fields_limit == 0 and temp_list[-1][-1] == custom_commands[-1]:
+                    break
+            if (len(custom_commands) - (end - botData.embed_fields_limit)) % botData.embed_fields_limit != 0:
+                temp_list.append(custom_commands[(end - botData.embed_fields_limit):])
+
+            cmd_msg :discord.Message = await ctx.send("Loading Commands... please be patient")
+            react_emojis = ['\U000025C0','\U000025B6']
+            def check(r:discord.Reaction,u: Union[discord.Member,discord.User]):
+                reactions_check = str(r.emoji) in react_emojis
+                user_msg_check = u.id == ctx.author.id and r.message.id == cmd_msg.id
+                return reactions_check and user_msg_check
+
+            index = 0
+            while True:
+                embed = discord.Embed(title=f"Custom Commands for Server : {ctx.guild.name}",description=f"***Custom Commands Which Doesn't Requires Prefix***\n***Page : {index+1}/{len(temp_list)}***",colour=discord.Colour.dark_gold())
+                cmd_list = temp_list[index]
+
+                for dictx in cmd_list:
+                    command = dictx['command'] if len(dictx['command']) < (botData.embed_title_limit - 145) else f"{dictx['command'][:botData.embed_title_limit-150]}..."
+                    response = dictx['response'] if len(dictx['response']) < (botData.embed_field_value_limit - 695) else f"{dictx['response'][:botData.embed_field_value_limit-700]}..."
+                    command_author = dictx['user_tag']
+                    time_stamp = dictx['time_stamp']
+                    if not dictx['need_prefix']:
+                        str_cmd_data = (f"Response: `{response}`\n"
+                                        f"Credit: `{command_author}`\n"
+                                        f"Added at Time (UTC) : `[{time_stamp}]`")
+                        embed.add_field(name=f"Command : {command}",value=str_cmd_data,inline=False)
+
+                embed.set_thumbnail(url=ctx.guild.icon_url)
+                embed.set_footer(text=f"Page : {index+1}/{len(temp_list)} \nRequested by {ctx.author}",icon_url=ctx.author.avatar_url)
+
+                await asyncio.sleep(2)
+                await cmd_msg.edit(embed=embed,
+                                   content=None)
+                await cmd_msg.add_reaction(react_emojis[0])
+                await cmd_msg.add_reaction(react_emojis[1])
+
+                try:
+                    reaction,user = await self.client.wait_for(event='reaction_add',check=check,timeout=60)
+                except asyncio.TimeoutError:
+                    await cmd_msg.remove_reaction(react_emojis[0],self.client.user)
+                    await cmd_msg.remove_reaction(react_emojis[1],self.client.user)
+                    await cmd_msg.add_reaction("\U0001F6AB")
+                    return
+                else:
+                    await cmd_msg.remove_reaction(reaction,user)
+                    if str(reaction.emoji) == react_emojis[1]:
+                        index += 1
+                    elif str(reaction.emoji) == react_emojis[0]:
+                        index -= 1
+                # Handling Index out of range while keeping the embed rotation logic working
+                if index == -1:
+                    index = len(temp_list)-1
+                elif index == len(temp_list):
+                    index = 0
+
+
+    @custom_main.group(invoke_without_command=True,name="self", aliases=['mycommands'])
     @commands.check(mongodbUtils.is_custom_command_opted)
     async def self_show(self,ctx):
         """
         Displays the list of user specific commands and their responses, where user is the command author.
         """
         prefix = mongodbUtils.get_local_prefix(ctx.message)
-        user_cmd_coll = self.db['user_custom_commands']
-        user_doc = user_cmd_coll.find_one({"user_id":ctx.author.id})
-        custom_commands = user_doc['custom_commands']
+        users_cmd_coll = self.db['user_custom_commands']
+        user_doc = users_cmd_coll.find_one({"user_id":ctx.author.id})
+        all_cmds = user_doc['custom_commands']
+        custom_commands = []
+        found_atleast_one = False
 
-        if len(custom_commands) == 0:
-            return await ctx.send(f"{ctx.author.mention}, Your are not having any active custom commands currently, use `{prefix}help custom` command to know about how to add the custom commands.",
+        if len(all_cmds) == 0:
+            """If guild is not having any custom commands added, this will execute"""
+            return await ctx.send(f"Your server is not having any custom commands currently, use `{prefix}help custom` command to know about how to add the custom commands.",
                                   reference=ctx.message,
                                   mention_author=False)
 
-        embed = discord.Embed(title=f"Custom Commands for User : {ctx.author.name}", colour=discord.Colour.dark_gold())
-        str_prefix_true = ""
-        str_prefix_false = ""
+        for dictt in all_cmds:
+            if dictt['need_prefix']:
+                found_atleast_one = True
+                custom_commands.append(dictt)
 
-        for dictx in custom_commands:
-            command = dictx['command']
-            response = dictx['response']
-            if dictx['need_prefix']:
-                str_prefix_true += (f"Command: `{command}` - Response: `{response}`\n")
-            else:
-                str_prefix_false += (f"Command: `{command}` - Response: `{response}`\n")
+        if not found_atleast_one:
+            return await ctx.send("There aren't any commands which require prefix for this user",
+                                  reference=ctx.message,
+                                  mention_author=False)
 
-        if len(str_prefix_true) > 0:
-            embed.add_field(name="Commands which requires prefix :",value=str_prefix_true,inline=False)
-        if len(str_prefix_false) > 0:
-            embed.add_field(name="Commands which does not require prefix :",value=str_prefix_false,inline=False)
+        embed = discord.Embed(title=f"Custom Commands for User : {ctx.author.name}",description=f"***Custom Commands Which Requires Prefix***",colour=discord.Colour.dark_gold())
+        if len(custom_commands) < botData.embed_fields_limit:
+            for dictx in custom_commands:
+                command = dictx['command'] if len(dictx['command']) < (botData.embed_title_limit - 145) else f"{dictx['command'][:botData.embed_title_limit-150]}..."
+                response = dictx['response'] if len(dictx['response']) < (botData.embed_field_value_limit - 695) else f"{dictx['response'][:botData.embed_field_value_limit-700]}..."
+                time_stamp = dictx['time_stamp']
+                if dictx['need_prefix']:
+                    str_cmd_data = (f"Response: `{response}`\n"
+                                    f"Added at Time (UTC) : {time_stamp}")
+                    embed.add_field(name=f"Command : {command}",value=str_cmd_data,inline=False)
 
-        embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.set_footer(text=f"Requested by {ctx.author}",icon_url=ctx.author.avatar_url)
+            embed.set_thumbnail(url=ctx.guild.icon_url)
+            embed.set_footer(text=f"Requested by {ctx.author}",icon_url=ctx.author.avatar_url)
 
-        return await ctx.send(embed=embed,
-                              reference=ctx.message,
-                              mention_author=False)
+            return await ctx.send(embed=embed,
+                                  reference=ctx.message,
+                                  mention_author=False)
+        else:
+            start = 0
+            end = botData.embed_fields_limit
+            temp_list = []
+
+            while end <= len(custom_commands):
+                temp_list.append(custom_commands[start:end])
+                start += botData.embed_fields_limit
+                end += botData.embed_fields_limit
+                if (len(custom_commands) - (end - botData.embed_fields_limit)) % botData.embed_fields_limit == 0 and temp_list[-1][-1] == custom_commands[-1]:
+                    break
+
+            if (len(custom_commands) - (end - botData.embed_fields_limit)) % botData.embed_fields_limit != 0:
+                temp_list.append(custom_commands[(end - botData.embed_fields_limit):])
+
+            cmd_msg :discord.Message = await ctx.send("Loading Commands... please be patient")
+            react_emojis = ['\U000025C0','\U000025B6']
+            def check(r:discord.Reaction,u: Union[discord.Member,discord.User]):
+                reactions_check = str(r.emoji) in react_emojis
+                user_msg_check = u.id == ctx.author.id and r.message.id == cmd_msg.id
+                return reactions_check and user_msg_check
+
+            index = 0
+            while True:
+                embed = discord.Embed(title=f"Custom Commands for User : {ctx.author.name}",description=f"***Custom Commands Which Requires Prefix***\n***Page : {index+1}/{len(temp_list)}***",colour=discord.Colour.dark_gold())
+                cmd_list = temp_list[index]
+
+                for dictx in cmd_list:
+                    command = dictx['command'] if len(dictx['command']) < (botData.embed_title_limit - 145) else f"{dictx['command'][:botData.embed_title_limit-150]}..."
+                    response = dictx['response'] if len(dictx['response']) < (botData.embed_field_value_limit - 695) else f"{dictx['response'][:botData.embed_field_value_limit-700]}..."
+                    time_stamp = dictx['time_stamp']
+                    if dictx['need_prefix']:
+                        str_cmd_data = (f"Response: `{response}`\n"
+                                        f"Added at Time (UTC) : `[{time_stamp}]`")
+                        embed.add_field(name=f"Command : {command}",value=str_cmd_data,inline=False)
+
+                embed.set_thumbnail(url=ctx.guild.icon_url)
+                embed.set_footer(text=f"Page : {index+1}/{len(temp_list)} \nRequested by {ctx.author}",icon_url=ctx.author.avatar_url)
+
+                await asyncio.sleep(2)
+                await cmd_msg.edit(embed=embed,
+                                   content=None)
+                await cmd_msg.add_reaction(react_emojis[0])
+                await cmd_msg.add_reaction(react_emojis[1])
+
+                try:
+                    reaction,user = await self.client.wait_for(event='reaction_add',check=check,timeout=60)
+                except asyncio.TimeoutError:
+                    await cmd_msg.remove_reaction(react_emojis[0],self.client.user)
+                    await cmd_msg.remove_reaction(react_emojis[1],self.client.user)
+                    await cmd_msg.add_reaction("\U0001F6AB")
+                    return
+                else:
+                    await cmd_msg.remove_reaction(reaction,user)
+                    if str(reaction.emoji) == react_emojis[1]:
+                        index += 1
+                    elif str(reaction.emoji) == react_emojis[0]:
+                        index -= 1
+                # Handling Index out of range while keeping the embed rotation logic working
+                if index == -1:
+                    index = len(temp_list)-1
+                elif index == len(temp_list):
+                    index = 0
+
+
+    @self_show.command(name="noprefix",aliases=['nopre'])
+    @commands.check(mongodbUtils.is_custom_command_opted)
+    async def self_show_no_prefix(self,ctx):
+        """
+        Displays the list of user specific commands which doesn't require prefix and their responses, where user is the command author.
+        """
+        prefix = mongodbUtils.get_local_prefix(ctx.message)
+        users_cmd_coll = self.db['user_custom_commands']
+        user_doc = users_cmd_coll.find_one({"user_id": ctx.author.id})
+        all_cmds = user_doc['custom_commands']
+        custom_commands = []
+        found_atleast_one = False
+
+        if len(all_cmds) == 0:
+            """If guild is not having any custom commands added, this will execute"""
+            return await ctx.send(f"Your server is not having any custom commands currently, use `{prefix}help custom` command to know about how to add the custom commands.",
+                                  reference=ctx.message,
+                                  mention_author=False)
+
+        for dictt in all_cmds:
+            if not dictt['need_prefix']:
+                found_atleast_one = True
+                custom_commands.append(dictt)
+
+        if not found_atleast_one:
+            return await ctx.send("There aren't any commands which require prefix for this user",
+                                  reference=ctx.message,
+                                  mention_author=False)
+
+        embed = discord.Embed(title=f"Custom Commands for User : {ctx.author.name}", description=f"***Custom Commands Which Doesn't Require Prefix***", colour=discord.Colour.dark_gold())
+        if len(custom_commands) < botData.embed_fields_limit:
+            for dictx in custom_commands:
+                command = dictx['command'] if len(dictx['command']) < (botData.embed_title_limit - 145) else f"{dictx['command'][:botData.embed_title_limit - 150]}..."
+                response = dictx['response'] if len(dictx['response']) < (botData.embed_field_value_limit - 695) else f"{dictx['response'][:botData.embed_field_value_limit - 700]}..."
+                time_stamp = dictx['time_stamp']
+                if not dictx['need_prefix']:
+                    str_cmd_data = (f"Response: `{response}`\n"
+                                    f"Added at Time (UTC) : {time_stamp}")
+                    embed.add_field(name=f"Command : {command}", value=str_cmd_data, inline=False)
+
+            embed.set_thumbnail(url=ctx.guild.icon_url)
+            embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+
+            return await ctx.send(embed=embed,
+                                  reference=ctx.message,
+                                  mention_author=False)
+        else:
+            start = 0
+            end = botData.embed_fields_limit
+            temp_list = []
+
+            while end <= len(custom_commands):
+                temp_list.append(custom_commands[start:end])
+                start += botData.embed_fields_limit
+                end += botData.embed_fields_limit
+                if (len(custom_commands) - (end - botData.embed_fields_limit)) % botData.embed_fields_limit == 0 and temp_list[-1][-1] == custom_commands[-1]:
+                    break
+
+            if (len(custom_commands) - (end - botData.embed_fields_limit)) % botData.embed_fields_limit != 0:
+                temp_list.append(custom_commands[(end - botData.embed_fields_limit):])
+
+            cmd_msg: discord.Message = await ctx.send("Loading Commands... please be patient")
+            react_emojis = ['\U000025C0', '\U000025B6']
+
+            def check(r: discord.Reaction, u: Union[discord.Member, discord.User]):
+                reactions_check = str(r.emoji) in react_emojis
+                user_msg_check = u.id == ctx.author.id and r.message.id == cmd_msg.id
+                return reactions_check and user_msg_check
+
+            index = 0
+            while True:
+                embed = discord.Embed(title=f"Custom Commands for User : {ctx.author.name}", description=f"***Custom Commands Which Doesn't Require Prefix***\n***Page : {index + 1}/{len(temp_list)}***", colour=discord.Colour.dark_gold())
+                cmd_list = temp_list[index]
+
+                for dictx in cmd_list:
+                    command = dictx['command'] if len(dictx['command']) < (botData.embed_title_limit - 145) else f"{dictx['command'][:botData.embed_title_limit - 150]}..."
+                    response = dictx['response'] if len(dictx['response']) < (botData.embed_field_value_limit - 695) else f"{dictx['response'][:botData.embed_field_value_limit - 700]}..."
+                    time_stamp = dictx['time_stamp']
+                    if not dictx['need_prefix']:
+                        str_cmd_data = (f"Response: `{response}`\n"
+                                        f"Added at Time (UTC) : `[{time_stamp}]`")
+                        embed.add_field(name=f"Command : {command}", value=str_cmd_data, inline=False)
+
+                embed.set_thumbnail(url=ctx.guild.icon_url)
+                embed.set_footer(text=f"Page : {index + 1}/{len(temp_list)} \nRequested by {ctx.author}", icon_url=ctx.author.avatar_url)
+
+                await asyncio.sleep(2)
+                await cmd_msg.edit(embed=embed,
+                                   content=None)
+                await cmd_msg.add_reaction(react_emojis[0])
+                await cmd_msg.add_reaction(react_emojis[1])
+
+                try:
+                    reaction, user = await self.client.wait_for(event='reaction_add', check=check, timeout=60)
+                except asyncio.TimeoutError:
+                    await cmd_msg.remove_reaction(react_emojis[0],self.client.user)
+                    await cmd_msg.remove_reaction(react_emojis[1],self.client.user)
+                    await cmd_msg.add_reaction("\U0001F6AB")
+                    return
+                else:
+                    await cmd_msg.remove_reaction(reaction, user)
+                    if str(reaction.emoji) == react_emojis[1]:
+                        index += 1
+                    elif str(reaction.emoji) == react_emojis[0]:
+                        index -= 1
+                # Handling Index out of range while keeping the embed rotation logic working
+                if index == -1:
+                    index = len(temp_list) - 1
+                elif index == len(temp_list):
+                    index = 0
+
 
 
     @custom_main.command(name="add",aliases=['+'])
@@ -534,7 +907,7 @@ class CustomGroup(commands.Cog):
                                           mention_author=False)
 
 
-async def cog_command_error(self, ctx, error):
+    async def cog_command_error(self, ctx, error):
         """
         Command error handler for this cog class
         """

@@ -10,3 +10,6 @@
 [23-08-2021 11:49:20] --> Left guild : The Raid Gang , ID : 391261899163041803 
 	There was something Unusual when clearing cache from Data Base
 
+[25-08-2021 16:29:28] --> Left guild : STRUGGLES OF NOOB , ID : 733370530039857232 
+	There was something Unusual when clearing cache from Data Base
+

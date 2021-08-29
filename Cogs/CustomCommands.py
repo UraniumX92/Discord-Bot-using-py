@@ -39,7 +39,7 @@ class CustomGroup(commands.Cog):
                         "`$custom optout` --> *opts user out from user exclusive commands*\n")
 
         show_cmds = ("`$custom server` --> *shows the list of custom commands which requires prefix for your server*\n"
-                     "`$custom server (noprefix | nopre)` --> *shows the list of custom commands which doesn't require prefix for your server\n"
+                     "`$custom server (noprefix | nopre)` --> *shows the list of custom commands which doesn't require prefix for your server*\n"
                      "`$custom self` --> *shows the list of user's exclusive custom commands which requires prefix*\n"
                      "`$custom self (noprefix | nopre)` --> *shows the list of user's exclusive custom commands which doesn't require prefix*\n")
 
@@ -110,7 +110,7 @@ class CustomGroup(commands.Cog):
                 if dictx['need_prefix']:
                     str_cmd_data = (f"Response: `{response}`\n"
                                     f"Credit: `{command_author}`\n"
-                                    f"Added at Time (UTC) : {time_stamp}")
+                                    f"Added at Time (UTC) : `[{time_stamp}]`")
                     embed.add_field(name=f"Command : {command}",value=str_cmd_data,inline=False)
 
             embed.set_thumbnail(url=ctx.guild.icon_url)
@@ -134,13 +134,13 @@ class CustomGroup(commands.Cog):
                 temp_list.append(custom_commands[(end - botData.embed_fields_limit):])
 
             cmd_msg :discord.Message = await ctx.send("Loading Commands... please be patient")
-            react_emojis = ['\U000025C0','\U000025B6']
+            await asyncio.sleep(1.5)
+            react_emojis = ['\U000025C0','\U000025B6'] # [Left Emoji , Right Emoji]
             def check(r:discord.Reaction,u: Union[discord.Member,discord.User]):
                 reactions_check = str(r.emoji) in react_emojis
                 user_msg_check = u.id == ctx.author.id and r.message.id == cmd_msg.id
                 return reactions_check and user_msg_check
 
-            ini_timestamp = int(datetime.now().timestamp())
             index = 0
             while True:
                 embed = discord.Embed(title=f"Custom Commands for Server : {ctx.guild.name}",description=f"***Custom Commands Which Requires Prefix***\n***Page : {index+1}/{len(temp_list)}***",colour=discord.Colour.dark_gold())
@@ -160,7 +160,6 @@ class CustomGroup(commands.Cog):
                 embed.set_thumbnail(url=ctx.guild.icon_url)
                 embed.set_footer(text=f"Page : {index+1}/{len(temp_list)} \nRequested by {ctx.author}",icon_url=ctx.author.avatar_url)
 
-                await asyncio.sleep(2)
                 await cmd_msg.edit(embed=embed,
                                    content=None)
                 await cmd_msg.add_reaction(react_emojis[0])
@@ -169,9 +168,9 @@ class CustomGroup(commands.Cog):
                 try:
                     reaction,user = await self.client.wait_for(event='reaction_add',check=check,timeout=60)
                 except asyncio.TimeoutError:
-                    await cmd_msg.remove_reaction(react_emojis[0],self.client.user)
-                    await cmd_msg.remove_reaction(react_emojis[1],self.client.user)
-                    await cmd_msg.add_reaction("\U0001F6AB")
+                    await cmd_msg.clear_reaction(react_emojis[0])
+                    await cmd_msg.clear_reaction(react_emojis[1])
+                    await cmd_msg.add_reaction("\U0001F512") # Lock Emoji
                     return
                 else:
                     await cmd_msg.remove_reaction(reaction,user)
@@ -187,6 +186,7 @@ class CustomGroup(commands.Cog):
 
 
     @guild_show.command(name="noprefix",aliases=["nopre"])
+    @commands.guild_only()
     async def guild_show_no_prefix(self,ctx):
         """
         Displays the list of guild specific commands which doesn't requires Prefix and their repsonses, for the guild in which command was used.
@@ -224,7 +224,7 @@ class CustomGroup(commands.Cog):
                 if not dictx['need_prefix']:
                     str_cmd_data = (f"Response: `{response}`\n"
                                     f"Credit: `{command_author}`\n"
-                                    f"Added at Time (UTC) : {time_stamp}")
+                                    f"Added at Time (UTC) : `[{time_stamp}]`")
                     embed.add_field(name=f"Command : {command}",value=str_cmd_data,inline=False)
 
             embed.set_thumbnail(url=ctx.guild.icon_url)
@@ -248,7 +248,8 @@ class CustomGroup(commands.Cog):
                 temp_list.append(custom_commands[(end - botData.embed_fields_limit):])
 
             cmd_msg :discord.Message = await ctx.send("Loading Commands... please be patient")
-            react_emojis = ['\U000025C0','\U000025B6']
+            await asyncio.sleep(1.5)
+            react_emojis = ['\U000025C0','\U000025B6'] # [Left Emoji , Right Emoji]
             def check(r:discord.Reaction,u: Union[discord.Member,discord.User]):
                 reactions_check = str(r.emoji) in react_emojis
                 user_msg_check = u.id == ctx.author.id and r.message.id == cmd_msg.id
@@ -273,7 +274,6 @@ class CustomGroup(commands.Cog):
                 embed.set_thumbnail(url=ctx.guild.icon_url)
                 embed.set_footer(text=f"Page : {index+1}/{len(temp_list)} \nRequested by {ctx.author}",icon_url=ctx.author.avatar_url)
 
-                await asyncio.sleep(2)
                 await cmd_msg.edit(embed=embed,
                                    content=None)
                 await cmd_msg.add_reaction(react_emojis[0])
@@ -282,9 +282,9 @@ class CustomGroup(commands.Cog):
                 try:
                     reaction,user = await self.client.wait_for(event='reaction_add',check=check,timeout=60)
                 except asyncio.TimeoutError:
-                    await cmd_msg.remove_reaction(react_emojis[0],self.client.user)
-                    await cmd_msg.remove_reaction(react_emojis[1],self.client.user)
-                    await cmd_msg.add_reaction("\U0001F6AB")
+                    await cmd_msg.clear_reaction(react_emojis[0])
+                    await cmd_msg.clear_reaction(react_emojis[1])
+                    await cmd_msg.add_reaction("\U0001F512") # Lock Emoji
                     return
                 else:
                     await cmd_msg.remove_reaction(reaction,user)
@@ -336,10 +336,10 @@ class CustomGroup(commands.Cog):
                 time_stamp = dictx['time_stamp']
                 if dictx['need_prefix']:
                     str_cmd_data = (f"Response: `{response}`\n"
-                                    f"Added at Time (UTC) : {time_stamp}")
+                                    f"Added at Time (UTC) : `[{time_stamp}]`")
                     embed.add_field(name=f"Command : {command}",value=str_cmd_data,inline=False)
 
-            embed.set_thumbnail(url=ctx.guild.icon_url)
+            embed.set_thumbnail(url=ctx.author.avatar_url)
             embed.set_footer(text=f"Requested by {ctx.author}",icon_url=ctx.author.avatar_url)
 
             return await ctx.send(embed=embed,
@@ -361,7 +361,8 @@ class CustomGroup(commands.Cog):
                 temp_list.append(custom_commands[(end - botData.embed_fields_limit):])
 
             cmd_msg :discord.Message = await ctx.send("Loading Commands... please be patient")
-            react_emojis = ['\U000025C0','\U000025B6']
+            await asyncio.sleep(1.5)
+            react_emojis = ['\U000025C0','\U000025B6'] # [Left Emoji , Right Emoji]
             def check(r:discord.Reaction,u: Union[discord.Member,discord.User]):
                 reactions_check = str(r.emoji) in react_emojis
                 user_msg_check = u.id == ctx.author.id and r.message.id == cmd_msg.id
@@ -381,10 +382,9 @@ class CustomGroup(commands.Cog):
                                         f"Added at Time (UTC) : `[{time_stamp}]`")
                         embed.add_field(name=f"Command : {command}",value=str_cmd_data,inline=False)
 
-                embed.set_thumbnail(url=ctx.guild.icon_url)
+                embed.set_thumbnail(url=ctx.author.avatar_url)
                 embed.set_footer(text=f"Page : {index+1}/{len(temp_list)} \nRequested by {ctx.author}",icon_url=ctx.author.avatar_url)
 
-                await asyncio.sleep(2)
                 await cmd_msg.edit(embed=embed,
                                    content=None)
                 await cmd_msg.add_reaction(react_emojis[0])
@@ -393,9 +393,9 @@ class CustomGroup(commands.Cog):
                 try:
                     reaction,user = await self.client.wait_for(event='reaction_add',check=check,timeout=60)
                 except asyncio.TimeoutError:
-                    await cmd_msg.remove_reaction(react_emojis[0],self.client.user)
-                    await cmd_msg.remove_reaction(react_emojis[1],self.client.user)
-                    await cmd_msg.add_reaction("\U0001F6AB")
+                    await cmd_msg.clear_reaction(react_emojis[0])
+                    await cmd_msg.clear_reaction(react_emojis[1])
+                    await cmd_msg.add_reaction("\U0001F512") # Lock Emoji
                     return
                 else:
                     await cmd_msg.remove_reaction(reaction,user)
@@ -447,10 +447,10 @@ class CustomGroup(commands.Cog):
                 time_stamp = dictx['time_stamp']
                 if not dictx['need_prefix']:
                     str_cmd_data = (f"Response: `{response}`\n"
-                                    f"Added at Time (UTC) : {time_stamp}")
+                                    f"Added at Time (UTC) : `[{time_stamp}]`")
                     embed.add_field(name=f"Command : {command}", value=str_cmd_data, inline=False)
 
-            embed.set_thumbnail(url=ctx.guild.icon_url)
+            embed.set_thumbnail(url=ctx.author.avatar_url)
             embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar_url)
 
             return await ctx.send(embed=embed,
@@ -472,7 +472,8 @@ class CustomGroup(commands.Cog):
                 temp_list.append(custom_commands[(end - botData.embed_fields_limit):])
 
             cmd_msg: discord.Message = await ctx.send("Loading Commands... please be patient")
-            react_emojis = ['\U000025C0', '\U000025B6']
+            await asyncio.sleep(1.5)
+            react_emojis = ['\U000025C0', '\U000025B6'] # [Left Emoji , Right Emoji]
 
             def check(r: discord.Reaction, u: Union[discord.Member, discord.User]):
                 reactions_check = str(r.emoji) in react_emojis
@@ -493,10 +494,9 @@ class CustomGroup(commands.Cog):
                                         f"Added at Time (UTC) : `[{time_stamp}]`")
                         embed.add_field(name=f"Command : {command}", value=str_cmd_data, inline=False)
 
-                embed.set_thumbnail(url=ctx.guild.icon_url)
+                embed.set_thumbnail(url=ctx.author.avatar_url)
                 embed.set_footer(text=f"Page : {index + 1}/{len(temp_list)} \nRequested by {ctx.author}", icon_url=ctx.author.avatar_url)
 
-                await asyncio.sleep(2)
                 await cmd_msg.edit(embed=embed,
                                    content=None)
                 await cmd_msg.add_reaction(react_emojis[0])
@@ -505,9 +505,9 @@ class CustomGroup(commands.Cog):
                 try:
                     reaction, user = await self.client.wait_for(event='reaction_add', check=check, timeout=60)
                 except asyncio.TimeoutError:
-                    await cmd_msg.remove_reaction(react_emojis[0],self.client.user)
-                    await cmd_msg.remove_reaction(react_emojis[1],self.client.user)
-                    await cmd_msg.add_reaction("\U0001F6AB")
+                    await cmd_msg.clear_reaction(react_emojis[0])
+                    await cmd_msg.clear_reaction(react_emojis[1])
+                    await cmd_msg.add_reaction("\U0001F512") # Lock Emoji
                     return
                 else:
                     await cmd_msg.remove_reaction(reaction, user)

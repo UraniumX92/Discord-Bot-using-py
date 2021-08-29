@@ -129,6 +129,7 @@ class UtilityCommands(commands.Cog):
         await ctx.message.delete()
 
     @commands.command(aliases=['activ'])
+    @commands.guild_only()
     async def activity(self, ctx, member: discord.Member = None):
         member = ctx.author if not member else member
         activities = member.activities
@@ -301,6 +302,8 @@ class UtilityCommands(commands.Cog):
 
         if isinstance(error, commands.MissingPermissions):
             await ctx.send(f"{ctx.author.mention}, Either you, or Bot is Missing Permission to perform the task.", delete_after=del_after)
+        elif isinstance(error, commands.NoPrivateMessage):
+            await ctx.send(f"{ctx.author.name}, You can't use this command in DMs, use this command only in servers")
         elif isinstance(error, commands.MemberNotFound):
             await ctx.send(f"{author.mention}, You are supposed to mention a valid Discord user.", delete_after=del_after)
         elif isinstance(error, commands.MissingRequiredArgument):

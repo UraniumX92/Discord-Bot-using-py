@@ -63,6 +63,7 @@ async def user_commands_listener(message:discord.Message):
         flag = False
         for dictx in custom_commands:
             if dictx['command'] in first_word:
+                command = dictx['command']
                 response = dictx['response']
                 need_prefix = dictx['need_prefix']
                 flag = True
@@ -75,15 +76,25 @@ async def user_commands_listener(message:discord.Message):
         """
         At this point we have found a command in user's commands, now we need to check the prefix condition
         we check if the prefix is in the first word (possible command word) and if prefix is there, we check if it matches with `need_prefix` condition,
+        also the whole message must only be command, we check these conditions first,
         if this condition is True , then we respond with `response` or else we return
         """
         prefix_condition = (first_word.startswith(prefix)) == (need_prefix)
 
         if prefix_condition:
-            await message.channel.send(content=response,
-                                       reference=message,
-                                       mention_author=False)
-            return True
+            if need_prefix and message.content == f"{prefix}{command}":
+                await message.channel.send(content=response,
+                                           reference=message,
+                                           mention_author=False)
+                return True
+
+            elif (not need_prefix) and message.content == command:
+                await message.channel.send(content=response,
+                                           reference=message,
+                                           mention_author=False)
+                return True
+            else:
+                return False
         else:
             return False
 
@@ -111,6 +122,7 @@ async def guild_command_listener(message:discord.Message):
     flag = False
     for dictx in custom_commands:
         if dictx['command'] in first_word:
+            command = dictx['command']
             response = dictx['response']
             need_prefix = dictx['need_prefix']
             flag = True
@@ -123,15 +135,25 @@ async def guild_command_listener(message:discord.Message):
         """
         At this point we have found a command in guild's custom commands, now we need to check the prefix condition
         we check if the prefix is in the first word (possible command word) and if prefix is there, we check if it matches with `need_prefix` condition,
-        if this condition is True , then we respond with `response` or else we return
+        also the whole message must only be command, we check these conditions first,
+        if these condition are True , then we respond with `response` or else we return
         """
         prefix_condition = (first_word.startswith(prefix)) == (need_prefix)
 
         if prefix_condition:
-            await message.channel.send(content=response,
-                                       reference=message,
-                                       mention_author=False)
-            return True
+            if need_prefix and message.content == f"{prefix}{command}":
+                await message.channel.send(content=response,
+                                           reference=message,
+                                           mention_author=False)
+                return True
+
+            elif (not need_prefix) and message.content == command:
+                await message.channel.send(content=response,
+                                           reference=message,
+                                           mention_author=False)
+                return True
+            else:
+                return False
         else:
             return False
 

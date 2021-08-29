@@ -13,8 +13,9 @@ class HelpCommands(commands.Cog):
 
     @commands.group(invoke_without_command=True)
     async def help(self, ctx):
+        prefix = mongodbUtils.get_local_prefix(ctx.message)
         help_Embed = botData.help_embed(title="Help Commands",dictx=botData.help_cmd_dict,member=ctx.author,client=self.client)
-        help_Embed.add_field(name='\u200b',value="**Invite Bot to your Server using `invite` Command**")
+        help_Embed.add_field(name='\u200b',value=f"**Invite Bot to your Server using `{prefix}invite` Command**")
         await ctx.send(embed=help_Embed,
                        reference=ctx.message,
                        mention_author=False)

@@ -16,3 +16,6 @@
 [23-08-2021 11:49:35] --> Joined guild : The Raid Gang , ID : 391261899163041803
 	Initialized all the default settings - Initialized the Data on Data Base
 
+[25-08-2021 16:29:44] --> Joined guild : STRUGGLES OF NOOB , ID : 733370530039857232
+	Initialized all the default settings - Initialized the Data on Data Base
+

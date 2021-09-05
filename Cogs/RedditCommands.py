@@ -99,9 +99,7 @@ class RedditCommands(commands.Cog):
                                                     limit=limit)
         menu_str = ""
         for index,post in enumerate(posts_list):
-            post_title = post.title
-            if len(post.title) > title_string_limit:
-                post_title = f"{post.title[:title_string_limit]}..."
+            post_title = post.title if len(post.title) < title_string_limit else f"{post.title[:title_string_limit]}..."
             menu_str += f"**{index+1}. [{post_title}]({post.url})**\n\n"
 
         menu_embed = discord.Embed(title=f"List of Posts from r/{subreddit}, sorting by: {sort}",description=menu_str,color=discord.Colour.dark_gold())

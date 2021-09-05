@@ -31,7 +31,8 @@ client = commands.Bot(command_prefix=get_prefix,
                       help_command=None,
                       activity=client_activity,
                       owner_id=owner_id,
-                      intents=discord.Intents.all()
+                      intents=discord.Intents.all(),
+                      case_insensitive=True,
                       )
 
 botFuncs.load_cogs(client)

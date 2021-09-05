@@ -158,6 +158,32 @@ async def guild_command_listener(message:discord.Message):
             return False
 
 
+async def custcmd_length_check(ctx:commands.Context,command,response):
+    """
+    to check if the custom commands getting added are in the limits or not, if they're out of limits, this func responds accordingly
+    returns True if command and response is in limit, otherwise False
+    """
+    cmd_len = 150
+    resp_len = 1600
+    check = False
+
+    if len(command) > cmd_len:
+        await ctx.send(f"Custom Command name cannot have more than `{cmd_len}` characters!\n"
+                       f"Number of characters in your given command name : `{len(command)}`",
+                       reference=ctx.message,
+                       mention_author=False)
+        return check
+    elif len(response) > resp_len:
+        await ctx.send(f"Custom Command response cannot have more than `{resp_len}` characters!\n"
+                       f"Number of characters in your given command response : `{len(response)}`",
+                       reference=ctx.message,
+                       mention_author=False)
+        return check
+    else:
+        check = True
+        return check
+
+
 async def change_presence(client:commands.Bot):
     """
     Background Task for bot, keeps changing Bot's presence every set amount of time

@@ -1,5 +1,7 @@
 import discord
 from discord.ext import commands
+
+import asyncUtils
 import botFuncs
 import botData
 import mongodbUtils
@@ -101,10 +103,13 @@ class CustomGroup(commands.Cog):
                                   mention_author=False)
 
         embed = discord.Embed(title=f"Custom Commands for Server : {ctx.guild.name}",description=f"***Custom Commands Which Requires Prefix***",colour=discord.Colour.dark_gold())
-        if len(custom_commands) < botData.embed_fields_limit:
+        embed_fields_limit = botData.embed_fields_limit-5
+        # Embed fields limit is 25 , we are decreasing it by 5 just for being safe , because total number of characters in an embed should not exceed 6000
+        if len(custom_commands) < embed_fields_limit:
             for dictx in custom_commands:
-                command = dictx['command'] if len(dictx['command']) < (botData.embed_title_limit - 145) else f"{dictx['command'][:botData.embed_title_limit-150]}..."
-                response = dictx['response'] if len(dictx['response']) < (botData.embed_field_value_limit - 695) else f"{dictx['response'][:botData.embed_field_value_limit-700]}..."
+                command = dictx['command']
+                temp_response = dictx['response']
+                response = botFuncs.slice_cmd_response(command,temp_response)
                 command_author = dictx['user_tag']
                 time_stamp = dictx['time_stamp']
                 if dictx['need_prefix']:
@@ -121,17 +126,17 @@ class CustomGroup(commands.Cog):
                                   mention_author=False)
         else:
             start = 0
-            end = botData.embed_fields_limit
+            end = embed_fields_limit
             temp_list = []
 
             while end <= len(custom_commands):
                 temp_list.append(custom_commands[start:end])
-                start += botData.embed_fields_limit
-                end += botData.embed_fields_limit
-                if (len(custom_commands) - (end - botData.embed_fields_limit)) % botData.embed_fields_limit == 0 and temp_list[-1][-1] == custom_commands[-1]:
+                start += embed_fields_limit
+                end += embed_fields_limit
+                if (len(custom_commands) - (end - embed_fields_limit)) % embed_fields_limit == 0 and temp_list[-1][-1] == custom_commands[-1]:
                     break
-            if (len(custom_commands) - (end - botData.embed_fields_limit)) % botData.embed_fields_limit != 0:
-                temp_list.append(custom_commands[(end - botData.embed_fields_limit):])
+            if (len(custom_commands) - (end - embed_fields_limit)) % embed_fields_limit != 0:
+                temp_list.append(custom_commands[(end - embed_fields_limit):])
 
             cmd_msg :discord.Message = await ctx.send("Loading Commands... please be patient")
             await asyncio.sleep(1.5)
@@ -147,8 +152,9 @@ class CustomGroup(commands.Cog):
                 cmd_list = temp_list[index]
 
                 for dictx in cmd_list:
-                    command = dictx['command'] if len(dictx['command']) < (botData.embed_title_limit - 145) else f"{dictx['command'][:botData.embed_title_limit-150]}..."
-                    response = dictx['response'] if len(dictx['response']) < (botData.embed_field_value_limit - 695) else f"{dictx['response'][:botData.embed_field_value_limit-700]}..."
+                    command = dictx['command']
+                    temp_response = dictx['response']
+                    response = botFuncs.slice_cmd_response(command,temp_response)
                     command_author = dictx['user_tag']
                     time_stamp = dictx['time_stamp']
                     if dictx['need_prefix']:
@@ -215,10 +221,13 @@ class CustomGroup(commands.Cog):
                                   mention_author=False)
 
         embed = discord.Embed(title=f"Custom Commands for Server : {ctx.guild.name}",description=f"***Custom Commands Which Doesn't Require Prefix***",colour=discord.Colour.dark_gold())
-        if len(custom_commands) < botData.embed_fields_limit:
+        embed_fields_limit = botData.embed_fields_limit-5
+        # Embed fields limit is 25 , we are decreasing it by 5 just for being safe , because total number of characters in an embed should not exceed 6000
+        if len(custom_commands) < embed_fields_limit:
             for dictx in custom_commands:
-                command = dictx['command'] if len(dictx['command']) < (botData.embed_title_limit - 145) else f"{dictx['command'][:botData.embed_title_limit-150]}..."
-                response = dictx['response'] if len(dictx['response']) < (botData.embed_field_value_limit - 695) else f"{dictx['response'][:botData.embed_field_value_limit-700]}..."
+                command = dictx['command']
+                temp_response = dictx['response']
+                response = botFuncs.slice_cmd_response(command,temp_response)
                 command_author = dictx['user_tag']
                 time_stamp = dictx['time_stamp']
                 if not dictx['need_prefix']:
@@ -235,17 +244,17 @@ class CustomGroup(commands.Cog):
                                   mention_author=False)
         else:
             start = 0
-            end = botData.embed_fields_limit
+            end = embed_fields_limit
             temp_list = []
 
             while end <= len(custom_commands):
                 temp_list.append(custom_commands[start:end])
-                start += botData.embed_fields_limit
-                end += botData.embed_fields_limit
-                if (len(custom_commands) - (end - botData.embed_fields_limit)) % botData.embed_fields_limit == 0 and temp_list[-1][-1] == custom_commands[-1]:
+                start += embed_fields_limit
+                end += embed_fields_limit
+                if (len(custom_commands) - (end - embed_fields_limit)) % embed_fields_limit == 0 and temp_list[-1][-1] == custom_commands[-1]:
                     break
-            if (len(custom_commands) - (end - botData.embed_fields_limit)) % botData.embed_fields_limit != 0:
-                temp_list.append(custom_commands[(end - botData.embed_fields_limit):])
+            if (len(custom_commands) - (end - embed_fields_limit)) % embed_fields_limit != 0:
+                temp_list.append(custom_commands[(end - embed_fields_limit):])
 
             cmd_msg :discord.Message = await ctx.send("Loading Commands... please be patient")
             await asyncio.sleep(1.5)
@@ -261,8 +270,9 @@ class CustomGroup(commands.Cog):
                 cmd_list = temp_list[index]
 
                 for dictx in cmd_list:
-                    command = dictx['command'] if len(dictx['command']) < (botData.embed_title_limit - 145) else f"{dictx['command'][:botData.embed_title_limit-150]}..."
-                    response = dictx['response'] if len(dictx['response']) < (botData.embed_field_value_limit - 695) else f"{dictx['response'][:botData.embed_field_value_limit-700]}..."
+                    command = dictx['command']
+                    temp_response = dictx['response']
+                    response = botFuncs.slice_cmd_response(command,temp_response)
                     command_author = dictx['user_tag']
                     time_stamp = dictx['time_stamp']
                     if not dictx['need_prefix']:
@@ -329,10 +339,13 @@ class CustomGroup(commands.Cog):
                                   mention_author=False)
 
         embed = discord.Embed(title=f"Custom Commands for User : {ctx.author.name}",description=f"***Custom Commands Which Requires Prefix***",colour=discord.Colour.dark_gold())
-        if len(custom_commands) < botData.embed_fields_limit:
+        embed_fields_limit = botData.embed_fields_limit-5
+        # Embed fields limit is 25 , we are decreasing it by 5 just for being safe , because total number of characters in an embed should not exceed 6000
+        if len(custom_commands) < embed_fields_limit:
             for dictx in custom_commands:
-                command = dictx['command'] if len(dictx['command']) < (botData.embed_title_limit - 145) else f"{dictx['command'][:botData.embed_title_limit-150]}..."
-                response = dictx['response'] if len(dictx['response']) < (botData.embed_field_value_limit - 695) else f"{dictx['response'][:botData.embed_field_value_limit-700]}..."
+                command = dictx['command']
+                temp_response = dictx['response']
+                response = botFuncs.slice_cmd_response(command,temp_response)
                 time_stamp = dictx['time_stamp']
                 if dictx['need_prefix']:
                     str_cmd_data = (f"Response: `{response}`\n"
@@ -347,18 +360,18 @@ class CustomGroup(commands.Cog):
                                   mention_author=False)
         else:
             start = 0
-            end = botData.embed_fields_limit
+            end = embed_fields_limit
             temp_list = []
 
             while end <= len(custom_commands):
                 temp_list.append(custom_commands[start:end])
-                start += botData.embed_fields_limit
-                end += botData.embed_fields_limit
-                if (len(custom_commands) - (end - botData.embed_fields_limit)) % botData.embed_fields_limit == 0 and temp_list[-1][-1] == custom_commands[-1]:
+                start += embed_fields_limit
+                end += embed_fields_limit
+                if (len(custom_commands) - (end - embed_fields_limit)) % embed_fields_limit == 0 and temp_list[-1][-1] == custom_commands[-1]:
                     break
 
-            if (len(custom_commands) - (end - botData.embed_fields_limit)) % botData.embed_fields_limit != 0:
-                temp_list.append(custom_commands[(end - botData.embed_fields_limit):])
+            if (len(custom_commands) - (end - embed_fields_limit)) % embed_fields_limit != 0:
+                temp_list.append(custom_commands[(end - embed_fields_limit):])
 
             cmd_msg :discord.Message = await ctx.send("Loading Commands... please be patient")
             await asyncio.sleep(1.5)
@@ -374,8 +387,9 @@ class CustomGroup(commands.Cog):
                 cmd_list = temp_list[index]
 
                 for dictx in cmd_list:
-                    command = dictx['command'] if len(dictx['command']) < (botData.embed_title_limit - 145) else f"{dictx['command'][:botData.embed_title_limit-150]}..."
-                    response = dictx['response'] if len(dictx['response']) < (botData.embed_field_value_limit - 695) else f"{dictx['response'][:botData.embed_field_value_limit-700]}..."
+                    command = dictx['command']
+                    temp_response = dictx['response']
+                    response = botFuncs.slice_cmd_response(command,temp_response)
                     time_stamp = dictx['time_stamp']
                     if dictx['need_prefix']:
                         str_cmd_data = (f"Response: `{response}`\n"
@@ -440,10 +454,13 @@ class CustomGroup(commands.Cog):
                                   mention_author=False)
 
         embed = discord.Embed(title=f"Custom Commands for User : {ctx.author.name}", description=f"***Custom Commands Which Doesn't Require Prefix***", colour=discord.Colour.dark_gold())
-        if len(custom_commands) < botData.embed_fields_limit:
+        embed_fields_limit = botData.embed_fields_limit-5
+        # Embed fields limit is 25 , we are decreasing it by 5 just for being safe , because total number of characters in an embed should not exceed 6000
+        if len(custom_commands) < embed_fields_limit:
             for dictx in custom_commands:
-                command = dictx['command'] if len(dictx['command']) < (botData.embed_title_limit - 145) else f"{dictx['command'][:botData.embed_title_limit - 150]}..."
-                response = dictx['response'] if len(dictx['response']) < (botData.embed_field_value_limit - 695) else f"{dictx['response'][:botData.embed_field_value_limit - 700]}..."
+                command = dictx['command']
+                temp_response = dictx['response']
+                response = botFuncs.slice_cmd_response(command,temp_response)
                 time_stamp = dictx['time_stamp']
                 if not dictx['need_prefix']:
                     str_cmd_data = (f"Response: `{response}`\n"
@@ -458,18 +475,18 @@ class CustomGroup(commands.Cog):
                                   mention_author=False)
         else:
             start = 0
-            end = botData.embed_fields_limit
+            end = embed_fields_limit
             temp_list = []
 
             while end <= len(custom_commands):
                 temp_list.append(custom_commands[start:end])
-                start += botData.embed_fields_limit
-                end += botData.embed_fields_limit
-                if (len(custom_commands) - (end - botData.embed_fields_limit)) % botData.embed_fields_limit == 0 and temp_list[-1][-1] == custom_commands[-1]:
+                start += embed_fields_limit
+                end += embed_fields_limit
+                if (len(custom_commands) - (end - embed_fields_limit)) % embed_fields_limit == 0 and temp_list[-1][-1] == custom_commands[-1]:
                     break
 
-            if (len(custom_commands) - (end - botData.embed_fields_limit)) % botData.embed_fields_limit != 0:
-                temp_list.append(custom_commands[(end - botData.embed_fields_limit):])
+            if (len(custom_commands) - (end - embed_fields_limit)) % embed_fields_limit != 0:
+                temp_list.append(custom_commands[(end - embed_fields_limit):])
 
             cmd_msg: discord.Message = await ctx.send("Loading Commands... please be patient")
             await asyncio.sleep(1.5)
@@ -486,8 +503,9 @@ class CustomGroup(commands.Cog):
                 cmd_list = temp_list[index]
 
                 for dictx in cmd_list:
-                    command = dictx['command'] if len(dictx['command']) < (botData.embed_title_limit - 145) else f"{dictx['command'][:botData.embed_title_limit - 150]}..."
-                    response = dictx['response'] if len(dictx['response']) < (botData.embed_field_value_limit - 695) else f"{dictx['response'][:botData.embed_field_value_limit - 700]}..."
+                    command = dictx['command']
+                    temp_response = dictx['response']
+                    response = botFuncs.slice_cmd_response(command,temp_response)
                     time_stamp = dictx['time_stamp']
                     if not dictx['need_prefix']:
                         str_cmd_data = (f"Response: `{response}`\n"
@@ -526,6 +544,13 @@ class CustomGroup(commands.Cog):
     @custom_main.command(name="add",aliases=['+'])
     @commands.guild_only()
     async def guild_add(self,ctx, command_name , * , command_response):
+        """
+        Adds a custom command for the guild , with need_prefix = True
+        """
+        command_checked = await asyncUtils.custcmd_length_check(ctx,command_name,command_response)
+        if not command_checked:
+            return
+
         # Creating fields for doc in db
         guild_id = ctx.guild.id
         guild_name = ctx.guild.name
@@ -581,6 +606,13 @@ class CustomGroup(commands.Cog):
     @custom_main.command(name="add.nopre",aliases=["+nopre"])
     @commands.guild_only()
     async def guild_add_no_prefix(self,ctx, command_name,*, command_response):
+        """
+        Adds a custom command for guild, with need_prefix = False
+        """
+        command_checked = await asyncUtils.custcmd_length_check(ctx,command_name,command_response)
+        if not command_checked:
+            return
+
         # Creating fields for doc in db
         guild_id = ctx.guild.id
         guild_name = ctx.guild.name
@@ -634,6 +666,13 @@ class CustomGroup(commands.Cog):
     @custom_main.command(name="addself",aliases=['s+'])
     @commands.check(mongodbUtils.is_custom_command_opted)
     async def add_user_command(self,ctx, command_name,*, command_response):
+        """
+        Adds a custom command for User, with need_prefix = True
+        """
+        command_checked = await asyncUtils.custcmd_length_check(ctx,command_name,command_response)
+        if not command_checked:
+            return
+
         # Creating fields for doc in db
         user_id = ctx.author.id
         user_tag = str(ctx.author)
@@ -677,6 +716,13 @@ class CustomGroup(commands.Cog):
     @custom_main.command(name="addself.nopre",aliases=['s+nopre'])
     @commands.check(mongodbUtils.is_custom_command_opted)
     async def add_userCmd_no_prefix(self,ctx, command_name,*, command_response):
+        """
+        Adds a custom command for User, with need_prefix = False
+        """
+        command_checked = await asyncUtils.custcmd_length_check(ctx,command_name,command_response)
+        if not command_checked:
+            return
+
         # Creating fields for doc in db
         user_id = ctx.author.id
         user_tag = str(ctx.author)
@@ -738,7 +784,8 @@ class CustomGroup(commands.Cog):
                                   mention_author=False
                                   )
         else:
-            resp_msg = await ctx.send(f"Command Name: `{command_name}`, Response: `{response}`\n"
+            resp_msg = await ctx.send(f"Command Name: `{command_name}`,\n"
+                                      f"\nResponse: `{response}`\n"
                                       f"Prefix required = `{need_prefix}`\n"
                                       f"{ctx.author.mention}, Are you sure you want to delete this command?\n"
                                       f"[reply with **y** or **n** within 1 minute]")
@@ -836,7 +883,7 @@ class CustomGroup(commands.Cog):
 
 
     @custom_main.command(name="optin")
-    async def user_custom_command_optin(self, ctx):
+    async def user_optin(self, ctx):
         prefix = mongodbUtils.get_local_prefix(ctx.message)
         user_cmd_coll = self.db['user_custom_commands']
         user_doc = user_cmd_coll.find_one(filter={"user_id": ctx.author.id})
@@ -864,7 +911,7 @@ class CustomGroup(commands.Cog):
 
 
     @custom_main.command(name="optout")
-    async def user_custom_command_optout(self, ctx):
+    async def user_optout(self, ctx):
         prefix = mongodbUtils.get_local_prefix(ctx.message)
         user_cmd_coll = self.db['user_custom_commands']
         user_doc = user_cmd_coll.find_one(filter={"user_id": ctx.author.id})

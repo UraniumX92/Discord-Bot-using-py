@@ -57,6 +57,12 @@ def log_func(log_string:str, file_name, newlines:int=2):
         logf.write(f"{log_string}"+"\n"*new_lines)
 
 
+def slice_cmd_response(command,response):
+    rem = 150 - len(command)
+    sliced_response = response if len(response) < 49 else f"{response[:(54+rem)]}...."
+    return sliced_response
+
+
 def getTenorList(category):
     """
     Tenor's API request's JSON structure:

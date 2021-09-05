@@ -64,3 +64,9 @@ In embed: Embed size exceeds maximum size of 6000 -- In Guild : "STRUGGLES OF NO
 [24-08-2021 20:10:06] --> name 'guild_cmd_coll' is not defined -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
 [24-08-2021 20:27:22] --> remove_reaction() missing 1 required positional argument: 'member' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
 [24-08-2021 20:35:40] --> 'bool' object has no attribute 'to_dict' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[01-09-2021 09:35:38] --> 400 Bad Request (error code: 50035): Invalid Form Body
+In content: Must be 2000 or fewer in length. -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[01-09-2021 09:38:57] --> 400 Bad Request (error code: 50035): Invalid Form Body
+In content: Must be 2000 or fewer in length. -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[01-09-2021 10:41:56] --> 400 Bad Request (error code: 50035): Invalid Form Body
+In content: Must be 2000 or fewer in length. -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939

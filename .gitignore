@@ -5,3 +5,4 @@ __pycache__/
 pyDiscBot.code-workspace
 Cogs/__pycache__/
 mongotesting.py
+Data Files/susString.json

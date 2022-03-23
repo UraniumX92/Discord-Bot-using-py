@@ -12,6 +12,7 @@ banWordFile = ("./Data Files/bannedWords.json")
 prefixesFile = ("./Data Files/prefixes.json")
 devsListFile = ("./Data Files/developers.json")
 switchesFile = ("./Data Files/switches&data.json")
+wordsFile = ("./Data Files/words.json")
 # ----------------------------------------------#
 guild_joined_EventLogFile = ("./Bot Event Logs/guild_joined.txt")
 guild_removed_EventLogFile = ("./Bot Event Logs/guild_remove.txt")

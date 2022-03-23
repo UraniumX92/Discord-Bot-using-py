@@ -70,3 +70,6 @@ In content: Must be 2000 or fewer in length. -- In Guild : "STRUGGLES OF NOOB" -
 In content: Must be 2000 or fewer in length. -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
 [01-09-2021 10:41:56] --> 400 Bad Request (error code: 50035): Invalid Form Body
 In content: Must be 2000 or fewer in length. -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[22-03-2022 16:31:26] --> 'str' object has no attribute 'lowe' -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+[22-03-2022 16:33:23] --> 'str' object has no attribute 'lowe' -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+[22-03-2022 17:25:50] --> name 'false' is not defined -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939

@@ -9,9 +9,8 @@ from asyncUtils import log_and_raise
 
 
 class FunCommands(commands.Cog):
-    def __init__(self,client):
+    def __init__(self, client: discord.Client):
         self.client = client
-
 
     @commands.command(aliases=['fax'])
     async def funfax(self, ctx, thing, *, quality):
@@ -20,12 +19,10 @@ class FunCommands(commands.Cog):
                        reference=ctx.message,
                        mention_author=False)
 
-
     @commands.command(aliases=['say'])
     async def sneak(self, ctx, *, messageTosay):
         await ctx.message.delete()
         await ctx.send(messageTosay)
-
 
     @commands.command(aliases=['sus', 'amoggus'])
     async def suspicious(self, ctx, member: discord.Member = None):
@@ -37,6 +34,130 @@ class FunCommands(commands.Cog):
                        reference=ctx.message,
                        mention_author=False)
 
+    @commands.command(name="hangman", aliases=["hm"])
+    async def hangman(self, ctx: commands.Context):
+        timeout = 90
+        word_list = None
+        with open(botData.wordsFile, 'r') as f:
+            word_list = botFuncs.loadJson(botData.wordsFile)
+
+        word = random.choice(word_list)
+        tempword = word.lower()
+        blanks = "_" * len(word)
+        spacedstr = lambda string: " ".join(list(string))
+        chances = 7
+        alphabets = "".join([chr(x) for x in range(97, 123)])
+        yolo = ''
+        while type(yolo) != int:
+            try:
+                await ctx.send("```\n"
+                               "Note: Respond to each message within 90 seconds or else your message will not be counted towards input\n\n"
+                               "1. Play classic hangman where you enter only 1 character at a time with 7 lives.\n"
+                               "2. YOLO : Enter Full word but you have only 1 life, point of no return.\n"
+                               "Select 1 or 2: ```")
+
+                def check1(msg: discord.Message):
+                    if not msg.content.isnumeric():
+                        return False
+                    usercheck = ctx.author.id == msg.author.id and ctx.channel.id == msg.channel.id
+                    inpcheck = msg.content.isnumeric() and int(msg.content) in range(1, 3)
+                    return usercheck and inpcheck
+
+                try:
+                    yolomsg = await self.client.wait_for(event='message',check=check1,timeout=timeout)
+                except asyncio.TimeoutError:
+                    pass
+                else:
+                    yolo = int(yolomsg.content)
+            except ValueError:
+                return await ctx.send("Invalid response, Game terminated.")
+
+        if yolo == 1:
+            msgstr = (f"```\n{spacedstr(blanks)}\n```\n"
+                      f"```\nRemaining Alphabets: {spacedstr(alphabets)}\n```\n"
+                      f"*{chances} chances remaining.*")
+            await ctx.send(msgstr)
+            while chances != 0:
+                await ctx.send("Enter a character:")
+
+                def check2(msg: discord.Message):
+                    usercheck = ctx.author.id == msg.author.id and ctx.channel.id == msg.channel.id
+                    inpcheck = msg.content.isalpha() and len(msg.content) == 1
+                    return usercheck and inpcheck
+
+                try:
+                    guessMsg = await self.client.wait_for(event='message',check=check2,timeout=timeout)
+                except asyncio.TimeoutError:
+                    pass
+                else:
+                    guess = guessMsg.content.lower()
+                    indx = alphabets.find(guess)
+                    if indx >= 0:
+                        alphabets = list(alphabets)
+                        alphabets[indx] = ""
+                        alphabets = "".join(alphabets)
+                    else:
+                        await ctx.send("you have already entered that alphabet before, try again.")
+                        continue
+
+                    count = 0
+                    intx = tempword.find(guess.lower())
+                    while intx >= 0:
+                        if count == 0:
+                            chances += 1
+                            count += 1
+                        tempword = list(tempword)
+                        blanks = list(blanks)
+                        blanks[intx] = word[intx]
+                        tempword[intx] = "_"
+                        tempword = "".join(tempword)
+                        blanks = "".join(blanks)
+                        intx = tempword.find(guess.lower())
+
+                    msgstr2 = f"```\n{spacedstr(blanks)}\n```\n"
+                    if blanks == word:
+                        await ctx.send(msgstr2)
+                        break
+
+                    chances -= 1
+                    msgstr2 += (f"```\nRemaining Alphabets: {spacedstr(alphabets)}\n```\n"
+                                f"*{chances} chances remaining.*")
+                    await ctx.send(msgstr2)
+
+            if chances == 0:
+                await ctx.send(f"You lost, the word was `{word}`.")
+            else:
+                await ctx.send(f"Congratulations you guessed it, the word is `{word}`.")
+
+        else:
+            inta = random.randint(0, len(word) - 1)
+            intb = random.randint(0, len(word) - 1)
+            while intb == inta:
+                intb = random.randint(0, len(word) - 1)
+            tempword = list(tempword)
+            blanks = list(blanks)
+            tempword[inta], tempword[intb] = "_", "_"
+            blanks[inta], blanks[intb] = word[inta], word[intb]
+            tempword = "".join(tempword)
+            blanks = "".join(blanks)
+
+            msgstr = f"```{spacedstr(blanks)}```\n"
+            msgstr += "Enter the full word, Don't worry about capitalization: "
+            await ctx.send(msgstr)
+
+            def yCheck(msg: discord.Message):
+                return ctx.author.id == msg.author.id and ctx.channel.id == msg.channel.id
+
+            try:
+                fullwordmsg = await self.client.wait_for(event='message',check=yCheck,timeout=timeout)
+            except asyncio.TimeoutError:
+                pass
+            else:
+                inpword = fullwordmsg.content
+            if inpword.lower() == word.lower():
+                await ctx.send(f"Congratulations you guessed it in YOLO mode, the word is `{word}`.")
+            else:
+                await ctx.send(f"Better luck next time, +1 respect for YOLO attempt, the word was `{word}`.")
 
     @commands.command(aliases=['platform','status'])
     async def device(self, ctx, member: discord.Member = None):
@@ -98,7 +219,6 @@ class FunCommands(commands.Cog):
                            reference=ctx.message,
                            mention_author=False)
 
-
     @commands.command(aliases=["dm"])
     async def direct_anonymous(self, ctx, member: discord.Member, *, message):
         try:
@@ -124,7 +244,6 @@ class FunCommands(commands.Cog):
                                    delete_after=5)
             else:
                 raise error
-
 
     @commands.command(aliases=['dmid'])
     async def dm_withID(self, ctx, userID: int, *, message):
@@ -153,7 +272,6 @@ class FunCommands(commands.Cog):
             else:
                 raise error
 
-
     async def cog_command_error(self, ctx, error):
         """
         Command error handler for this cog class
@@ -176,7 +294,7 @@ class FunCommands(commands.Cog):
         elif isinstance(error, commands.BadArgument):
             await ctx.send(f"Incorrect usage of the command! check what your command does by using `{prefix}help`", delete_after=del_after)
         else:
-            await log_and_raise(client=self.client,ctx=ctx,error=error)
+            await log_and_raise(client=self.client, ctx=ctx, error=error)
 
 
 def setup(client):

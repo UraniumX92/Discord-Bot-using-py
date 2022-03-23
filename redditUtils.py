@@ -12,7 +12,7 @@ client_id = os.environ['REDDIT_CLIENT_ID']
 client_secret = os.environ['REDDIT_CLIENT_SECRET']
 user_name = os.environ['REDDIT_USERNAME']
 password = os.environ['REDDIT_PASSWORD']
-user_agent = 'Reddit_client_for_discord_bot'
+user_agent = 'Reddit'
 
 reddit = praw.Reddit(client_id=client_id,
                      client_secret=client_secret,

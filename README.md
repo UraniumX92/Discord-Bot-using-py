@@ -1,5 +1,10 @@
-# Discord Bot v4.0 :
+# Discord Bot v4.0.1 :
+### New:
+* ***Hangman game added in Fun Commands.***
+  * From a collection of 300+ words, a random word is selected to play hangman using a command.
+  * New twisted "YOLO" mode in hangman where the player has to guess entire word in 1 guess (2 random characters are revealed). making it insanely difficult to guess.
 
+# Change Log from v4.0:
 ## Major Update:
  **Until last update, Bot was using universal settings for all servers (from json file)**
  

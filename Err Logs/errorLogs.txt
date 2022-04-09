@@ -73,3 +73,6 @@ In content: Must be 2000 or fewer in length. -- In Guild : "STRUGGLES OF NOOB" -
 [22-03-2022 16:31:26] --> 'str' object has no attribute 'lowe' -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
 [22-03-2022 16:33:23] --> 'str' object has no attribute 'lowe' -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
 [22-03-2022 17:25:50] --> name 'false' is not defined -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[09-04-2022 01:35:10] --> name 'user' is not defined -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[09-04-2022 01:40:09] --> name 'user' is not defined -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[09-04-2022 01:41:08] --> local variable 'plays' referenced before assignment -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939

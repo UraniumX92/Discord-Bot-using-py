@@ -60,3 +60,6 @@ Error Message Logs Cleared at [14-08-2021 19:50:35]
 [22-03-2022 16:31:26] --> Uranium#4939: $hangman  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
 [22-03-2022 16:33:23] --> Uranium#4939: $hangman  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
 [22-03-2022 17:25:50] --> Uranium#4939: >hangman --Guild : "STRUGGLES OF NOOB" -- Channel: #bot-commands
+[09-04-2022 01:35:10] --> Uranium#4939: >ttt 2p <@451848182327148554> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[09-04-2022 01:40:09] --> Uranium#4939: >ttt 2p <@451848182327148554> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[09-04-2022 01:41:08] --> Uranium#4939: >ttt 2p <@451848182327148554> --Guild : "STRUGGLES OF NOOB" -- Channel: #general

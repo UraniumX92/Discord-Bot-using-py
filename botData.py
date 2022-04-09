@@ -62,12 +62,13 @@ util_cmd_dict = {
 }
 
 fun_cmd_dict = {
-    'fax'       : "Type this command to get random % of some quality given in command.",
-    'sneak'     : "Type this command to make bot say anything you say after command, your message will get deleted instantly.",
-    'device'    : "sends a funny message depending on the platform mentioned-user is active on (Mobile | PC | Web)",
-    'dm'        : "sends dm to mentioned user, message = message of command author in command. \n\t(limitation: only users who are in guild can get these messages from bot).",
-    'dmid'      : "same as {direct_anonymous|dm} but takes user-id instead of user mention,\n\tWorks even if user is not in guild , but should have DM\'s open.",
-
+    'fax'            : "Type this command to get random % of some quality given in command.",
+    'sneak'          : "Type this command to make bot say anything you say after command, your message will get deleted instantly.",
+    'device'         : "sends a funny message depending on the platform mentioned-user is active on (Mobile | PC | Web)",
+    'dm'             : "sends dm to mentioned user, message = message of command author in command. \n\t(limitation: only users who are in guild can get these messages from bot).",
+    'dmid'           : "same as {direct_anonymous|dm} but takes user-id instead of user mention,\n\tWorks even if user is not in guild , but should have DM\'s open.",
+    'hangman'        : "play a game of hangman.",
+    'tictactoe help' : "shows commands to play tictactoe against AI or friends."
 }
 
 modCmdDescription_dict = {

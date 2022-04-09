@@ -4,6 +4,8 @@ import botData
 import mongodbUtils
 import random
 import asyncio
+import tttgame
+import numpy as np
 from discord.ext import commands
 from asyncUtils import log_and_raise
 
@@ -159,6 +161,299 @@ class FunCommands(commands.Cog):
             else:
                 await ctx.send(f"Better luck next time, +1 respect for YOLO attempt, the word was `{word}`.")
 
+    @commands.group(name="tictactoe",aliases=['ttt'],invoke_without_command=True)
+    async def tictactoe(self,ctx:commands.Context):
+        prefix = mongodbUtils.get_local_prefix(ctx.message)
+        timeout = 120
+        bot_name = str(self.client.user).split('#')[0]
+        plays = 0
+        matrix = np.array([[0] * 3 for _i in range(3)])
+        sides = [(0, 1), (1, 2), (2, 1), (1, 0)]
+        corners = [(0, 0), (0, 2), (2, 2), (2, 0)]
+        middle = (1, 1)
+        user = 2
+        comp = 1
+        won = False
+        draw = False
+        symbols = [":black_large_square:",":o:",":x:"]
+        available_slots = []
+        ref_msg = await ctx.send(f":o: `{bot_name}`\n"
+                                 f"v/s\n"
+                                 f":x: `{ctx.author.display_name}`")
+
+        def matrixToStr(matrix):
+            st = ''
+            for i in range(3):
+                for j in range(3):
+                    st += symbols[matrix[i,j]]
+                st += '\n'
+            return st
+
+        # Opposite corners for given side
+        opp_corners = {
+            sides[0]: ((2, 0), (2, 2)),
+            sides[1]: ((0, 0), (2, 0)),
+            sides[2]: ((0, 0), (0, 2)),
+            sides[3]: ((0, 2), (2, 2))
+        }
+
+        # Opposite corner for given corner
+        c2c_opp = {
+            corners[0]: corners[2],
+            corners[2]: corners[0],
+            corners[1]: corners[3],
+            corners[3]: corners[1]
+        }
+
+        for i in range(3):
+            for j in range(3):
+                available_slots.append(tuple((i, j)))
+
+        turn = random.randint(0,1)
+
+        while (not won) and (not draw):
+            if len(available_slots)==9:
+                await ctx.send(matrixToStr(matrix))
+
+            userind = None
+            if turn % 2 == 1:
+                inptext = f"Enter co-ordinates (use `{prefix}tictactoe help` if you don't know how the coordinates work): "
+                if plays>2:
+                    inptext = "Enter co-ordinates: "
+                await ctx.send(inptext)
+                def check(msg:discord.Message):
+                    c1 = ctx.author.id == msg.author.id and ctx.channel.id == msg.channel.id
+                    if not c1:
+                        return False
+                    c2 = msg.content.isnumeric() and len(msg.content)<3
+                    if c2:
+                        if int(msg.content) in range(33+1):
+                            l = list(msg.content)
+                            return tuple((int(l[0])-1,int(l[1])-1)) in available_slots
+                        else:
+                            return False
+                    else:
+                        return False
+                try:
+                    inpmsg:discord.Message = await self.client.wait_for(event='message',check=check,timeout=timeout)
+                except asyncio.TimeoutError:
+                    return await ctx.send("Timeout reached, Game terminated",reference=ref_msg)
+                else:
+                    inpList = list(inpmsg.content)
+                    userind = tuple((int(inpList[0])-1,int(inpList[1])-1))
+
+                matrix[userind] = user
+                plays += 1
+                available_slots.remove(userind)
+                won = tttgame.winner(matrix, user)
+                if won:
+                    await ctx.send(matrixToStr(matrix))
+                    await ctx.send("You WON! :tada:")
+                    continue
+                if len(available_slots) == 0:
+                    await ctx.send(matrixToStr(matrix))
+                    await ctx.send("It's a Draw")
+                    draw = True
+                    continue
+            else:
+                await ctx.send(f"{bot_name}'s turn")
+                if plays == 0:
+                    compind = random.choice(corners)
+                else:
+                    compind = tttgame.onestepaway(matrix, comp)
+                    if not compind:
+                        compind = tttgame.onestepaway(matrix, user)
+                    if not compind:
+                        # play on middle when more than 3 plays are done and middle is still empty
+                        if middle in available_slots or plays == 0:
+                            compind = middle
+                        else:
+                            two_corners = None
+                            for corner in corners:
+                                if matrix[c2c_opp[corner]] == user and matrix[corner] == user and matrix[middle] == comp:
+                                    two_corners = (corner, c2c_opp[corner])
+                            if two_corners:
+                                filtered_sides = list(filter(lambda x: x in available_slots, sides))
+                                compind = random.choice(filtered_sides)
+                            else:
+                                if userind in corners:
+                                    if c2c_opp[userind] in available_slots:
+                                        compind = c2c_opp[userind]
+                                    else:
+                                        if middle in available_slots:
+                                            compind = middle
+                                        else:
+                                            compind = random.choice(available_slots)
+                                else:
+                                    if userind in sides:
+                                        compind = random.choice(opp_corners[userind])
+                                        if compind not in available_slots:
+                                            if middle in available_slots:
+                                                compind = middle
+                                            else:
+                                                compind = random.choice(available_slots)
+                                    else:
+                                        filetered_corners = list(filter(lambda x: x in available_slots, corners))
+                                        compind = random.choice(filetered_corners) if len(
+                                            filetered_corners) > 0 else None
+                                        if compind not in available_slots or not compind:
+                                            if middle in available_slots:
+                                                compind = middle
+                                            else:
+                                                compind = random.choice(available_slots)
+
+                matrix[compind] = comp
+                plays += 1
+                available_slots.remove(compind)
+                await ctx.send(matrixToStr(matrix))
+                won = tttgame.winner(matrix, comp)
+                if won:
+                    await ctx.send("You lost")
+                    continue
+                if len(available_slots) == 0:
+                    await ctx.send("It's a Draw")
+                    draw = True
+                    continue
+            turn += 1
+
+    @tictactoe.command(name="2p")
+    @commands.guild_only()
+    async def t3_2p(self,ctx:commands.Context,member:discord.Member):
+        p1:discord.Member = ctx.author
+        p2 = member
+        ref_msg = await ctx.send(f":o: `{p1.display_name}`\n"
+                                 f"v/s\n"
+                                 f":x: `{p2.display_name}`")
+
+        prefix = mongodbUtils.get_local_prefix(ctx.message)
+        timeout = 120
+        matrix = np.array([[0]*3 for _i in range(3)])
+        n1 = 1
+        n2 = 2
+        won = False
+        draw = False
+        symbols = [":black_large_square:", ":o:", ":x:"]
+        available_slots = []
+
+        def matrixToStr(matrix):
+            st = ''
+            for i in range(3):
+                for j in range(3):
+                    st += symbols[matrix[i, j]]
+                st += '\n'
+            return st
+
+        for i in range(3):
+            for j in range(3):
+                available_slots.append(tuple((i, j)))
+
+        turn = random.randint(0,1)
+        while (not won) and (not draw):
+            await ctx.send(matrixToStr(matrix))
+            inptext = f"Enter co-ordinates (use `{prefix}tictactoe help` if you don't know how the coordinates work): "
+            if len(available_slots) < 8:
+                inptext = "Enter co-ordinates: "
+            p1ind = None
+            p2ind = None
+            plays = 0
+            if turn % 2 == 0:
+                await ctx.send(f"{p1.display_name}'s Turn")
+                await ctx.send(inptext)
+
+                def check1(msg: discord.Message):
+                    c1 = msg.author.id == p1.id and ctx.channel.id == msg.channel.id
+                    if not c1:
+                        return False
+                    c2 = msg.content.isnumeric() and len(msg.content) < 3
+                    if c2:
+                        if int(msg.content) in range(33 + 1):
+                            l = list(msg.content)
+                            return tuple((int(l[0]) - 1, int(l[1]) - 1)) in available_slots
+                        else:
+                            return False
+                    else:
+                        return False
+
+                try:
+                    inpmsg: discord.Message = await self.client.wait_for(event='message', check=check1, timeout=timeout)
+                except asyncio.TimeoutError:
+                    return await ctx.send("Timeout reached, Game terminated",reference=ref_msg)
+                else:
+                    inpList = list(inpmsg.content)
+                    p1ind = tuple((int(inpList[0]) - 1, int(inpList[1]) - 1))
+
+                matrix[p1ind] = n1
+                plays += 1
+                available_slots.remove(p1ind)
+                won = tttgame.winner(matrix, n1)
+                if won:
+                    await ctx.send(matrixToStr(matrix))
+                    await ctx.send(f"{p1.display_name} WON! :tada:")
+                    continue
+                if len(available_slots) == 0:
+                    await ctx.send(matrixToStr(matrix))
+                    await ctx.send("It's a Draw")
+                    draw = True
+                    continue
+            else:
+                await ctx.send(f"{p2.display_name}'s Turn")
+                await ctx.send(inptext)
+
+                def check2(msg: discord.Message):
+                    c1 = msg.author.id == p2.id and ctx.channel.id == msg.channel.id
+                    if not c1:
+                        return False
+                    c2 = msg.content.isnumeric() and len(msg.content) < 3
+                    if c2:
+                        if int(msg.content) in range(33 + 1):
+                            l = list(msg.content)
+                            return tuple((int(l[0]) - 1, int(l[1]) - 1)) in available_slots
+                        else:
+                            return False
+                    else:
+                        return False
+
+                try:
+                    inpmsg: discord.Message = await self.client.wait_for(event='message', check=check2, timeout=timeout)
+                except asyncio.TimeoutError:
+                    await ctx.send("Timeout reached, Game terminated")
+                    return
+                else:
+                    inpList = list(inpmsg.content)
+                    p2ind = tuple((int(inpList[0]) - 1, int(inpList[1]) - 1))
+
+                matrix[p2ind] = n2
+                plays += 1
+                available_slots.remove(p2ind)
+                won = tttgame.winner(matrix, n2)
+                if won:
+                    await ctx.send(matrixToStr(matrix))
+                    await ctx.send(f"{p2.display_name} WON! :tada:")
+                    continue
+                if len(available_slots) == 0:
+                    await ctx.send(matrixToStr(matrix))
+                    await ctx.send("It's a Draw")
+                    draw = True
+                    continue
+            turn += 1
+
+    @tictactoe.command(name="help")
+    async def t3help(self,ctx):
+        prefix = mongodbUtils.get_local_prefix(ctx.message)
+        textstr = ("```\n"
+                   "Commands:\n"
+                   f"  {prefix}tictactoe -> play Tictactoe against Bot\n"
+                   f"  {prefix}tictactoe 2p {{@user}}-> play Tictactoe with a friend\n"
+                   f"  {prefix}tictactoe help -> get some help SMH\n"
+                   "Co-ordinate system of Tictactoe game:\n"
+                   "1,1   1,2   1,3\n"
+                   "2,1   2,2   2,3\n"
+                   "3,1   3,2   3,3\n\n"
+                   "Note: While entering coordinates just enter the numbers without comma ','\n"
+                   "eg: Instead of entering \"2,3\", just enter \"23\".\n"
+                   "```")
+        return await ctx.send(textstr)
+
     @commands.command(aliases=['platform','status'])
     async def device(self, ctx, member: discord.Member = None):
         member = ctx.author if not member else member
@@ -284,7 +579,9 @@ class FunCommands(commands.Cog):
         del_after = 10
 
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send(f"{ctx.author.mention}, Either you, or Bot is Missing Permission to perform the task.", delete_after=del_after)
+            await ctx.send(f"{author.mention}, Either you, or Bot is Missing Permission to perform the task.", delete_after=del_after)
+        elif isinstance(error,commands.NoPrivateMessage):
+            await ctx.send(f"{author.mention}, You are not allowed to use this command in Direct Messages, use this command only in Servers!",delete_after=del_after)
         elif isinstance(error, commands.MemberNotFound):
             await ctx.send(f"{author.mention}, You are supposed to mention a valid Discord user.", delete_after=del_after)
         elif isinstance(error, commands.MissingRequiredArgument):

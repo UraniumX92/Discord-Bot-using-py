@@ -1,5 +1,13 @@
-# Discord Bot v4.0.1 :
+# Discord Bot v4.0.2 :
 ### New:
+* ***TicTacToe Game added in Fun Commands***
+  * Play TicTacToe against good AI
+  * Play with your friends
+* TicTacToe Algorithm made by me using `numpy`
+  * `tttgame.py` has the algorithm utils to play TicTacToe on Console app.
+  * Logic Building of AI is explained in code comments
+
+### Change log from v4.0.1:
 * ***Hangman game added in Fun Commands.***
   * From a collection of 300+ words, a random word is selected to play hangman using a command.
   * New twisted "YOLO" mode in hangman where the player has to guess entire word in 1 guess (2 random characters are revealed). making it insanely difficult to guess.

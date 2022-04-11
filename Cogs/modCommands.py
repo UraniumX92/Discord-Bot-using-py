@@ -1,9 +1,7 @@
 import discord
-import botFuncs
 import botData
 import mongodbUtils
 import asyncio
-import pymongo
 from discord.ext import commands
 from asyncUtils import log_and_raise
 

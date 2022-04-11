@@ -2,7 +2,6 @@ import discord
 import botFuncs
 import botData
 import mongodbUtils
-import asyncio
 import os
 from discord.ext import commands
 from asyncUtils import log_and_raise

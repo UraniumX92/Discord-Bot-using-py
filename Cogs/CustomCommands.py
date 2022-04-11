@@ -1,14 +1,11 @@
 import discord
 from discord.ext import commands
-
 import asyncUtils
 import botFuncs
 import botData
 import mongodbUtils
 from asyncUtils import log_and_raise
 import asyncio
-import os
-from datetime import datetime
 from typing import Union
 
 

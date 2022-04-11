@@ -1,12 +1,19 @@
-# Discord Bot v4.0.2 :
-### New:
+# *Discord Bot v4.0.21 :*
+### ***New:***
 * ***TicTacToe Game added in Fun Commands***
   * Play TicTacToe against good AI
   * Play with your friends
 * TicTacToe Algorithm made by me using `numpy`
   * `tttgame.py` has the algorithm utils to play TicTacToe on Console app.
   * Logic Building of AI is explained in code comments
-
+  
+### ***New in v4.0.21:***
+  * **QoL upgrades:**
+    * while game is going on, users can quit ongoing game by simply entering `quit`
+    * Difficulty modes added:
+      * Easy : Bot will make completely random plays
+      * Medium : Bot only checks when someone is about to win, otherwise random play
+      * Hard : the initial algorithm used in v4.0.2 will be used as hard mode
 ### Change log from v4.0.1:
 * ***Hangman game added in Fun Commands.***
   * From a collection of 300+ words, a random word is selected to play hangman using a command.
@@ -16,7 +23,7 @@
 ## Major Update:
  **Until last update, Bot was using universal settings for all servers (from json file)**
  
-**From now on, all server specific settings, and server specific prefixes are stored in data base using MongoDB
+**From now on, all server specific settings, and server specific prefixes are stored in database using MongoDB
 and these settings will be implemented on each server**
 
 ***New Commands Categories :***
@@ -61,8 +68,8 @@ and these settings will be implemented on each server**
 
 * **Hotfix Update:**
   * **In Custom commands, show commands were Improved**
-    * If the number of commands exceeds the limit for number of fields for an Embed, bot will split the comands data into several parts based on the total number of commands present
-    * 2 emojis for next and previous are reacted by bot, if the user who called the command reacts on these emojis , then the commands page will go to next, previous based on the reaction added by command author
+    * If the number of commands exceeds the limit for number of fields for an Embed, bot will split the commands' data into several parts based on the total number of commands present
+    * 2 emojis for next and previous are reacted by bot, if the user who called the command reacts on these emojis , then the commands' page will go to next, previous based on the reaction added by command author
     * after 1 minutes of inactivity , these reactions will get cleared and a No Entry emoji is added as reaction indicating that bot will not take any response
     * ***All of this was built pretty much from scratch, took me 1 complete day to make algorithm for splitting and then creating a menu logic, while handling the IndexError***
   * **In Reddit Commands, get sub command got Improved**
@@ -71,7 +78,7 @@ and these settings will be implemented on each server**
     * same goes with titles
     
 
-That's it for this Update, Took me lots of effort in this one, Learning to use a Data Base, learning to use Python Reddit API Wrapper (PRAW) and Implenting these concepts was **Something!**
+That's it for this Update, Took me lots of effort in this one, Learning to use a Data Base, learning to use Python Reddit API Wrapper (PRAW) and Implementing these concepts was **Something!**
 ***
 
 >**Note: If you want to build this bot together with me, then please contact me on discord `Uranium#4939`, Thank you!!**

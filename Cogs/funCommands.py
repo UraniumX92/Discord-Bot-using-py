@@ -22,6 +22,7 @@ class FunCommands(commands.Cog):
                        mention_author=False)
 
     @commands.command(aliases=['say'])
+    @commands.guild_only()
     async def sneak(self, ctx, *, messageTosay):
         await ctx.message.delete()
         await ctx.send(messageTosay)
@@ -162,9 +163,21 @@ class FunCommands(commands.Cog):
                 await ctx.send(f"Better luck next time, +1 respect for YOLO attempt, the word was `{word}`.")
 
     @commands.group(name="tictactoe",aliases=['ttt'],invoke_without_command=True)
-    async def tictactoe(self,ctx:commands.Context):
+    async def tictactoe(self,ctx:commands.Context,difficulty='medium'):
         prefix = mongodbUtils.get_local_prefix(ctx.message)
         timeout = 120
+        difficulty = difficulty.lower()
+        difficulties = [('e','ez','easy'),('m','mid','medium'),('h','hrd','hard')]
+        dlevel = None
+        for i,diff in enumerate(difficulties):
+             if difficulty in diff:
+                 dlevel = i
+
+        if dlevel is None:
+            return await ctx.send("Game Terminated.\n"
+                                  "Invalid argument for difficulty level. Difficulties are `{easy|medium|hard}` or `{e|m|h}`.\n"
+                                  f"use command `{prefix}tictactoe help` to know more")
+
         bot_name = str(self.client.user).split('#')[0]
         plays = 0
         matrix = np.array([[0] * 3 for _i in range(3)])
@@ -177,9 +190,12 @@ class FunCommands(commands.Cog):
         draw = False
         symbols = [":black_large_square:",":o:",":x:"]
         available_slots = []
+
         ref_msg = await ctx.send(f":o: `{bot_name}`\n"
                                  f"v/s\n"
-                                 f":x: `{ctx.author.display_name}`")
+                                 f":x: `{ctx.author.display_name}`\n"
+                                 f"Difficulty : `{difficulties[dlevel][2].capitalize()}`")
+
 
         def matrixToStr(matrix):
             st = ''
@@ -221,23 +237,28 @@ class FunCommands(commands.Cog):
                 if plays>2:
                     inptext = "Enter co-ordinates: "
                 await ctx.send(inptext)
-                def check(msg:discord.Message):
-                    c1 = ctx.author.id == msg.author.id and ctx.channel.id == msg.channel.id
-                    if not c1:
-                        return False
-                    c2 = msg.content.isnumeric() and len(msg.content)<3
-                    if c2:
-                        if int(msg.content) in range(33+1):
-                            l = list(msg.content)
-                            return tuple((int(l[0])-1,int(l[1])-1)) in available_slots
+                try:
+                    def check(msg:discord.Message):
+                        c1 = ctx.author.id == msg.author.id and ctx.channel.id == msg.channel.id
+                        if not c1:
+                            return False
+                        if msg.content.lower() == "quit":
+                            raise ValueError
+                        c2 = msg.content.isnumeric() and len(msg.content)<3
+                        if c2:
+                            if int(msg.content) in range(33+1):
+                                l = list(msg.content)
+                                return tuple((int(l[0])-1,int(l[1])-1)) in available_slots
+                            else:
+                                return False
                         else:
                             return False
-                    else:
-                        return False
-                try:
                     inpmsg:discord.Message = await self.client.wait_for(event='message',check=check,timeout=timeout)
-                except asyncio.TimeoutError:
-                    return await ctx.send("Timeout reached, Game terminated",reference=ref_msg)
+                except Exception as err:
+                    if isinstance(err,asyncio.TimeoutError):
+                        return await ctx.send("Timeout reached, Game terminated",reference=ref_msg)
+                    if isinstance(err,ValueError):
+                        return await ctx.send(f"{ctx.author.display_name} left the game, Game Terminated.",reference=ref_msg)
                 else:
                     inpList = list(inpmsg.content)
                     userind = tuple((int(inpList[0])-1,int(inpList[1])-1))
@@ -257,50 +278,59 @@ class FunCommands(commands.Cog):
                     continue
             else:
                 await ctx.send(f"{bot_name}'s turn")
-                if plays == 0:
-                    compind = random.choice(corners)
+                if dlevel == 0:
+                    compind = random.choice(available_slots)
+                elif dlevel == 1:
+                    compind = tttgame.onestepaway(matrix,comp)
+                    if not compind:
+                        compind = tttgame.onestepaway(matrix,user)
+                    if not compind:
+                        compind = random.choice(available_slots)
                 else:
-                    compind = tttgame.onestepaway(matrix, comp)
-                    if not compind:
-                        compind = tttgame.onestepaway(matrix, user)
-                    if not compind:
-                        # play on middle when more than 3 plays are done and middle is still empty
-                        if middle in available_slots or plays == 0:
-                            compind = middle
-                        else:
-                            two_corners = None
-                            for corner in corners:
-                                if matrix[c2c_opp[corner]] == user and matrix[corner] == user and matrix[middle] == comp:
-                                    two_corners = (corner, c2c_opp[corner])
-                            if two_corners:
-                                filtered_sides = list(filter(lambda x: x in available_slots, sides))
-                                compind = random.choice(filtered_sides)
+                    if plays == 0:
+                        compind = random.choice(corners)
+                    else:
+                        compind = tttgame.onestepaway(matrix, comp)
+                        if not compind:
+                            compind = tttgame.onestepaway(matrix, user)
+                        if not compind:
+                            # play on middle when more than 3 plays are done and middle is still empty
+                            if middle in available_slots or plays == 0:
+                                compind = middle
                             else:
-                                if userind in corners:
-                                    if c2c_opp[userind] in available_slots:
-                                        compind = c2c_opp[userind]
-                                    else:
-                                        if middle in available_slots:
-                                            compind = middle
-                                        else:
-                                            compind = random.choice(available_slots)
+                                two_corners = None
+                                for corner in corners:
+                                    if matrix[c2c_opp[corner]] == user and matrix[corner] == user and matrix[middle] == comp:
+                                        two_corners = (corner, c2c_opp[corner])
+                                if two_corners:
+                                    filtered_sides = list(filter(lambda x: x in available_slots, sides))
+                                    compind = random.choice(filtered_sides)
                                 else:
-                                    if userind in sides:
-                                        compind = random.choice(opp_corners[userind])
-                                        if compind not in available_slots:
+                                    if userind in corners:
+                                        if c2c_opp[userind] in available_slots:
+                                            compind = c2c_opp[userind]
+                                        else:
                                             if middle in available_slots:
                                                 compind = middle
                                             else:
                                                 compind = random.choice(available_slots)
                                     else:
-                                        filetered_corners = list(filter(lambda x: x in available_slots, corners))
-                                        compind = random.choice(filetered_corners) if len(
-                                            filetered_corners) > 0 else None
-                                        if compind not in available_slots or not compind:
-                                            if middle in available_slots:
-                                                compind = middle
-                                            else:
-                                                compind = random.choice(available_slots)
+                                        if userind in sides:
+                                            compind = random.choice(opp_corners[userind])
+                                            if compind not in available_slots:
+                                                if middle in available_slots:
+                                                    compind = middle
+                                                else:
+                                                    compind = random.choice(available_slots)
+                                        else:
+                                            filetered_corners = list(filter(lambda x: x in available_slots, corners))
+                                            compind = random.choice(filetered_corners) if len(
+                                                filetered_corners) > 0 else None
+                                            if compind not in available_slots or not compind:
+                                                if middle in available_slots:
+                                                    compind = middle
+                                                else:
+                                                    compind = random.choice(available_slots)
 
                 matrix[compind] = comp
                 plays += 1
@@ -308,7 +338,7 @@ class FunCommands(commands.Cog):
                 await ctx.send(matrixToStr(matrix))
                 won = tttgame.winner(matrix, comp)
                 if won:
-                    await ctx.send("You lost")
+                    await ctx.send("You lost :frowning:")
                     continue
                 if len(available_slots) == 0:
                     await ctx.send("It's a Draw")
@@ -348,6 +378,7 @@ class FunCommands(commands.Cog):
                 available_slots.append(tuple((i, j)))
 
         turn = random.randint(0,1)
+        pleft:discord.Member = None
         while (not won) and (not draw):
             await ctx.send(matrixToStr(matrix))
             inptext = f"Enter co-ordinates (use `{prefix}tictactoe help` if you don't know how the coordinates work): "
@@ -359,25 +390,34 @@ class FunCommands(commands.Cog):
             if turn % 2 == 0:
                 await ctx.send(f"{p1.display_name}'s Turn")
                 await ctx.send(inptext)
-
-                def check1(msg: discord.Message):
-                    c1 = msg.author.id == p1.id and ctx.channel.id == msg.channel.id
-                    if not c1:
-                        return False
-                    c2 = msg.content.isnumeric() and len(msg.content) < 3
-                    if c2:
-                        if int(msg.content) in range(33 + 1):
-                            l = list(msg.content)
-                            return tuple((int(l[0]) - 1, int(l[1]) - 1)) in available_slots
+                try:
+                    def check1(msg: discord.Message):
+                        if not ctx.channel.id==msg.channel.id:
+                            return False
+                        if msg.content.lower() == "quit" and (msg.author.id==p1.id or msg.author.id == p2.id):
+                            if msg.author.id == p1.id:
+                                raise ValueError(p1.display_name)
+                            else:
+                                raise ValueError(p2.display_name)
+                        c1 = msg.author.id == p1.id
+                        if not c1:
+                            return False
+                        c2 = msg.content.isnumeric() and len(msg.content) < 3
+                        if c2:
+                            if int(msg.content) in range(33 + 1):
+                                l = list(msg.content)
+                                return tuple((int(l[0]) - 1, int(l[1]) - 1)) in available_slots
+                            else:
+                                return False
                         else:
                             return False
-                    else:
-                        return False
 
-                try:
                     inpmsg: discord.Message = await self.client.wait_for(event='message', check=check1, timeout=timeout)
-                except asyncio.TimeoutError:
-                    return await ctx.send("Timeout reached, Game terminated",reference=ref_msg)
+                except Exception as err:
+                    if isinstance(err,asyncio.TimeoutError):
+                        return await ctx.send("Timeout reached, Game terminated",reference=ref_msg)
+                    if isinstance(err,ValueError):
+                        return await ctx.send(f"{err.args[0]} left the game, Game Terminated.",reference=ref_msg)
                 else:
                     inpList = list(inpmsg.content)
                     p1ind = tuple((int(inpList[0]) - 1, int(inpList[1]) - 1))
@@ -399,25 +439,34 @@ class FunCommands(commands.Cog):
                 await ctx.send(f"{p2.display_name}'s Turn")
                 await ctx.send(inptext)
 
-                def check2(msg: discord.Message):
-                    c1 = msg.author.id == p2.id and ctx.channel.id == msg.channel.id
-                    if not c1:
-                        return False
-                    c2 = msg.content.isnumeric() and len(msg.content) < 3
-                    if c2:
-                        if int(msg.content) in range(33 + 1):
-                            l = list(msg.content)
-                            return tuple((int(l[0]) - 1, int(l[1]) - 1)) in available_slots
+                try:
+                    def check2(msg: discord.Message):
+                        if not ctx.channel.id==msg.channel.id:
+                            return False
+                        if msg.content.lower() == "quit" and (msg.author.id==p1.id or msg.author.id == p2.id):
+                            if msg.author.id == p1.id:
+                                raise ValueError(p1.display_name)
+                            else:
+                                raise ValueError(p2.display_name)
+                        c1 = msg.author.id == p2.id
+                        if not c1:
+                            return False
+                        c2 = msg.content.isnumeric() and len(msg.content) < 3
+                        if c2:
+                            if int(msg.content) in range(33 + 1):
+                                l = list(msg.content)
+                                return tuple((int(l[0]) - 1, int(l[1]) - 1)) in available_slots
+                            else:
+                                return False
                         else:
                             return False
-                    else:
-                        return False
 
-                try:
                     inpmsg: discord.Message = await self.client.wait_for(event='message', check=check2, timeout=timeout)
-                except asyncio.TimeoutError:
-                    await ctx.send("Timeout reached, Game terminated")
-                    return
+                except Exception as err:
+                    if isinstance(err,asyncio.TimeoutError):
+                        return await ctx.send("Timeout reached, Game terminated",reference=ref_msg)
+                    if isinstance(err,ValueError):
+                        return await ctx.send(f"{err.args[0]} left the game, Game Terminated.",reference=ref_msg)
                 else:
                     inpList = list(inpmsg.content)
                     p2ind = tuple((int(inpList[0]) - 1, int(inpList[1]) - 1))
@@ -442,15 +491,20 @@ class FunCommands(commands.Cog):
         prefix = mongodbUtils.get_local_prefix(ctx.message)
         textstr = ("```\n"
                    "Commands:\n"
-                   f"  {prefix}tictactoe -> play Tictactoe against Bot\n"
-                   f"  {prefix}tictactoe 2p {{@user}}-> play Tictactoe with a friend\n"
+                   f"  {prefix}tictactoe {{easy|meduim|hard}} -> play Tictactoe against Bot with easy/medium/hard difficulties (default mode is medium)\n"
+                   f"  {prefix}tictactoe 2p {{@user}} -> play Tictactoe with a friend\n"
                    f"  {prefix}tictactoe help -> get some help SMH\n"
+                   f"  quit -> while game is going on, enter this to end/leave the game\n\n"
                    "Co-ordinate system of Tictactoe game:\n"
                    "1,1   1,2   1,3\n"
                    "2,1   2,2   2,3\n"
                    "3,1   3,2   3,3\n\n"
-                   "Note: While entering coordinates just enter the numbers without comma ','\n"
-                   "eg: Instead of entering \"2,3\", just enter \"23\".\n"
+                   "Note: \n"
+                   "> While entering coordinates just enter the numbers without comma ','\n"
+                   " eg: Instead of entering \"2,3\", just enter \"23\".\n"
+                   "> you can write 'ttt' as alternative for 'tictactoe'\n"
+                   "> you can write 'e','m','h' as alternatives for 'easy','medium','hard' respectively.\n"
+                   "> exclude the {} brackets."
                    "```")
         return await ctx.send(textstr)
 

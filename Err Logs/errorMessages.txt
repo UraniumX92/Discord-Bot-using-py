@@ -63,3 +63,5 @@ Error Message Logs Cleared at [14-08-2021 19:50:35]
 [09-04-2022 01:35:10] --> Uranium#4939: >ttt 2p <@451848182327148554> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
 [09-04-2022 01:40:09] --> Uranium#4939: >ttt 2p <@451848182327148554> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
 [09-04-2022 01:41:08] --> Uranium#4939: >ttt 2p <@451848182327148554> --Guild : "STRUGGLES OF NOOB" -- Channel: #general
+[11-04-2022 09:46:00] --> Uranium#4939: >ttt 2p <@159985870458322944> --Guild : "STRUGGLES OF NOOB" -- Channel: #members-joined
+[11-04-2022 10:36:24] --> Uranium#4939: $sneak LMAO bro  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939

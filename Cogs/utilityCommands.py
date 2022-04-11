@@ -1,14 +1,14 @@
-import discord
-from discord.ext import commands
-import botFuncs
-import botData
-import mongodbUtils
-from asyncUtils import log_and_raise
-import asyncio
 import os
 import re
 import random
+import botData
+import discord
+import asyncio
+import botFuncs
+import mongodbUtils
 from datetime import datetime
+from discord.ext import commands
+from asyncUtils import log_and_raise
 
 
 class UtilityCommands(commands.Cog):

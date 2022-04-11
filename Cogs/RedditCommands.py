@@ -2,13 +2,11 @@ import discord
 from discord.ext import commands
 import random
 import botData
-import botFuncs
 import redditUtils
 import mongodbUtils
 from redditUtils import reddit
 from asyncUtils import log_and_raise
 import asyncio
-import os
 import prawcore
 
 

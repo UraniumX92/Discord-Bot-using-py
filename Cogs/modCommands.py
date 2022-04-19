@@ -236,14 +236,19 @@ class ModCommands(commands.Cog):
 
     @commands.command(aliases=["clear", "p"])
     @commands.has_permissions(manage_messages=True)
-    async def purge(self, ctx, amount: int = 1):
+    @commands.guild_only()
+    async def purge_messages(self, ctx, amount=1,member:discord.Member=None):
         if amount < 0:
             await ctx.message.add_reaction("❓")
-            await ctx.send("Can't delete negative number of messages!", delete_after=2.5)
+            return await ctx.send("Can't delete negative number of messages!", delete_after=2.5)
         else:
             await ctx.message.delete()
-            await ctx.channel.purge(limit=amount)
-            await ctx.send(f'Deleted `{amount}` messages', delete_after=2.5)
+            if member:
+                purged_msgs = await ctx.channel.purge(limit=amount,check=lambda m:m.author.id==member.id)
+                return await ctx.send(f"Deleted `{len(purged_msgs)}` messages by user `{member}`.",delete_after=3)
+            else:
+                purged_msgs = await ctx.channel.purge(limit=amount)
+                return await ctx.send(f'Deleted `{len(purged_msgs)}` messages', delete_after=3)
 
 
     @commands.command(aliases=["m"])

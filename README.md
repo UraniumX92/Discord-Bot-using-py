@@ -1,13 +1,28 @@
-# *Discord Bot v4.0.21 :*
+# *Discord Bot v4.1.0 :*
 ### ***New:***
+* Separate Cog for game commands
+  * New Typing practice game
+    * Random words : Type randomly selected words from top 100 or top 1000 most used English words.
+    * Quotes : Type randomly selected quote
+    * Shows the amount of time taken, calculates the WPM and CPM and displays it after message is sent
+    * ***Flexibility :*** Timer starts only when user starts typing and ends when message is sent
+      * little clock emoji reaction is added as soon as timer starts, and it is removed when message is sent.
+* Added Help command for gameCommands.
+* small changes/updates:
+  * Updated `purge` command in modCommands. now a user's message can be deleted by mentioning a user.
+  * Added new command `getquote` in funCommands; Gives a random quote with name of Author.
+  * new files in `Data Files`:
+    * `quotes.json` for using quotes in typing game and fun commands
+    * `topwords100.json` for using in typing game
+    * `topwords1000.json` for using in typing game
+  
+#### *Change Log from v4.0.21:*
 * ***TicTacToe Game added in Fun Commands***
   * Play TicTacToe against good AI
   * Play with your friends
 * TicTacToe Algorithm made by me using `numpy`
   * `tttgame.py` has the algorithm utils to play TicTacToe on Console app.
   * Logic Building of AI is explained in code comments
-  
-### ***New in v4.0.21:***
   * **QoL upgrades:**
     * while game is going on, users can quit ongoing game by simply entering `quit`
     * Difficulty modes added:

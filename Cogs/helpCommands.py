@@ -17,7 +17,6 @@ class HelpCommands(commands.Cog):
                        reference=ctx.message,
                        mention_author=False)
 
-
     @help.command(name="fun")
     async def fun_help(self,ctx):
         fun_help_embed = botData.help_embed(title="Fun Commands",dictx=botData.fun_cmd_dict,member=ctx.author,client=self.client)
@@ -25,14 +24,12 @@ class HelpCommands(commands.Cog):
                        reference=ctx.message,
                        mention_author=False)
 
-
     @help.command(name="utility",aliases=['util'])
     async def util_help(self,ctx):
         util_help_embed = botData.help_embed(title="Utility Commands",dictx=botData.util_cmd_dict,member=ctx.author,client=self.client)
         await ctx.send(embed=util_help_embed,
                        reference=ctx.message,
                        mention_author=False)
-
 
     @help.command(name='moderators',aliases=["mod","mods"])
     @commands.has_permissions(manage_guild=True)
@@ -43,7 +40,6 @@ class HelpCommands(commands.Cog):
                        reference=ctx.message,
                        mention_author=False)
 
-
     @help.command(name='developers',aliases=['dev','devs'])
     @commands.check(mongodbUtils.is_dev)
     async def dev_help(self, ctx):
@@ -52,18 +48,22 @@ class HelpCommands(commands.Cog):
                        reference=ctx.message,
                        mention_author=False)
 
-
     @help.command(name="custom")
     async def custom_command_help(self,ctx):
         cust_help_cmd = self.client.get_command(name="custom")
         return await ctx.invoke(cust_help_cmd)
-
 
     @help.command(name="reddit")
     async def reddit_command_help(self,ctx):
         reddit_help_cmd = self.client.get_command(name="reddit")
         return await ctx.invoke(reddit_help_cmd)
 
+    @help.command(name="games",aliases=['game'])
+    async def game_help_command(self,ctx:commands.Context):
+        game_help_embed = botData.help_embed(title="Game Commands",dictx=botData.game_cmd_dict,member=ctx.author,client=self.client)
+        await ctx.send(embed=game_help_embed,
+                       reference=ctx.message,
+                       mention_author=False)
 
     async def cog_command_error(self, ctx, error):
         """

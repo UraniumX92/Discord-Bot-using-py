@@ -78,3 +78,6 @@ In content: Must be 2000 or fewer in length. -- In Guild : "STRUGGLES OF NOOB" -
 [09-04-2022 01:41:08] --> local variable 'plays' referenced before assignment -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
 [11-04-2022 09:46:00] --> 'NoneType' object has no attribute 'display_name' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
 [11-04-2022 10:36:24] --> 403 Forbidden (error code: 50003): Cannot execute action on a DM channel -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+[18-04-2022 19:17:56] --> string index out of range -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[18-04-2022 19:39:32] --> local variable 'i' referenced before assignment -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
+[19-04-2022 10:58:00] --> 'authro' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939

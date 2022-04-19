@@ -13,6 +13,8 @@ prefixesFile = ("./Data Files/prefixes.json")
 devsListFile = ("./Data Files/developers.json")
 switchesFile = ("./Data Files/switches&data.json")
 wordsFile = ("./Data Files/words.json")
+topwordsFile = ("./Data Files/topwords1000.json")
+quotesFile = ("./Data Files/quotes.json")
 # ----------------------------------------------#
 guild_joined_EventLogFile = ("./Bot Event Logs/guild_joined.txt")
 guild_removed_EventLogFile = ("./Bot Event Logs/guild_remove.txt")
@@ -67,12 +69,17 @@ fun_cmd_dict = {
     'device'         : "sends a funny message depending on the platform mentioned-user is active on (Mobile | PC | Web)",
     'dm'             : "sends dm to mentioned user, message = message of command author in command. \n\t(limitation: only users who are in guild can get these messages from bot).",
     'dmid'           : "same as {direct_anonymous|dm} but takes user-id instead of user mention,\n\tWorks even if user is not in guild , but should have DM\'s open.",
+    'getquote'       : "get a random quote."
+}
+
+game_cmd_dict = {
     'hangman'        : "play a game of hangman.",
-    'tictactoe help' : "shows commands to play tictactoe against AI or friends."
+    'tictactoe help' : "shows commands to play tictactoe against AI or friends.",
+    'typing help'    : "shows commands to play typing game (random words or quotes)."
 }
 
 modCmdDescription_dict = {
-    'purge'             : "Deletes the specified number of messages from the channel.",
+    'purge'             : "Deletes the specified number of messages from the channel. if user is mentioned with this command, then deletes the user's messages from the specified number of messages given.",
     'banword'           : "Type this command to add , remove banned words , can also show list of banwords",
     'mute'              : "If User is having higher role than muted role, then bot moves the muted role above user's highest role \n\tand then mutes the user.",
     'unmute'            : "Unmutes the user.",
@@ -106,10 +113,7 @@ devCmdDescription_dict = {
 }
 
 #-------------------------- Functions to create help prompt messages using real time prefix --------------------------#
-def help_embed(title,
-               dictx:dict,
-               member:discord.Member,
-               client:commands.Bot):
+def help_embed(title,dictx:dict,member:discord.Member,client:commands.Bot):
     """Takes a dict {command_name : command description} and returns a discord.Embed to send as help command"""
     embed = discord.Embed(title=title, color=discord.Colour.dark_gold())
     embed.set_thumbnail(url=client.user.avatar_url)
@@ -122,12 +126,4 @@ def help_embed(title,
 
 
 if __name__ == '__main__':
-    susStrInp = input("Enter sus string to append, // to skip: ")
-    if susStrInp == "//":
-        pass
-    else:
-        susList.append(susStrInp)
-        botFuncs.dumpJson(susList,susStringFile)
-
-    for item in susList:
-        print(item)
+    pass

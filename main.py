@@ -20,18 +20,20 @@ operatorList = ["+","-","*"] # --> List of operators used in different commands 
 
 owner_id = int(os.environ['MY_DISCORD_USER_ID'])
 
-client_activity = discord.Activity(type=discord.ActivityType.listening,
-                                   name=" your Commands 🙂",
-                                   start=datetime.utcnow()
-                                   )
+client_activity = discord.Activity(
+    type=discord.ActivityType.listening,
+    name=" your Commands 🙂",
+    start=datetime.utcnow()
+)
 
-client = commands.Bot(command_prefix=get_prefix,
-                      help_command=None,
-                      activity=client_activity,
-                      owner_id=owner_id,
-                      intents=discord.Intents.all(),
-                      case_insensitive=True,
-                      )
+client = commands.Bot(
+    command_prefix=get_prefix,
+    help_command=None,
+    activity=client_activity,
+    owner_id=owner_id,
+    intents=discord.Intents.all(),
+    case_insensitive=True
+)
 
 botFuncs.load_cogs(client)
 

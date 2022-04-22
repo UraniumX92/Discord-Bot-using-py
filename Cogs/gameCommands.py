@@ -532,13 +532,14 @@ class GameCommands(commands.Cog):
             res_msg = await self.client.wait_for(event="message",check=check_result,timeout=timeout*3)
         except Exception as err:
             if isinstance(err,asyncio.TimeoutError):
-                await main_msg.clear_reaction("🕰️")
+                await main_msg.remove_reaction("🕰️", self.client.user)
                 return await ctx.send("Typing result was not submitted within 3 minutes. Game terminated", reference=main_msg)
             if isinstance(err,ValueError):
+                await main_msg.remove_reaction("🕰️", self.client.user)
                 return await ctx.send(f"Game terminated.", reference=main_msg)
         else:
-            ts2 = datetime.utcnow().timestamp()
-            await main_msg.clear_reaction("🕰️")
+            ts2 = res_msg.created_at.timestamp()
+            await main_msg.remove_reaction("🕰️",self.client.user)
 
         total_time = ts2-ts1
         res_words = res_msg.content.split(" ")
@@ -557,7 +558,7 @@ class GameCommands(commands.Cog):
         cpm = len(res_str) * xfactor
 
         return await ctx.send(f"```\n{addstr}"
-                              f"Accuracy   : {int(accuracy)}%\n"
+                              f"Accuracy   : {accuracy:.2f}%\n"
                               f"Time Taken : {total_time:.2f} seconds\n"
                               f"wpm        : {wpm:.2f}\n"
                               f"cpm        : {cpm:.2f}\n"
@@ -604,13 +605,14 @@ class GameCommands(commands.Cog):
             res_msg = await self.client.wait_for(event="message",check=check_result,timeout=timeout*3)
         except Exception as err:
             if isinstance(err,asyncio.TimeoutError):
-                await main_msg.clear_reaction("🕰️")
+                await main_msg.remove_reaction("🕰️", self.client.user)
                 return await ctx.send("Typing result was not submitted within 3 minutes. Game terminated", reference=main_msg)
             if isinstance(err,ValueError):
+                await main_msg.remove_reaction("🕰️", self.client.user)
                 return await ctx.send(f"Game terminated.", reference=main_msg)
         else:
-            ts2 = datetime.utcnow().timestamp()
-            await main_msg.clear_reaction("🕰️")
+            ts2 = res_msg.created_at.timestamp()
+            await main_msg.remove_reaction("🕰️", self.client.user)
 
         total_time = ts2-ts1
         res_words = res_msg.content.split(" ")
@@ -629,7 +631,7 @@ class GameCommands(commands.Cog):
         cpm = len(res_str) * xfactor
 
         return await ctx.send(f"```\n{addstr}"
-                              f"Accuracy   : {int(accuracy)}%\n"
+                              f"Accuracy   : {accuracy:.2f}%\n"
                               f"Time Taken : {total_time:.2f} seconds\n"
                               f"wpm        : {wpm:.2f}\n"
                               f"cpm        : {cpm:.2f}\n"
@@ -641,7 +643,7 @@ class GameCommands(commands.Cog):
         return await ctx.send(f"```\n"
                               f"Typing practice commands:\n"
                               f"{prefix}typing {{n}} {{tn}} -> Gives you text to type for 'n' number of words for top 'tn' number of words used in English.\n"
-                              f"{prefix}typing (quotes|quote|q) -> Gives a random quote to type.\n"
+                              f"{prefix}typing (quotes|quote|q) {{lower|low|l}}-> Gives a random quote to type, if 'lower' parameter is given, then converts the quote into lowercase alphabets.\n"
                               f"{prefix}typing help -> this command....\n\n"
                               f"Note:\n"
                               f"\t * You can enter 'type' instead of 'typing'\n"

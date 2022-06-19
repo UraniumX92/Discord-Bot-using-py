@@ -508,10 +508,8 @@ class GameCommands(commands.Cog):
                                     f"```")
 
         def check_typing(channel:discord.TextChannel,user:discord.User,when:datetime):
-            if channel.id == ctx.channel.id and user.id == ctx.author.id:
-                return True
-            else:
-                return False
+            return channel.id == ctx.channel.id and user.id == ctx.author.id
+
         try:
             ch,usr,ts1 = await self.client.wait_for(event="typing",check=check_typing,timeout=timeout)
         except asyncio.TimeoutError:
@@ -581,10 +579,8 @@ class GameCommands(commands.Cog):
                                   f"```")
 
         def check_typing(channel:discord.TextChannel,user:discord.User,when:datetime):
-            if channel.id == ctx.channel.id and user.id == ctx.author.id:
-                return True
-            else:
-                return False
+            return channel.id == ctx.channel.id and user.id == ctx.author.id
+
         try:
             ch,usr,ts1 = await self.client.wait_for(event="typing",check=check_typing,timeout=timeout)
         except asyncio.TimeoutError:

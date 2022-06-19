@@ -21,8 +21,8 @@ db = mongo_client['PythonicDB']
 
 def get_prefix(client, message:discord.Message):
     try:
-        prefix_collection = db['guild_prefixes']
-        doc = prefix_collection.find_one({"guild_id": message.guild.id})
+        guild_coll = db['guild_info']
+        doc = guild_coll.find_one({"guild_id": message.guild.id})
         local_prefix = doc['prefix']
         return local_prefix
     except AttributeError:
@@ -86,54 +86,25 @@ def init_guild_join_settings(guild:discord.Guild):
     data is later used in commands and other events like, on_raw_reaction_add , on_message_edit , on_message_delete etc..
     """
     # Initialising default prefix dump in data base for the guild
-    prefix_collection = db['guild_prefixes']
-    prefix_dict = {
+    guild_coll = db['guild_info']
+    guild_dict = {
         "guild_id" : guild.id,
         "guild_name" : str(guild.name),
         "prefix" : botData.default_bot_prefix
     }
-    prefix_collection.replace_one(filter={"guild_id": guild.id},
-                                 replacement=prefix_dict,
-                                 upsert=True
-                                 )
 
     # Initialising default switches data dump in data base for the guild
-    switches_collection = db['guild_switches']
-    switches_dict = botFuncs.loadJson(botData.switchesFile)
-    switches_dict.update({
-        "guild_id": guild.id,
-        "guild_name": str(guild.name)
-    })
-    switches_collection.replace_one(filter={"guild_id": guild.id},
-                                    replacement=switches_dict,
-                                    upsert=True
-                                    )
+    guild_dict.update(botFuncs.loadJson(botData.switchesFile))
+
 
     # Initializing default banned words data dump in data base for the guild
-    banword_collection = db['guild_bannedwords']
-    banword_list = botFuncs.loadJson(botData.banWordFile)
-    banword_dict = {
-        "guild_id" : guild.id,
-        "guild_name": str(guild.name),
-        "banned_words" : banword_list
-    }
-    banword_collection.replace_one(filter={"guild_id": guild.id},
-                                   replacement=banword_dict,
-                                   upsert=True
-                                   )
+    guild_dict['banned_words'] = botFuncs.loadJson(botData.banWordFile)
 
     # Initializing Custom commands Doc for guild in 'guild_custom_commands'
-    guild_cmd_coll = db['guild_custom_commands']
-    custom_commands = []
-    cmd_doc_dict = {
-        "guild_id" : guild.id,
-        "guild_name" : guild.name,
-        "custom_commands" : custom_commands
-    }
-    guild_cmd_coll.replace_one(filter={"guild_id":guild.id},
-                               replacement=cmd_doc_dict,
-                               upsert=True
-                               )
+    guild_dict['custom_commands'] = []
+    guild_coll.replace_one(filter={"guild_id":guild.id},
+                           replacement=guild_dict,
+                           upsert=True)
 
     # Logging the info
     log_string = (f"[{botFuncs.getDateTime()}] --> Joined guild : {guild.name} , ID : {guild.id}\n\t"
@@ -148,41 +119,19 @@ def init_guild_remove_settings(guild:discord.Guild):
     this will clear the data associated with the guild - from Data Base , because we don't want to store cached data
     main pupose is to save memory on Data base
     """
-    overall_del_count = []
     # Clearing from collection - guild_prefixes
-    prefixes_collection = db['guild_prefixes']
-    pfx_del = prefixes_collection.delete_one(filter={"guild_id": guild.id})
-    overall_del_count.append(pfx_del.deleted_count)
+    guilds_coll = db['guild_info']
 
-    # Clearing from collection - guild_switches
-    switches_collection = db['guild_switches']
-    switch_del = switches_collection.delete_one(filter={"guild_id": guild.id})
-    overall_del_count.append(switch_del.deleted_count)
-
-    # Clearing from collection - guild_bannedwords
-    bannedwords_collection = db['guild_bannedwords']
-    banw_del = bannedwords_collection.delete_one(filter={"guild_id": guild.id})
-    overall_del_count.append(banw_del.deleted_count)
-
-    # Clearing from collection = guild_custom_commands
-    guild_cmd_coll = db['guild_custom_commands']
-    custom_cmd_del = guild_cmd_coll.delete_one(filter={"guild_id": guild.id})
-    overall_del_count.append(custom_cmd_del.deleted_count)
-
-    total_del_count = 0
-    for each_count in overall_del_count:
-        total_del_count += each_count
-
-    successfully_deleted : bool = total_del_count == len(overall_del_count)
+    del_count = guilds_coll.delete_one(filter={"guild_id": guild.id})
     # Logging the info
-    if successfully_deleted:
+    if del_count!=0:
         log_string = (f"[{botFuncs.getDateTime()}] --> Left guild : {guild.name} , ID : {guild.id}\n\t"
-                      f"Deleted all the Guild's cache from Data Base")
+                      f"Deleted all the Guild's data from Data Base")
         botFuncs.log_func(log_string=log_string,
                           file_name=botData.guild_removed_EventLogFile)
     else:
         botFuncs.log_func(log_string=f"[{botFuncs.getDateTime()}] --> Left guild : {guild.name} , ID : {guild.id} \n\t"
-                                     f"There was something Unusual when clearing cache from Data Base",
+                                     f"There was something Unusual when clearing data from Data Base",
                           file_name=botData.guild_removed_EventLogFile)
 
 
@@ -198,6 +147,7 @@ my MongoDB Data Base Structure:
             guild_custom_commands,
             user_custom_commands
             
+            
         ** Each Dictionary below represents a single document for each collection in Data Base **
 
         bot_devs:
@@ -207,66 +157,52 @@ my MongoDB Data Base Structure:
             'user_id': 259708868144136202,
             'user_tag': 'Uranium#4939'
         }
-
-        guild_prefixes:
-        {
-            '_id': ObjectId('611e09b40c50cda36da35124'),
-            'guild_id': 733370530039857232,
-            'guild_name': 'STRUGGLES OF NOOB',
-            'prefix': '>'
-        }
-
-        guild_switches:
-        {   
-            '_id': ObjectId('611e09b50c50cda36da35140'),
-            'del_snipe_switch': True,
-            'diffReactLimit': 3,
-            'edit_snipe_switch': True,
-            'filterSwitch': False,
-            'guild_id': 733370530039857232,
-            'guild_name': 'STRUGGLES OF NOOB',
-            'pinSwitch': True,
-            'reactLimit': 7
-        }
-
-        guild_bannedwords:
-        {
-            '_id': ObjectId('611e09b50c50cda36da3515f'),
-            'banned_words': [
-                                'some',
-                                'banned',
-                                'words',
-                                'here'
-                            ],
-            'guild_id': 733370530039857232,
-            'guild_name': 'STRUGGLES OF NOOB'}
-        }
-
-        guild_custom_commands :
+        
+        guild_info:
         {
             '_id': ObjectId('611e473c927fcd303a681c8d'),
-            'guild_id' : 00000000000000000,
-            'guild_name' : 'guild name',
-            'custom_commands' : [
-                                    {
-                                        user_id : u0000000000,
-                                        user_tag : <discord tag of user who made command>,
-                                        command : <name of command>,
-                                        response : <response string to send for the command>,
-                                        need_prefix : true,
-                                        time_stamp : <time at which command was added>
-                                    },
-                                    {
-                                        user_id : u0000000111,
-                                        user_tag : <discord tag of user who made command>,
-                                        command : <name of command2>,
-                                        response : <response string to send for the command2>,
-                                        need_prefix : false,
-                                        time_stamp : <time at which command2 was added>
-                                    }
-                                ]
+            "guild_id": 182374298347298349,
+            "banned_words": [
+                "some",
+                "banned",
+                "words",
+                "here"
+            ],
+            "custom_commands": [
+                {
+                    "user_id": 259723423144136202,
+                    "user_tag": "user#0000",
+                    "command": "command word here",
+                    "response": "command response here",
+                    "need_prefix": false,
+                    "time_stamp": "23-02-2022 11:42:18"
+                },
+                {
+                    "user_id": 2523423423444136202,
+                    "user_tag": "user#0000",
+                    "command": "command word here2",
+                    "response": "command response here2",
+                    "need_prefix": true,
+                    "time_stamp": "23-02-2022 11:44:21"
+                }
+            ],
+            "del_snipe_switch": true,
+            "diffReactLimit": 3,
+            "edit_snipe_switch": true,
+            "filterSwitch": true,
+            "guild_name": "guild name here",
+            "pinSwitch": true,
+            "prefix": ">",
+            "reactLimit": 7,
+            "join-leave": {
+                "channel_id": 988062343434720219,
+                "join": "Hurray {user} joined {server}",
+                "leave": "{user} left {server}"
+            }
         }
-
+        
+        Note: In above Collection 'guild_info', 'join-leave' is optional from server to server. for some servers it might not exist. if tried to access it might give KeyError.
+        
         user_custom_commands:
         {
             '_id': ObjectId('611e473c927fcd303a681c8d'),

@@ -77,7 +77,7 @@ class CustomGroup(commands.Cog):
         Displays the list of guild specific commands which requires Prefix and their repsonses, for the guild in which command was used.
         """
         prefix = mongodbUtils.get_local_prefix(ctx.message)
-        guild_cmd_coll = self.db['guild_custom_commands']
+        guild_cmd_coll = self.db['guild_info']
         guild_doc = guild_cmd_coll.find_one({"guild_id":ctx.guild.id})
         all_cmds = guild_doc['custom_commands']
         custom_commands = []
@@ -195,7 +195,7 @@ class CustomGroup(commands.Cog):
         Displays the list of guild specific commands which doesn't requires Prefix and their repsonses, for the guild in which command was used.
         """
         prefix = mongodbUtils.get_local_prefix(ctx.message)
-        guild_cmd_coll = self.db['guild_custom_commands']
+        guild_cmd_coll = self.db['guild_info']
         guild_doc = guild_cmd_coll.find_one({"guild_id":ctx.guild.id})
         all_cmds = guild_doc['custom_commands']
         custom_commands = []
@@ -559,7 +559,7 @@ class CustomGroup(commands.Cog):
         response = command_response
 
 
-        guild_commands_coll = self.db['guild_custom_commands']
+        guild_commands_coll = self.db['guild_info']
         filter_dict = {
             "guild_id" : guild_id
         }
@@ -621,7 +621,7 @@ class CustomGroup(commands.Cog):
         response = command_response
 
 
-        guild_commands_coll = self.db['guild_custom_commands']
+        guild_commands_coll = self.db['guild_info']
         filter_dict = {
             "guild_id" : guild_id
         }
@@ -817,7 +817,7 @@ class CustomGroup(commands.Cog):
     @commands.guild_only()
     async def guild_remove(self,ctx,command_name):
         prefix = mongodbUtils.get_local_prefix(ctx.message)
-        guild_cmd_coll = self.db['guild_custom_commands']
+        guild_cmd_coll = self.db['guild_info']
         guild_doc = guild_cmd_coll.find_one({"guild_id":ctx.guild.id})
         custom_commands = guild_doc['custom_commands']
         if len(custom_commands) == 0:

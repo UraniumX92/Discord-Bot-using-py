@@ -8,7 +8,7 @@ from asyncUtils import log_and_raise
 
 class ModCommands(commands.Cog):
     def __init__(self,client):
-        self.client = client
+        self.client:commands.Bot = client
         self.owner_id = botData.owner_id
         self.db = mongodbUtils.db
 
@@ -18,8 +18,8 @@ class ModCommands(commands.Cog):
     @commands.has_permissions(manage_guild=True)
     async def banwords(self, ctx):
         banwStr = ""
-        banned_words_collection = self.db["guild_bannedwords"]
-        bWords_dict = banned_words_collection.find_one({"guild_id": (ctx.guild.id)},{"_id":0,"banned_words":1})
+        guilds_coll = self.db["guild_info"]
+        bWords_dict = guilds_coll.find_one({"guild_id": (ctx.guild.id)},{"_id":0,"banned_words":1})
         bannedWords = bWords_dict['banned_words']
 
         for word in bannedWords:
@@ -35,8 +35,8 @@ class ModCommands(commands.Cog):
     @commands.has_permissions(manage_guild=True)
     async def add(ctx, *, banword):
         word = banword.lower()
-        banned_words_collection = mongodbUtils.db["guild_bannedwords"]
-        bWords_dict = banned_words_collection.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "banned_words": 1})
+        giulds_coll = mongodbUtils.db["guild_info"]
+        bWords_dict = giulds_coll.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "banned_words": 1})
         bannedWords = bWords_dict['banned_words']
 
         if word in bannedWords:
@@ -45,7 +45,7 @@ class ModCommands(commands.Cog):
                                   mention_author=False)
         else:
             bannedWords.append(word)
-            banned_words_collection.update_one(filter={"guild_id":(ctx.guild.id)},
+            giulds_coll.update_one(filter={"guild_id":(ctx.guild.id)},
                                                update={"$set":{"banned_words":bannedWords}})
             return await ctx.send(f"Successfully added `{word}` to list of banned words",
                                   reference=ctx.message,
@@ -55,12 +55,12 @@ class ModCommands(commands.Cog):
     @commands.has_permissions(manage_guild=True)
     async def remove(ctx, *, banword):
         word = banword.lower()
-        banned_words_collection = mongodbUtils.db["guild_bannedwords"]
-        bWords_dict = banned_words_collection.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "banned_words": 1})
+        guilds_coll = mongodbUtils.db["guild_info"]
+        bWords_dict = guilds_coll.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "banned_words": 1})
         bannedWords = bWords_dict['banned_words']
         if word in bannedWords:
             bannedWords.remove(word)
-            banned_words_collection.update_one(filter={"guild_id":(ctx.guild.id)},
+            guilds_coll.update_one(filter={"guild_id":(ctx.guild.id)},
                                                update={"$set":{"banned_words":bannedWords}})
             return await ctx.send(f"Successfully removed `{word}` from list of banned words",
                                   reference=ctx.message,
@@ -79,8 +79,8 @@ class ModCommands(commands.Cog):
             if len(prefix) > 3 or not prefix.isascii() or prefix == '```':
                 raise ValueError
 
-            prefix_collection = self.db['guild_prefixes']
-            prefix_collection.update_one(filter={"guild_id": (ctx.guild.id)},
+            guilds_coll = self.db['guild_info']
+            guilds_coll.update_one(filter={"guild_id": (ctx.guild.id)},
                                          update={"$set":{"prefix": (prefix)}})
             await ctx.send(f"Successfully set `{prefix}` as prefix for this guild!",
                            reference=ctx.message,
@@ -97,8 +97,8 @@ class ModCommands(commands.Cog):
     @commands.group(invoke_without_command=True, aliases=['switches', 'swt'])
     @commands.has_permissions(manage_guild=True)
     async def switch(self, ctx):
-        switches_collection = self.db["guild_switches"]
-        local_switches = switches_collection.find_one({"guild_id":(ctx.guild.id)},{"_id":0,"guild_id":0,"guild_name":0})
+        guilds_coll = self.db["guild_info"]
+        local_switches = guilds_coll.find_one({"guild_id":(ctx.guild.id)},{"_id":0,"guild_id":0,"guild_name":0})
 
         embed = discord.Embed(title="Displaying Switches and data".title(), color=discord.Colour.dark_gold())
         for key, value in local_switches.items():
@@ -111,13 +111,13 @@ class ModCommands(commands.Cog):
     @switch.command(aliases=['filter', 'fswitch'])
     @commands.has_permissions(manage_guild=True)
     async def filter_switch(self, ctx, operator):
-        switches_collection = self.db["guild_switches"]
-        local_switches = switches_collection.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
+        guilds_coll = self.db["guild_info"]
+        local_switches = guilds_coll.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
 
         if operator == '+':
             local_switches['filterSwitch'] = True
-            switches_collection.update_one(filter={"guild_id":(ctx.guild.id)},
-                                           update={"$set":local_switches})
+            guilds_coll.update_one(filter={"guild_id":(ctx.guild.id)},
+                                   update={"$set":local_switches})
             await ctx.send(f'Message scanning for filtered words is Activated!', delete_after=6,
                            reference=ctx.message,
                            mention_author=False)
@@ -125,8 +125,8 @@ class ModCommands(commands.Cog):
             await ctx.message.delete()
         elif operator == '-':
             local_switches['filterSwitch'] = False
-            switches_collection.update_one(filter={"guild_id":(ctx.guild.id)},
-                                           update={"$set":local_switches})
+            guilds_coll.update_one(filter={"guild_id":(ctx.guild.id)},
+                                   update={"$set":local_switches})
             await ctx.send(f'Message scanning for filtered words is turned off.', delete_after=6,
                            reference=ctx.message,
                            mention_author=False)
@@ -136,19 +136,19 @@ class ModCommands(commands.Cog):
     @switch.command(aliases=['pswitch', 'psw'])
     @commands.has_permissions(manage_guild=True)
     async def p_switch(self, ctx, operator):
-        switches_collection = self.db["guild_switches"]
-        local_switches = switches_collection.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
+        guilds_coll = self.db["guilds_info"]
+        local_switches = guilds_coll.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
 
         if operator == '+':
             local_switches['pinSwitch'] = True
-            switches_collection.update_one(filter={"guild_id":(ctx.guild.id)},
+            guilds_coll.update_one(filter={"guild_id":(ctx.guild.id)},
                                            update={"$set":local_switches})
             await ctx.send(f"Bot feature 'Pin on Reactions' Activated!", delete_after=6,
                            reference=ctx.message,
                            mention_author=False)
         elif operator == '-':
             local_switches['pinSwitch'] = False
-            switches_collection.update_one(filter={"guild_id":(ctx.guild.id)},
+            guilds_coll.update_one(filter={"guild_id":(ctx.guild.id)},
                                            update={"$set":local_switches})
             await ctx.send(f"Bot feature 'Pin on Reactions' Deactivated!", delete_after=6,
                            reference=ctx.message,
@@ -157,20 +157,20 @@ class ModCommands(commands.Cog):
     @switch.command(aliases=['delsnipe', 'dsnipe'])
     @commands.has_permissions(manage_guild=True)
     async def del_snipe_switch(self, ctx, operator):
-        switches_collection = self.db["guild_switches"]
-        local_switches = switches_collection.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
+        guilds_coll = self.db["guilds_info"]
+        local_switches = guilds_coll.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
 
         if operator == '+':
             local_switches['del_snipe_switch'] = True
-            switches_collection.update_one(filter={"guild_id":(ctx.guild.id)},
-                                           update={"$set":local_switches})
+            guilds_coll.update_one(filter={"guild_id":(ctx.guild.id)},
+                                   update={"$set":local_switches})
             await ctx.send(f"Bot feature 'Snipe Deleted Message' Activated!", delete_after=6,
                            reference=ctx.message,
                            mention_author=False)
         elif operator == '-':
             local_switches['del_snipe_switch'] = False
-            switches_collection.update_one(filter={"guild_id":(ctx.guild.id)},
-                                           update={"$set":local_switches})
+            guilds_coll.update_one(filter={"guild_id":(ctx.guild.id)},
+                                   update={"$set":local_switches})
             await ctx.send(f"Bot feature 'Snipe Deleted Message' Deactivated!", delete_after=6,
                            reference=ctx.message,
                            mention_author=False)
@@ -178,19 +178,19 @@ class ModCommands(commands.Cog):
     @switch.command(aliases=['editsnipe', 'esnipe'])
     @commands.has_permissions(manage_guild=True)
     async def edit_snipe_switch(self, ctx, operator):
-        switches_collection = self.db["guild_switches"]
-        local_switches = switches_collection.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
+        guilds_coll = self.db["guilds_info"]
+        local_switches = guilds_coll.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
 
         if operator == '+':
             local_switches['edit_snipe_switch'] = True
-            switches_collection.update_one(filter={"guild_id":(ctx.guild.id)},
+            guilds_coll.update_one(filter={"guild_id":(ctx.guild.id)},
                                            update={"$set":local_switches})
             await ctx.send(f"Bot feature 'Snipe Edited Message' Activated!", delete_after=6,
                            reference=ctx.message,
                            mention_author=False)
         elif operator == '-':
             local_switches['edit_snipe_switch'] = False
-            switches_collection.update_one(filter={"guild_id":(ctx.guild.id)},
+            guilds_coll.update_one(filter={"guild_id":(ctx.guild.id)},
                                            update={"$set":local_switches})
             await ctx.send(f"Bot feature 'Snipe Edited Message' Deactivated!", delete_after=6,
                            reference=ctx.message,
@@ -204,12 +204,12 @@ class ModCommands(commands.Cog):
                                   reference=ctx.message,
                                   mention_author=False)
 
-        switches_collection = self.db["guild_switches"]
-        local_switches = switches_collection.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
+        guilds_coll = self.db["guilds_info"]
+        local_switches = guilds_coll.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
 
         local_switches['reactLimit'] = limit
-        switches_collection.update_one(filter={"guild_id":(ctx.guild.id)},
-                                       update={"$set":local_switches})
+        guilds_coll.update_one(filter={"guild_id":(ctx.guild.id)},
+                               update={"$set":local_switches})
         await ctx.send(f"Pin on Reactions : Reaction Limit changed to `{limit} reactions`",
                        reference=ctx.message,
                        mention_author=False)
@@ -222,11 +222,11 @@ class ModCommands(commands.Cog):
                                   reference=ctx.message,
                                   mention_author=False)
 
-        switches_collection = self.db["guild_switches"]
-        local_switches = switches_collection.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
+        guilds_coll = self.db["guilds_info"]
+        local_switches = guilds_coll.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
 
         local_switches['diffReactLimit'] = limit
-        switches_collection.update_one(filter={"guild_id":(ctx.guild.id)},
+        guilds_coll.update_one(filter={"guild_id":(ctx.guild.id)},
                                        update={"$set":local_switches})
         await ctx.send(f"Pin on Reactions : Number of different reactions limit changed to `{limit} Different reactions`",
                        reference=ctx.message,
@@ -522,8 +522,8 @@ class ModCommands(commands.Cog):
     @commands.guild_only()
     async def remove_custom_cmd(self,ctx,command_name):
         prefix = mongodbUtils.get_local_prefix(ctx.message)
-        guild_cmd_coll = self.db['guild_custom_commands']
-        guild_doc = guild_cmd_coll.find_one({"guild_id": ctx.guild.id})
+        guilds_coll = self.db['guilds_info']
+        guild_doc = guilds_coll.find_one({"guild_id": ctx.guild.id})
         custom_commands = guild_doc['custom_commands']
         if len(custom_commands) == 0:
             return await ctx.send(f"There are no custom commands added for this guild, use `{prefix}custom-help` to know how to add custom commands.",
@@ -565,7 +565,7 @@ class ModCommands(commands.Cog):
                 if waitMsg.content.lower() == 'y':
                     custom_commands = [dct for dct in custom_commands if dct['command'] != command_name]
                     guild_doc.update({'custom_commands': custom_commands})
-                    guild_cmd_coll.update_one(filter={"guild_id": ctx.guild.id},
+                    guilds_coll.update_one(filter={"guild_id": ctx.guild.id},
                                               update={"$set": guild_doc})
                     return await ctx.send(f"Succesfully Deleted the command from this server's commands list",
                                           reference=waitMsg,
@@ -575,6 +575,127 @@ class ModCommands(commands.Cog):
                                           reference=waitMsg,
                                           mention_author=False)
 
+    @commands.command(name='setchannel',aliases=['setch'])
+    @commands.has_permissions(manage_guild=True)
+    @commands.guild_only()
+    async def set_welcome_channel(self,ctx:commands.Context):
+        timeout = 60*3
+        valid_responses = ['y','yes','no','n']
+        guild_id = ctx.guild.id
+        channel_id = ctx.channel.id
+        guild_coll = self.db['guild_info']
+        guild_doc = guild_coll.find_one(filter={'guild_id':guild_id})
+        msg = await ctx.send("Are you sure you want to set this channel for Member's join/leave messages? (y/n)",reference=ctx.message,mention_author=False)
+
+        def check(msg:discord.Message):
+            return msg.author.id==ctx.author.id and ctx.channel.id==msg.channel.id and msg.content.lower() in valid_responses
+
+        try:
+            res_msg:discord.Message = await self.client.wait_for(event='message',check=check,timeout=timeout)
+        except asyncio.TimeoutError:
+            return await msg.delete()
+        else:
+            if res_msg.content.lower() in valid_responses[:2]:
+                try:
+                    join_leave_dict = guild_doc['join-leave']
+                except KeyError:
+                    join_leave_dict = {}
+
+                join_leave_dict['channel_id'] = channel_id
+                guild_doc['join-leave'] = join_leave_dict
+                guild_coll.update_one(filter={'guild_id':guild_id},update={'$set':guild_doc})
+                return await ctx.send("Successfully set this channel for Member's join/leave messages.",reference=ctx.message,mention_author=False)
+            else:
+                return await ctx.send("Process terminated succesfully!",reference=ctx.message,mention_author=False)
+
+    @commands.command(name='setmessage',aliases=['setmsg'])
+    @commands.has_permissions(manage_guild=True)
+    @commands.guild_only()
+    async def set_welcome_message(self, ctx:commands.Context, msg_type):
+        joinL = ['join','welcome']
+        removeL = ['leave','remove']
+        if msg_type in joinL:
+            msg_type = joinL[0]
+        elif msg_type in removeL:
+            msg_type = removeL[0]
+        else:
+            raise commands.BadArgument('Wrong type of argument')
+
+        timeout = 60 * 3
+        char_limit = 350
+        guild_id = ctx.guild.id
+        channel_id = ctx.channel.id
+        guild_coll = self.db['guild_info']
+        guild_doc = guild_coll.find_one(filter={'guild_id': guild_id})
+        try:
+            join_leave_dict = guild_doc['join-leave']
+            channelx = join_leave_dict['channel_id']
+        except KeyError:
+            prefix = mongodbUtils.get_local_prefix(ctx.message)
+            str_to_send = (f"Oops! Looks like you haven't set your join/leave channel. please first set your join/leave channel using  this command` {prefix}setchannel` in the desired channel."
+                           f" then use this command again `{prefix}setmsg {msg_type}`.")
+            return await ctx.send(str_to_send)
+        else:
+            str_to_send = (f"```\n"
+                           "{server} --> This will be replaced by the name of your server\n"
+                           "{user}   --> This will be replaced by the mention of user who joined\n"
+                           "Example for message when user joins:\n"
+                           f"\"Hi {{user}}, welcome to {{server}}\" will be displayed as: \"Hi {ctx.author}, welcome to {ctx.guild.name}\"\n"
+                           f"Now Enter the message which you want to display when a member {msg_type}s this server:\n"
+                           f"```")
+            msg = await ctx.send(str_to_send,reference=ctx.message,mention_author=False)
+
+            def check(msg):
+                return msg.author.id == ctx.author.id and ctx.channel.id == msg.channel.id
+
+            try:
+                res_msg = await self.client.wait_for(event='message',check=check,timeout=timeout)
+            except asyncio.TimeoutError:
+                return await msg.delete()
+            else:
+                event_str = res_msg.content
+                if len(event_str)>char_limit:
+                    return await ctx.send(f"Message length is too long. limit is {char_limit} characters.")
+
+                join_leave_dict[msg_type] = event_str
+                guild_doc['join-leave'] = join_leave_dict
+                guild_coll.update_one(filter={'guild_id':guild_id},update={'$set':guild_doc})
+                return await ctx.send(f"Succesfully sent the message for when users {msg_type}s the server as:\n"
+                                      f"```\n"
+                                      f"{event_str}\n"
+                                      f"```")
+
+    @commands.command(name='disablejoinleave', aliases=['djl','disjl'])
+    @commands.has_permissions(manage_guild=True)
+    @commands.guild_only()
+    async def disable_join_leave_setting(self,ctx):
+        timeout = 60 * 3
+        valid_responses = ['y', 'yes', 'no', 'n']
+        guild_id = ctx.guild.id
+
+        try:
+            guild_coll = mongodbUtils.db['guild_info']
+            guild_doc = guild_coll.find_one(filter={'guild_id': guild_id})
+            join_leave_dict = guild_doc['join-leave']
+            test = join_leave_dict['channel_id']
+        except KeyError:
+            return await ctx.send("Join/Leave settings are already disabled for this server.",reference=ctx.message,mention_author=False)
+
+
+        msg = await ctx.send("Are you sure you want to disable join/leave settings? (y/n)")
+
+        def check(msg:discord.Message):
+            return msg.author.id==ctx.author.id and ctx.channel.id==msg.channel.id and msg.content.lower() in valid_responses
+
+        try:
+            res_msg:discord.Message = await self.client.wait_for(event='message',check=check,timeout=timeout)
+        except asyncio.TimeoutError:
+            return await msg.delete()
+        else:
+            if res_msg.content.lower() in valid_responses[:2]:
+                guild_doc['join-leave'] = {}
+                guild_coll.update_one(filter={'guild_id':guild_id},update={'$set':guild_doc})
+                return await ctx.send("Successfully disabled join/leave settings for this server",reference=ctx.message,mention_author=False)
 
     async def cog_command_error(self, ctx, error):
         """

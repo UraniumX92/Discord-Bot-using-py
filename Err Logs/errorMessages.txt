@@ -68,3 +68,4 @@ Error Message Logs Cleared at [14-08-2021 19:50:35]
 [18-04-2022 19:17:56] --> Uranium#4939: >type --Guild : "STRUGGLES OF NOOB" -- Channel: #members-joined
 [18-04-2022 19:39:32] --> Uranium#4939: >type 0 --Guild : "STRUGGLES OF NOOB" -- Channel: #members-joined
 [19-04-2022 10:58:00] --> Uranium#4939: >getquote --Guild : "STRUGGLES OF NOOB" -- Channel: #members-joined
+[19-06-2022 13:07:03] --> Uranium#4939: $setmsg join  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939

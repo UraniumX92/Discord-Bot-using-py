@@ -288,6 +288,54 @@ class UtilityCommands(commands.Cog):
                        reference=ctx.message,
                        mention_author=False)
 
+    @commands.command(name='gettimestamp',aliases=['tsnow'])
+    async def send_time(self,ctx,inc_dec_time=''):
+        ts_now = int(datetime.utcnow().timestamp())
+        if inc_dec_time=='':
+            return await ctx.send(f"`{ts_now}`",reference=ctx.message,mention_author=False)
+        else:
+            h,m,s = 0,0,0
+            operatorx = '+'
+            if inc_dec_time[0]=='-':
+                operatorx = '-'
+                inc_dec_time = inc_dec_time[1:]
+            elif inc_dec_time[0]=='+':
+                inc_dec_time = inc_dec_time[1:]
+
+            if 'h' in inc_dec_time:
+                h, inc_dec_time = inc_dec_time.split('h')
+            if 'm' in inc_dec_time:
+                m, inc_dec_time = inc_dec_time.split('m')
+            if 's' in inc_dec_time:
+                s, inc_dec_time = inc_dec_time.split('s')
+
+            try:
+                h = int(h)
+                m = int(m)
+                s = int(s)
+            except ValueError:
+                return await ctx.send("Invalid formatting", reference=ctx.message, mention_author=False)
+
+            if operatorx=='+':
+                ts_now += h*60*60
+                ts_now += m*60
+                ts_now += s
+            else:
+                ts_now -= h*60*60
+                ts_now -= m*60
+                ts_now -= s
+
+            return await ctx.send(f"`{ts_now}`",reference=ctx.message, mention_author=False)
+
+    @commands.command(name='fromtimestamp',aliases=['fromts'])
+    async def from_timestamp(self,ctx,ts):
+        formatstr = '%d-%m-%Y %H:%M:%S'
+        if not ts.isdigit():
+            return await ctx.send("Invalid Time stamp",reference=ctx.message,mention_author=False)
+        else:
+            ts = int(ts)
+            time_to_send = datetime.fromtimestamp(ts).strftime(formatstr)
+            return await ctx.send(f"**{time_to_send}**",reference=ctx.message,mention_author=False)
 
     async def cog_command_error(self, ctx, error):
         """

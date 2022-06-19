@@ -59,7 +59,9 @@ util_cmd_dict = {
     'nick': "set nick name of mentioned user",
     'snipe': "Get the deleted or edited message history by using this command within 1 minute of Deletion or Edition of message",
     'invite': "Get the invite link of bot, and invite the bot to your server!",
-    'ping': "Ping Pong! Get the reaction time of Bot using this command!"
+    'ping': "Ping Pong! Get the reaction time of Bot using this command!",
+    'tsnow {time_in_hours_min_sec}': "use this command to get the unix timestamp from UTC timezone. If you want your time then add or remove time like this +5h30m | -2h30m30s. Note that h,m,s should be strictly in order",
+    'fromts {timestamp}': "use this command to get Date and time from a unix timestamp"
 
 }
 
@@ -79,27 +81,30 @@ game_cmd_dict = {
 }
 
 modCmdDescription_dict = {
-    'purge'             : "Deletes the specified number of messages from the channel. if user is mentioned with this command, then deletes the user's messages from the specified number of messages given.",
-    'banword'           : "Type this command to add , remove banned words , can also show list of banwords",
-    'mute'              : "If User is having higher role than muted role, then bot moves the muted role above user's highest role \n\tand then mutes the user.",
-    'unmute'            : "Unmutes the user.",
-    'kick'              : "Kicks the user from guild.",
-    'ban'               : "Bans the user from guild.",
-    'unban'             : "Un-bans the user form guild.",
-    'switch'            : "shows the Switches and data",
-    'switch filter'     : "Turn the message filter for banwords on/off using +/-",
-    'switch pswitch'    : "Turn the 'Pin Message on Reactions' feature on/off using +/-",
-    'switch rlimit'     : "Bot Feature 'Pin Message on Reactions' : Set the number of reactions needed to pin the message ",
-    'switch difflimit'  : "Bot Feature 'Pin Message on Reactions' : Set the number of different reactions required to pin the message",
-    'switch delsnipe'   : "Bot Feature 'delete message snipe' : on/off",
-    'switch editsnipe'  : "Bot Feature 'edit message snipe' : on/off",
-    'pin'               : "Reply a message with this command to pin the referenced message",
-    'unpin'             : "Reply a message with this command to un-pin the referenced message",
-    'changevc'          : "use this command to move members within Voice Channels, if channel name is not provided , then it disconnects the mentioned user from VC",
-    'role add'          : "use this command to add role to mentioned user",
-    'role remove'       : "use this command to remove role from mentioned user",
-    'role show'         : "use this command to show the list of roles of mentioned user",
-    'removecmd | cmd-'  : "use this command to remove the custom command from server's Custom Commands"
+    'purge'                  : "Deletes the specified number of messages from the channel. if user is mentioned with this command, then deletes the user's messages from the specified number of messages given.",
+    'banword'                : "Type this command to add , remove banned words , can also show list of banwords",
+    'mute'                   : "If User is having higher role than muted role, then bot moves the muted role above user's highest role \n\tand then mutes the user.",
+    'unmute'                 : "Unmutes the user.",
+    'kick'                   : "Kicks the user from guild.",
+    'ban'                    : "Bans the user from guild.",
+    'unban'                  : "Un-bans the user form guild.",
+    'switch'                 : "shows the Switches and data",
+    'switch filter'          : "Turn the message filter for banwords on/off using +/-",
+    'switch pswitch'         : "Turn the 'Pin Message on Reactions' feature on/off using +/-",
+    'switch rlimit'          : "Bot Feature 'Pin Message on Reactions' : Set the number of reactions needed to pin the message ",
+    'switch difflimit'       : "Bot Feature 'Pin Message on Reactions' : Set the number of different reactions required to pin the message",
+    'switch delsnipe'        : "Bot Feature 'delete message snipe' : on/off",
+    'switch editsnipe'       : "Bot Feature 'edit message snipe' : on/off",
+    'pin'                    : "Reply a message with this command to pin the referenced message",
+    'unpin'                  : "Reply a message with this command to un-pin the referenced message",
+    'changevc'               : "use this command to move members within Voice Channels, if channel name is not provided , then it disconnects the mentioned user from VC",
+    'role add'               : "use this command to add role to mentioned user",
+    'role remove'            : "use this command to remove role from mentioned user",
+    'role show'              : "use this command to show the list of roles of mentioned user",
+    'removecmd | cmd-'       : "use this command to remove the custom command from server's Custom Commands",
+    'setchannel | setch'     : "use this command in a channel to set that channel for user join/leave messages",
+    'setmsg {msg_type}'      : "use this command to set the messages to be sent by bot when a user joins/leaves the server, in place of 'msg_type' you can write 'join'/'leave' to set the respective messages",
+    'disablejoinleave | djl' : "use this command to disable the setting of user join/leave messages"
 }
 
 devCmdDescription_dict = {
@@ -109,7 +114,8 @@ devCmdDescription_dict = {
     'logs messages' : "sends `errorMessages.txt` as `discord.File`",
     'logs clear' : "Enter the name of Logs file with this command to clear the specified Log File",
     'getf' : ("Use this command to get the files from source code by entering path (path starting from main directory)\n"
-              "if path is not provided, then shows the list of files which can be fetched using command")
+              "if path is not provided, then shows the list of files which can be fetched using command"),
+    'guilds' : "use this command to get the list of guilds of bot and their id's"
 }
 
 #-------------------------- Functions to create help prompt messages using real time prefix --------------------------#

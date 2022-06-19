@@ -61,7 +61,7 @@ async def on_ready():
     print(f"Bot went online on : [{botFuncs.getDateTime()}]")
 
 
-#  -------------------------------------------------- On Guild Join and Leave - Events -------------------------------------------------- #
+#  -------------------------------------------------- On Guild Join, Update and Leave - Events -------------------------------------------------- #
 @client.event
 async def on_guild_join(guild:discord.Guild):
     mongodbUtils.init_guild_join_settings(guild)
@@ -70,6 +70,17 @@ async def on_guild_join(guild:discord.Guild):
 async def on_guild_remove(guild:discord.Guild):
     mongodbUtils.init_guild_remove_settings(guild)
 
+@client.event
+async def on_guild_update(before:discord.Guild,after:discord.Guild):
+    if before.name != after.name:
+        guilds_coll = mongodbUtils.db['guild_info']
+        guild_doc = guilds_coll.find_one({'guild_id':after.id})
+        guild_doc['guild_name'] = after.name
+        guilds_coll.update_one({'guild_id':after.id}, {'$set':guild_doc},upsert=True)
+        upd_str = (f"[{botFuncs.getDateTime()}] --> Guild updated : {after.name} , ID : {after.id}\n"
+                   f"\tUpdated the guild name from '{before.name}' to '{after.name}'.")
+        botFuncs.log_func(upd_str,botData.guild_joined_EventLogFile)
+
 #  -------------------------------------------------- On Message Delete - Event -------------------------------------------------- #
 @client.event
 async def on_message_delete(message):
@@ -77,7 +88,7 @@ async def on_message_delete(message):
     def check(msg:discord.Message):
         return msg.channel.id == message.channel.id
     try:
-        switches_collection = mongodbUtils.db["guild_switches"]
+        switches_collection = mongodbUtils.db["guild_info"]
         local_switches = switches_collection.find_one({"guild_id": (message.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
         delSwitch = local_switches['del_snipe_switch']
     except AttributeError:
@@ -103,7 +114,7 @@ async def on_message_edit(before,after):
     def check(msg:discord.Message):
         return msg.channel.id == after.channel.id
     try:
-        switches_collection = mongodbUtils.db["guild_switches"]
+        switches_collection = mongodbUtils.db["guild_info"]
         local_switches = switches_collection.find_one({"guild_id": (after.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
         editSwitch = local_switches['edit_snipe_switch']
     except AttributeError:
@@ -161,7 +172,7 @@ async def on_raw_reaction_add(payload):
         and all of them can be controlled using their respective commands.
     """
     try:
-        switches_collection = mongodbUtils.db["guild_switches"]
+        switches_collection = mongodbUtils.db["guild_info"]
         local_switches = switches_collection.find_one({"guild_id": payload.guild_id}, {"_id": 0, "guild_id": 0, "guild_name": 0})
 
         react_limit_to_pin = local_switches['reactLimit']
@@ -195,6 +206,39 @@ async def on_raw_reaction_add(payload):
         pass
 
 
+#  -------------------------------------------- On Member Join/Leave - Events --------------------------------------------- #
+@client.event
+async def on_member_join(member:discord.Member):
+    guild:discord.Guild = member.guild
+    guild_coll = mongodbUtils.db['guild_info']
+    guild_doc = guild_coll.find_one({'guild_id':guild.id})
+    try:
+        join_leave_dict = guild_doc['join-leave']
+        channel:discord.TextChannel = guild.get_channel(join_leave_dict['channel_id'])
+        response:str = join_leave_dict['join']
+    except KeyError:
+        pass
+    else:
+        response = response.replace('{user}',f'{member.mention}')
+        response = response.replace('{server}',f'{guild.name}')
+        return await channel.send(response)
+
+@client.event
+async def on_member_remove(member:discord.Member):
+    guild: discord.Guild = member.guild
+    guild_coll = mongodbUtils.db['guild_info']
+    guild_doc = guild_coll.find_one({'guild_id': guild.id})
+    try:
+        join_leave_dict = guild_doc['join-leave']
+        channel: discord.TextChannel = guild.get_channel(join_leave_dict['channel_id'])
+        response: str = join_leave_dict['leave']
+    except KeyError:
+        pass
+    else:
+        response = response.replace('{user}', f'{member.mention}')
+        response = response.replace('{server}', f'{guild.name}')
+        return await channel.send(response)
+
 #  -------------------------------------------------- On Message - Event -------------------------------------------------- #
 @client.event
 async def on_message(message):
@@ -205,10 +249,13 @@ async def on_message(message):
         return
 
     try:
-        switches_collection = mongodbUtils.db["guild_switches"]
-        local_switches = switches_collection.find_one({"guild_id": message.guild.id}, {"_id": 0, "guild_id": 0, "guild_name": 0})
-        filterSwitch = local_switches['filterSwitch']
+        guild_collection = mongodbUtils.db["guild_info"]
+        guild_doc = guild_collection.find_one({"guild_id": message.guild.id}, {"_id":0, "guild_id":0, "guild_name":0})
+        banned_words = guild_doc['banned_words']
+        filterSwitch = guild_doc['filterSwitch']
     except AttributeError:
+        # If message is not sent in guild then use default settings
+        banned_words = botData.bannedWords
         filterSwitch = False
 
     # Listening for user exclusive commands
@@ -236,7 +283,7 @@ async def on_message(message):
 
     #  ------------------------------------- Reset bot prefix for guild ------------------------------------------------ #
     if any(mention in fullMsgList[0] for mention in bot_mentions) and " ".join(fullMsgList[1:]) == "reset prefix":
-        prefix_collection = mongodbUtils.db['guild_prefixes']
+        prefix_collection = mongodbUtils.db['guild_info']
         prefix_collection.update_one(filter={"guild_id": message.guild.id},
                                      update={"$set": {"prefix": str(default_bot_prefix)}})
         return await message.channel.send(f"Succesfully set `{default_bot_prefix}` as prefix for this guild!",
@@ -248,7 +295,7 @@ async def on_message(message):
     if (not fullMsgList[0] in banword_aliases) and filterSwitch:
         # If user is using banword command or filterSwitch is False, then this code won't execute.
 
-        if any(bnword in lowerMsgList for bnword in botData.bannedWords):
+        if any(bnword in lowerMsgList for bnword in banned_words):
             await message.add_reaction("❗")
             await message.channel.send(f"{userName} Watch your language!",
                                        reference=message,

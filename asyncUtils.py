@@ -112,8 +112,8 @@ async def guild_command_listener(message:discord.Message):
         # If message is not sent in a server, we return
         return False
 
-    guild_cmd_coll = mongodbUtils.db['guild_custom_commands']
-    guild_doc = guild_cmd_coll.find_one({"guild_id": guild.id})
+    guild_coll = mongodbUtils.db['guild_info']
+    guild_doc = guild_coll.find_one({"guild_id": guild.id})
     custom_commands = guild_doc['custom_commands']
     if len(custom_commands) == 0:
         # If the server is not having any custom commands yet, we return

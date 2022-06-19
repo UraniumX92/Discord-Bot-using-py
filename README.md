@@ -1,5 +1,19 @@
-# *Discord Bot v4.1.0 :*
+# *Discord Bot v4.2.0 :*
 ### ***New:***
+* DataBase Structure changes:
+  * Merged `guild_prefixes` `guild_bannedwords` `guild_custom_commands` `guild_switches` into 1 Collection named `guild_info`
+* New Features/Commands:
+  * Welcome/Goodbye messages when users join the server
+    * This feature can be initialized using `setchannel` commands. (Mod Command - Only server admins can use this)
+    * Set welcome message and goodbye message using `setmessage` command. (Mod Command - Only server admins can use this)
+  * 2 time related commands added in Utility Commands (Unix <-> Human readable):
+    * `timestampnow` -> gives the current unix timestamp from UTC. time zone can be modified using a format (see help command for utility commands)
+    * `fromtimestamp` -> takes the timestamp from unix and converts it into human-readable date-time
+  * Miscellaneous:
+    * Now `guild_name` will be updated in database as soon as name of a server is changed and the change is logged in `./Bot Event Logs/guild_joined.txt`
+    * Some other minor fixes
+  
+#### *Change Log from v4.1.0:*
 * Separate Cog for game commands
   * New Typing practice game
     * Random words : Type randomly selected words from top 100 or top 1000 most used English words.
@@ -15,8 +29,7 @@
     * `quotes.json` for using quotes in typing game and fun commands
     * `topwords100.json` for using in typing game
     * `topwords1000.json` for using in typing game
-  
-#### *Change Log from v4.0.21:*
+#### v4.0.21
 * ***TicTacToe Game added in Fun Commands***
   * Play TicTacToe against good AI
   * Play with your friends

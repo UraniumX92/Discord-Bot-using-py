@@ -288,6 +288,16 @@ class DevCommands(commands.Cog):
                 else:
                     raise error
 
+    @commands.command(name='guilds',aliases=['glds','gld','server','servers'])
+    @commands.check(mongodbUtils.is_dev)
+    async def show_guilds_info(self,ctx):
+        guilds = self.client.guilds
+        str = ''
+        for guild in guilds:
+            str+=f"`id: {guild.id}, name: {guild.name}`\n"
+        return await ctx.send(str,
+                              reference=ctx.message,
+                              mention_author=False)
 
     async def cog_command_error(self, ctx, error):
         """

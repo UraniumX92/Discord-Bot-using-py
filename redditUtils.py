@@ -1,12 +1,6 @@
-from enum import Enum
 import praw
-import prawcore.exceptions
-
-import botData
-import botFuncs
 import os
 from pprint import pprint
-import json
 
 client_id = os.environ['REDDIT_CLIENT_ID']
 client_secret = os.environ['REDDIT_CLIENT_SECRET']

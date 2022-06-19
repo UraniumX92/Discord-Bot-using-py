@@ -77,7 +77,7 @@ class HelpCommands(commands.Cog):
         del_after = 10
 
         if isinstance(error, commands.CheckFailure):
-            await ctx.send(f"{author.mention} you aren't eligible to use this command! Only Bot devs can use this command.", delete_after=del_after,
+            await ctx.send(f"{author.mention} you aren't eligible to use this command! Only Bot devs (or) Server Moderators can use this command.", delete_after=del_after,
                            reference=ctx.message,mention_author=False)
         elif isinstance(error,commands.NoPrivateMessage):
             await ctx.send(f"{author.mention}, You are not allowed to use this command in Direct Messages, use this command only in Servers!")

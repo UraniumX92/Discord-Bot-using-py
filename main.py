@@ -174,11 +174,10 @@ async def on_raw_reaction_add(payload):
     try:
         switches_collection = mongodbUtils.db["guild_info"]
         local_switches = switches_collection.find_one({"guild_id": payload.guild_id}, {"_id": 0, "guild_id": 0, "guild_name": 0})
-
         react_limit_to_pin = local_switches['reactLimit']
         pinSwitch = local_switches['pinSwitch']
         diff_reaction_limit = local_switches['diffReactLimit']
-    except AttributeError:
+    except (AttributeError, KeyError):
         return
 
     try:

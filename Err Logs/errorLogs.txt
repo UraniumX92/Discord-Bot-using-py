@@ -82,3 +82,5 @@ In content: Must be 2000 or fewer in length. -- In Guild : "STRUGGLES OF NOOB" -
 [18-04-2022 19:39:32] --> local variable 'i' referenced before assignment -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
 [19-04-2022 10:58:00] --> 'authro' -- In Guild : "STRUGGLES OF NOOB" -- Command User : Uranium#4939
 [19-06-2022 13:07:03] --> 'NoneType' object has no attribute 'id' -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+[20-06-2022 10:55:13] --> [Errno 22] Invalid argument -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+[20-06-2022 11:03:39] --> [Errno 22] Invalid argument -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939

@@ -289,32 +289,33 @@ class UtilityCommands(commands.Cog):
                        mention_author=False)
 
     @commands.command(name='gettimestamp',aliases=['tsnow'])
-    async def send_time(self,ctx,inc_dec_time=''):
+    async def send_time(self, ctx, shift_time=''):
+        shift_time = shift_time.lower()
         ts_now = int(datetime.utcnow().timestamp())
-        if inc_dec_time=='':
+        if shift_time== '':
             return await ctx.send(f"`{ts_now}`",reference=ctx.message,mention_author=False)
         else:
             h,m,s = 0,0,0
             operatorx = '+'
-            if inc_dec_time[0]=='-':
+            if shift_time[0]== '-':
                 operatorx = '-'
-                inc_dec_time = inc_dec_time[1:]
-            elif inc_dec_time[0]=='+':
-                inc_dec_time = inc_dec_time[1:]
+                shift_time = shift_time[1:]
+            elif shift_time[0]== '+':
+                shift_time = shift_time[1:]
 
-            if 'h' in inc_dec_time:
-                h, inc_dec_time = inc_dec_time.split('h')
-            if 'm' in inc_dec_time:
-                m, inc_dec_time = inc_dec_time.split('m')
-            if 's' in inc_dec_time:
-                s, inc_dec_time = inc_dec_time.split('s')
+            if 'h' in shift_time:
+                h, shift_time = shift_time.split('h')
+            if 'm' in shift_time:
+                m, shift_time = shift_time.split('m')
+            if 's' in shift_time:
+                s, shift_time = shift_time.split('s')
 
             try:
                 h = int(h)
                 m = int(m)
                 s = int(s)
             except ValueError:
-                return await ctx.send("Invalid formatting", reference=ctx.message, mention_author=False)
+                return await ctx.send("Invalid time formatting\nValid time format examples : `2h30m10s` `5H40S` `30m15s`", reference=ctx.message, mention_author=False)
 
             if operatorx=='+':
                 ts_now += h*60*60
@@ -329,13 +330,23 @@ class UtilityCommands(commands.Cog):
 
     @commands.command(name='fromtimestamp',aliases=['fromts'])
     async def from_timestamp(self,ctx,ts):
-        formatstr = '%d-%m-%Y %H:%M:%S'
+        months_list = ['january','february','march','april','may','june','july','august','september','october','november','december']
         if not ts.isdigit():
             return await ctx.send("Invalid Time stamp",reference=ctx.message,mention_author=False)
         else:
             ts = int(ts)
-            time_to_send = datetime.fromtimestamp(ts).strftime(formatstr)
-            return await ctx.send(f"**{time_to_send}**",reference=ctx.message,mention_author=False)
+            ampm = 'am'
+            try:
+                year,month,day,hour,minute,seconds,*_x = datetime.fromtimestamp(ts).timetuple()
+            except OSError:
+                return await ctx.send("`ERROR`: Given Timestamp is too long.",reference=ctx.message,mention_author=False)
+            else:
+                if hour>=12:
+                    hour = hour-12
+                    ampm = 'pm'
+
+                time_to_send = f"{day}-{botFuncs.capFistChar(months_list[month-1])}-{year} | {hour}:{minute}:{seconds} {ampm.upper()}"
+                return await ctx.send(f"**{time_to_send}**",reference=ctx.message,mention_author=False)
 
     async def cog_command_error(self, ctx, error):
         """

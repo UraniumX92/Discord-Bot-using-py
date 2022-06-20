@@ -11,7 +11,7 @@
     * `fromtimestamp` -> takes the timestamp from unix and converts it into human-readable date-time
   * Miscellaneous:
     * Now `guild_name` will be updated in database as soon as name of a server is changed and the change is logged in `./Bot Event Logs/guild_joined.txt`
-    * Some other minor fixes
+    * v4.2.1 : fixed some unhandled exceptions
   
 #### *Change Log from v4.1.0:*
 * Separate Cog for game commands

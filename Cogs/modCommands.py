@@ -136,7 +136,7 @@ class ModCommands(commands.Cog):
     @switch.command(aliases=['pswitch', 'psw'])
     @commands.has_permissions(manage_guild=True)
     async def p_switch(self, ctx, operator):
-        guilds_coll = self.db["guilds_info"]
+        guilds_coll = self.db["guild_info"]
         local_switches = guilds_coll.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
 
         if operator == '+':
@@ -157,7 +157,7 @@ class ModCommands(commands.Cog):
     @switch.command(aliases=['delsnipe', 'dsnipe'])
     @commands.has_permissions(manage_guild=True)
     async def del_snipe_switch(self, ctx, operator):
-        guilds_coll = self.db["guilds_info"]
+        guilds_coll = self.db["guild_info"]
         local_switches = guilds_coll.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
 
         if operator == '+':
@@ -178,7 +178,7 @@ class ModCommands(commands.Cog):
     @switch.command(aliases=['editsnipe', 'esnipe'])
     @commands.has_permissions(manage_guild=True)
     async def edit_snipe_switch(self, ctx, operator):
-        guilds_coll = self.db["guilds_info"]
+        guilds_coll = self.db["guild_info"]
         local_switches = guilds_coll.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
 
         if operator == '+':
@@ -204,7 +204,7 @@ class ModCommands(commands.Cog):
                                   reference=ctx.message,
                                   mention_author=False)
 
-        guilds_coll = self.db["guilds_info"]
+        guilds_coll = self.db["guild_info"]
         local_switches = guilds_coll.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
 
         local_switches['reactLimit'] = limit
@@ -222,7 +222,7 @@ class ModCommands(commands.Cog):
                                   reference=ctx.message,
                                   mention_author=False)
 
-        guilds_coll = self.db["guilds_info"]
+        guilds_coll = self.db["guild_info"]
         local_switches = guilds_coll.find_one({"guild_id": (ctx.guild.id)}, {"_id": 0, "guild_id": 0, "guild_name": 0})
 
         local_switches['diffReactLimit'] = limit
@@ -522,7 +522,7 @@ class ModCommands(commands.Cog):
     @commands.guild_only()
     async def remove_custom_cmd(self,ctx,command_name):
         prefix = mongodbUtils.get_local_prefix(ctx.message)
-        guilds_coll = self.db['guilds_info']
+        guilds_coll = self.db['guild_info']
         guild_doc = guilds_coll.find_one({"guild_id": ctx.guild.id})
         custom_commands = guild_doc['custom_commands']
         if len(custom_commands) == 0:

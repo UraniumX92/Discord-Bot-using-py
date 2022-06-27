@@ -14,6 +14,7 @@ from asyncUtils import change_presence
 import dotenv
 dotenv.load_dotenv()
 #------------------------------------------------------------------------------------------------------------------------#
+bot_number = int(os.environ['BOT_NUMBER'])
 default_bot_prefix = "$"
 operatorList = ["+","-","*"] # --> List of operators used in different commands to add , remove and show respectively
 #------------------------------------------------------------------------------------------------------------------------#
@@ -40,9 +41,9 @@ botFuncs.load_cogs(client)
 #  -------------------------------------------------- On Ready - Event -------------------------------------------------- #
 @client.event
 async def on_ready():
-    global owner_id
-    owner = client.get_user(owner_id)
     bot_devs_collection = mongodbUtils.db['bot_devs']
+    owner :discord.User = client.get_user(owner_id)
+    client_host_descriptions =[f"{owner}'s machine","primary repl"]
     owner_added = bot_devs_collection.find_one(filter={"user_id" : (owner_id)})
     if not owner_added:
         dev_dict = {
@@ -57,6 +58,10 @@ async def on_ready():
     else:
         print(f"Bot owner : {owner}  is Present in DataBase 'bot_devs'")
 
+    await owner.send(f"```\n"
+                     f"Pythonic Bot is now Online on {client_host_descriptions[bot_number].capitalize()}.\n"
+                     f"Time (UTC) : {botFuncs.getDateTime()}\n"
+                     f"```")
     print(f'{client.user} is online on discord.py version : {discord.__version__}')
     print(f"Bot went online on : [{botFuncs.getDateTime()}]")
 
@@ -336,4 +341,12 @@ async def on_command_error(ctx,error):
 BOT_TOKEN = os.environ['BOT_TOKEN']
 
 client.loop.create_task(change_presence(client=client))
-client.run(BOT_TOKEN)
+
+try:
+	client.run(BOT_TOKEN)
+except discord.HTTPException as err:
+    # For replit. if client gets rate limited, this will kill the process on replit, and restart repl in a different container. (different IP)
+	if err.status == 429:
+		print("Rate Limit Detected, restarting Repl")
+		os.kill(1,1)
+	print(err)

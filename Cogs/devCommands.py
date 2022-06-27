@@ -3,9 +3,11 @@ import botFuncs
 import botData
 import mongodbUtils
 import os
+import dotenv
 from discord.ext import commands
 from asyncUtils import log_and_raise
 
+dotenv.load_dotenv('../.env')
 
 class DevCommands(commands.Cog):
     def __init__(self,client):
@@ -298,6 +300,14 @@ class DevCommands(commands.Cog):
         return await ctx.send(str,
                               reference=ctx.message,
                               mention_author=False)
+
+    @commands.command(name="getbotnumber",aliases=['getbotnum','getbnum','getb#','get#'])
+    @commands.check(mongodbUtils.is_dev)
+    async def get_bot_number(self,ctx):
+        owner = self.client.get_user(self.client.owner_id)
+        bot_num = int(os.environ['BOT_NUMBER'])
+        description = [f"{owner}'s machine","primary repl"]
+        return await ctx.send(f"Current bot number : `{bot_num}`, **Running on {description[bot_num]}**",reference=ctx.message,mention_author=False)
 
     async def cog_command_error(self, ctx, error):
         """

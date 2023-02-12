@@ -24,7 +24,7 @@ class HelpCommands(commands.Cog):
                        reference=ctx.message,
                        mention_author=False)
 
-    @help.command(name="utility",aliases=['util'])
+    @help.command(name="utility",aliases=['util','utils'])
     async def util_help(self,ctx):
         util_help_embed = botData.help_embed(title="Utility Commands",dictx=botData.util_cmd_dict,member=ctx.author,client=self.client)
         await ctx.send(embed=util_help_embed,
@@ -62,6 +62,13 @@ class HelpCommands(commands.Cog):
     async def game_help_command(self,ctx:commands.Context):
         game_help_embed = botData.help_embed(title="Game Commands",dictx=botData.game_cmd_dict,member=ctx.author,client=self.client)
         await ctx.send(embed=game_help_embed,
+                       reference=ctx.message,
+                       mention_author=False)
+
+    @help.command(name="openai",aliases=['ai'])
+    async def openAI_help_command(self,ctx:commands.Context):
+        AI_help_embed = botData.help_embed(title="OpenAI Commands / AI commands",dictx=botData.ai_cmd_dict,member=ctx.author,client=self.client)
+        await ctx.send(embed=AI_help_embed,
                        reference=ctx.message,
                        mention_author=False)
 

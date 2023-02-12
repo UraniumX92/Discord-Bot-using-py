@@ -114,8 +114,8 @@ def getTenorList(category):
         resList = responseContent['results']
         listOfDict2 = list()
 
-        for dict in resList:
-            listOfDict2.append(dict['media'])
+        for dictt in resList:
+            listOfDict2.append(dictt['media'])
 
         urlsList = list()
 

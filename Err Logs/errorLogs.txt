@@ -84,3 +84,51 @@ In content: Must be 2000 or fewer in length. -- In Guild : "STRUGGLES OF NOOB" -
 [19-06-2022 13:07:03] --> 'NoneType' object has no attribute 'id' -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
 [20-06-2022 10:55:13] --> [Errno 22] Invalid argument -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
 [20-06-2022 11:03:39] --> [Errno 22] Invalid argument -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+[16-01-2023 08:38:28] --> 'User' object has no attribute 'icon_url' -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+[16-01-2023 08:39:46] --> 400 Bad Request (error code: 50035): Invalid Form Body
+In embed.author.icon_url: Scheme "./data files/chatgpt icon.png" is not supported. Scheme must be one of ('http', 'https').
+In embed.thumbnail.url: Scheme "./data files/chatgpt icon.png" is not supported. Scheme must be one of ('http', 'https'). -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+[16-01-2023 08:42:11] --> 400 Bad Request (error code: 50035): Invalid Form Body
+In embed.fields.0.value: Must be 1024 or fewer in length. -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+OpenAI error (Image) : err : Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system.,
+	prompt=lesbian girls kissing, 
+	channel: Direct Message with Uranium#4939, guild: None
+
+OpenAI error (Image) : err : Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system.,
+	prompt=Hitler and Donald trump shaking hands, 
+	channel: Direct Message with Uranium#4939, guild: None
+
+OpenAI error (Image) : err : Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system.,
+	prompt=Hitler and Donald trump, 
+	channel: Direct Message with Uranium#4939, guild: None
+
+OpenAI error (Image) : err : Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system.,
+	prompt=donald trump and narendra modi, 
+	channel: Direct Message with Uranium#4939, guild: None
+
+[26-01-2023 20:28:43] --> object Typing can't be used in 'await' expression -- In Guild : "headrub n payload" -- Command User : Uranium#4939
+[26-01-2023 20:28:45] --> object Typing can't be used in 'await' expression -- In Guild : "headrub n payload" -- Command User : Uranium#4939
+[26-01-2023 20:29:52] --> 'Typing' object has no attribute 'close' -- In Guild : "headrub n payload" -- Command User : Uranium#4939
+[26-01-2023 20:29:54] --> 'Typing' object has no attribute 'close' -- In Guild : "headrub n payload" -- Command User : Uranium#4939
+[26-01-2023 20:44:19] --> __aenter__ -- In Guild : "headrub n payload" -- Command User : Uranium#4939
+OpenAI error (Image) : err : Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system.,
+	prompt=20 yearl old hot and sexy white girl, 
+	channel: general, guild: headrub n payload
+
+OpenAI error (Image) : err : Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system.,
+	prompt=20 yearl old hot skinny white girl licking, 
+	channel: general, guild: headrub n payload
+
+OpenAI error (Image) : err : Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system.,
+	prompt=20 year old hot skinny white girl licking, 
+	channel: general, guild: headrub n payload
+
+OpenAI error (Image) : err : Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system.,
+	prompt=20 yearl old hot skinny white girl licking ice cream, 
+	channel: general, guild: headrub n payload
+
+OpenAI error (Image) : err : Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system.,
+	prompt=20 yearl old skinny white girl licking ice cream, 
+	channel: general, guild: headrub n payload
+
+[12-02-2023 18:26:45] --> name 'owner' is not defined -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939

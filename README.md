@@ -1,19 +1,35 @@
-# *Discord Bot v4.2.0 :*
+# *Discord Bot v4.3.0 :*
 ### ***New:***
+
+## AI Commands - Powered by [OpenAI](https://openai.com) 
+  * **GPTask**
+    * Ask ChatGPT3 model to write anything for you by giving some prompt text.
+  * **gptmean**
+    * Ask ChatGPT3 model anything and get a mean response.
+  * **gptgangsta**
+    * Ask ChatGPT3 model anything and it will reply in gangsta slang.
+  * **gptgenz**
+    * Ask ChatGPT3 model anything and it will reply in Gen-Z slang.
+  * **gptnerd**
+    * Ask ChatGPT3 model anything and it will taunt you and lectures you about some CS topic instead.
+  * **ImageAI** 
+    * Ask OpenAI Image generation model to create an image based on your given prompt text.
+***
+#### *Change Log from v4.2.0:*
 * DataBase Structure changes:
-  * Merged `guild_prefixes` `guild_bannedwords` `guild_custom_commands` `guild_switches` into 1 Collection named `guild_info`
+* Merged `guild_prefixes` `guild_bannedwords` `guild_custom_commands` `guild_switches` into 1 Collection named `guild_info`
 * New Features/Commands:
-  * Welcome/Goodbye messages when users join the server
+* Welcome/Goodbye messages when users join the server
     * This feature can be initialized using `setchannel` commands. (Mod Command - Only server admins can use this)
     * Set welcome message and goodbye message using `setmessage` command. (Mod Command - Only server admins can use this)
-  * 2 time related commands added in Utility Commands (Unix <-> Human readable):
+* 2 time related commands added in Utility Commands (Unix <-> Human readable):
     * `timestampnow` -> gives the current unix timestamp from UTC. time zone can be modified using a format (see help command for utility commands)
     * `fromtimestamp` -> takes the timestamp from unix and converts it into human-readable date-time
-  * Miscellaneous:
+* Miscellaneous:
     * Now `guild_name` will be updated in database as soon as name of a server is changed and the change is logged in `./Bot Event Logs/guild_joined.txt`
     * v4.2.1 : fixed some unhandled exceptions
-  
-#### *Change Log from v4.1.0:*
+
+#### v4.1.0  
 * Separate Cog for game commands
   * New Typing practice game
     * Random words : Type randomly selected words from top 100 or top 1000 most used English words.

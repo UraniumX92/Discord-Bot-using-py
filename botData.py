@@ -6,7 +6,7 @@ import os
 import dotenv
 dotenv.load_dotenv()
 
-owner_id = int(os.environ['MY_DISCORD_USER_ID'])
+owner_id = os.environ['MY_DISCORD_USER_ID']
 #--------------------------------------- Files ---------------------------------------#
 banWordFile = ("./Data Files/bannedWords.json")
 prefixesFile = ("./Data Files/prefixes.json")
@@ -46,7 +46,8 @@ help_cmd_dict = {
     'help custom' : "shows the help for Custom Commands",
     'help reddit' : "shows the help for Reddit Commands",
     'help (moderators | mods | mod)' : "shows the help for Moderator Commands",
-    'help (developers | devs | dev)' : "shows the help for Developer Commands"
+    'help (developers | devs | dev)' : "shows the help for Developer Commands",
+    'help (OpenAI | AI)' : "shows the help for OpenAI Commands",
 }
 
 util_cmd_dict = {
@@ -78,6 +79,15 @@ game_cmd_dict = {
     'hangman'        : "play a game of hangman.",
     'tictactoe help' : "shows commands to play tictactoe against AI or friends.",
     'typing help'    : "shows commands to play typing game (random words or quotes)."
+}
+
+ai_cmd_dict = {
+    'GPTask (gpt | aiask | askai)'      : "ask ChatGPT3 model to write anything for you by giving some prompt text.",
+    'gptmean (meanai | aimean)'         : "ask ChatGPT3 model anything and get a mean response.",
+    'gptgangsta (gangstai | aigangsta)' : "ask ChatGPT3 model anything and it will reply in gangsta slang.",
+    'gptgenz (genzai | aigenz)'         : "ask ChatGPT3 model anything and it will reply in Gen-Z slang.",
+    'gptnerd (nerdai | ainerd)'         : "ask ChatGPT3 model any.... you should learn some coding first.",
+    'imageAI (imgai | aiimg | genimg)'  : "ask OpenAI Image generation model to create an image based on your given prompt text.",
 }
 
 modCmdDescription_dict = {

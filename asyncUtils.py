@@ -6,7 +6,7 @@ import botData
 import mongodbUtils
 
 
-async def log_and_raise(client:commands.Bot,ctx:commands.Context,error):
+async def log_and_raise(client:commands.Bot,ctx:commands.Context,error:Exception):
     """
     util command to log the un-handled error and raise it, while sending basic error info to users as message
     """
@@ -27,7 +27,7 @@ async def log_and_raise(client:commands.Bot,ctx:commands.Context,error):
             erMsg.write(f"[{logTime}] --> {author}: {ctx.message.content} --Guild : \"{guild_name}\" -- Channel: #{channel_name}\n")
 
         await ctx.send(f"{author.mention}, Either bot doesn't have permission to do the task or you used the command incorrectly\n"
-                       f"an error has occurred, Please contact the Bot Dev `{owner}` with this info :\n ```[{logTime}] --> Error occured in command process, in guild: {guild_name} -- channel : #{ctx.message.channel}``` \n"
+                       f"an error has occurred, Please contact the Bot Dev `{owner}` with this info :\n ```[{logTime}] --> Error occured in command process, in guild: {guild_name} -- channel : #{ctx.channel}``` \n"
                        f"This message will be Deleted automatically after **{int(deleteAfter / 60)} minutes**, make sure you copy the error info before this gets deleted", delete_after=deleteAfter)
     except AttributeError:
         # If the error is raised in DM's, it will raise AttributeError, so we handle it here
@@ -37,7 +37,7 @@ async def log_and_raise(client:commands.Bot,ctx:commands.Context,error):
             erMsg.write(f"[{logTime}] --> {author}: {ctx.message.content}  -- Channel: #{channel_name} --Command User : {author}\n")
 
         await ctx.send(f"{author.mention}, Either bot doesn't have permission to do the task or you used the command incorrectly\n"
-                       f"an error has occurred, Please contact the Bot Dev `{owner}` with this info :\n ```[{logTime}] --> Error occured in command process, in channel #{ctx.message.channel}``` \n"
+                       f"an error has occurred, Please contact the Bot Dev `{owner}` with this info :\n ```[{logTime}] --> Error occured in command process, in channel #{ctx.channel}``` \n"
                        f"This message will be Deleted automatically after **{int(deleteAfter / 60)} minutes**, make sure you copy the error info before this gets deleted", delete_after=deleteAfter)
     raise error
 

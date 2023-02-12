@@ -71,3 +71,12 @@ Error Message Logs Cleared at [14-08-2021 19:50:35]
 [19-06-2022 13:07:03] --> Uranium#4939: $setmsg join  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
 [20-06-2022 10:55:13] --> Uranium#4939: $fromts 99999999999999  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
 [20-06-2022 11:03:39] --> Uranium#4939: $fromts 99999999999  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+[16-01-2023 08:38:28] --> Uranium#4939: $gpt write python code for hello world  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+[16-01-2023 08:39:46] --> Uranium#4939: $gpt write python code for hello world  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+[16-01-2023 08:42:11] --> Uranium#4939: $gpt write python code for hello world  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+[26-01-2023 20:28:43] --> Uranium#4939: +gpt hello --Guild : "headrub n payload" -- Channel: #general
+[26-01-2023 20:28:45] --> Uranium#4939: +gpt hello --Guild : "headrub n payload" -- Channel: #general
+[26-01-2023 20:29:52] --> Uranium#4939: +gpt hi --Guild : "headrub n payload" -- Channel: #general
+[26-01-2023 20:29:54] --> Uranium#4939: +gpt hi --Guild : "headrub n payload" -- Channel: #general
+[26-01-2023 20:44:19] --> Uranium#4939: +gpt hello man --Guild : "headrub n payload" -- Channel: #general
+[12-02-2023 18:26:45] --> Uranium#4939: $gptmean who are you?  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939

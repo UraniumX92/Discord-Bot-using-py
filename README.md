@@ -1,5 +1,9 @@
-# *Discord Bot v4.3.0 :*
+# *Discord Bot v4.3.1 :*
 ### ***New:***
+
+### Hotfix:
+  * *Optimized prompt engineering*
+  * *Removed imports which were previously used, but not in use currently*
 
 ## AI Commands - Powered by [OpenAI](https://openai.com) 
   * **GPTask**

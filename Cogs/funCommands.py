@@ -3,9 +3,6 @@ import botFuncs
 import botData
 import mongodbUtils
 import random
-import asyncio
-import tttgame
-import numpy as np
 from discord.ext import commands
 from asyncUtils import log_and_raise
 

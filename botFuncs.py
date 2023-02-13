@@ -3,7 +3,6 @@ import os
 from dotenv import load_dotenv
 import json
 import random
-import discord
 from discord.ext import commands
 import requests
 from datetime import datetime

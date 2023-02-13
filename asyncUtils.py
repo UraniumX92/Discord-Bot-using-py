@@ -10,7 +10,6 @@ async def log_and_raise(client:commands.Bot,ctx:commands.Context,error:Exception
     """
     util command to log the un-handled error and raise it, while sending basic error info to users as message
     """
-    bot_prefix = mongodbUtils.get_local_prefix(ctx.message)
     author = ctx.author
     channel_name = ctx.channel
     logTime = botFuncs.getDateTime()

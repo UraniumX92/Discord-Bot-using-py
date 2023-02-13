@@ -59,7 +59,7 @@ async def on_ready():
         print(f"Bot owner : {owner}  is Present in DataBase 'bot_devs'")
 
     await owner.send(f"```\n"
-                     f"Pythonic Bot is now Online on {client_host_descriptions[bot_number].capitalize()}.\n"
+                     f"{client.user} Bot is now Online on {client_host_descriptions[bot_number].capitalize()}.\n"
                      f"Time (UTC) : {botFuncs.getDateTime()}\n"
                      f"```")
     print(f'{client.user} is online on discord.py version : {discord.__version__}')

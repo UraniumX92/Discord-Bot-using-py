@@ -17,19 +17,22 @@ class OpenAI_Commands(commands.Cog):
         self.client = client
         self.owner_id = botData.owner_id
 
-    def get_prompt(self,owner,prefix,user,question,endstring):
-        return (f"Your name is Pythonic.\n"
-                f"You are a Discord Bot created by {owner}, using Python, with some AI features (powered by OpenAI)\n"
-                f"{owner} is a programmer who is a CS enthusiast, interested in cryptography and algorithms.\n"
-                f"You can be used to moderate servers,\n"
-                f"play some games like tictactoe against human or bot, hangman, check your typing speed etc,\n"
-                f"there are other fun and utility commands too. which can be checked using this command : {prefix}help\n"
-                f"Your code's GitHub Repository is at https://github.com/UraniumX92/Discord-Bot-using-py\n"
-                f"a discord user named \"{user}\" asked you this question:\n"
-                f"\"{question}\"\n"
-                f"if question is about your creator or about you, then only give the required information from info mentioned above (at beginning).\n"
-                f"if they are asking about themselves, then tell their name ({user}) and any info you have about them.\n"
-                f"{endstring}")
+    def get_prompt(self,owner,prefix,user,question,endstring,exinfo=False):
+        client_name = str(self.client.user).split("#")[0]
+        promptstr = (f"Your name is {client_name}.\n"
+                      f"You are a Discord Bot created by {owner}, using Python, with some AI features (powered by OpenAI)\n")
+        if exinfo:
+            promptstr += (f"{owner} is a programmer who is a CS enthusiast, interested in cryptography and algorithms.\n"
+                          f"You can be used to moderate servers,\n"
+                          f"play some games like tictactoe against human or bot, hangman, check user's typing speed etc,\n"
+                          f"there are other fun and utility commands too. which can be checked using this command : {prefix}help\n"
+                          f"Your code's GitHub Repository is at https://github.com/UraniumX92/Discord-Bot-using-py\n")
+
+        promptstr += (f"a discord user named \"{user}\" asked you this question:\n"
+                      f"\"{question}\"\n"
+                      f"if question is about your creator or about you, then only give the required information from info mentioned above (at beginning).\n"
+                      f"if they are asking about themselves, then tell their name ({user}) and any info you have about them.\n")
+        return promptstr + endstring
 
     @commands.command(name="openAIhelp",aliases=['aihelp','helpai','ai-help','help-ai','ai'])
     async def openAI_help(self,ctx:commands.Context):
@@ -45,11 +48,26 @@ class OpenAI_Commands(commands.Cog):
             async with ctx.channel.typing():
                 owner = await self.client.fetch_user(self.owner_id)
                 prefix = mongodbUtils.get_local_prefix(ctx.message)
-                prompt = self.get_prompt(owner=str(owner),endstring=f"Now respond to {ctx.author}'s question:",prefix=prefix,user=str(ctx.author),question=question)
-                completions = openai.Completion.create(engine="text-davinci-003", prompt=prompt, max_tokens=2048, n=1, stop=None, temperature=0.9)
+                prompt = self.get_prompt(
+                    owner=str(owner),
+                    endstring=f"Now respond to {ctx.author}'s question:",
+                    prefix=prefix,
+                    user=str(ctx.author),
+                    question=question,
+                    exinfo=True
+                )
+                completions = openai.Completion.create(
+                    engine="text-davinci-003",
+                    prompt=prompt,
+                    max_tokens=2048,
+                    n=1, stop=None,
+                    temperature=0.9
+                )
                 embed = discord.Embed(color=discord.Colour.from_rgb(23, 255, 170))
-                embed.set_author(name="Powered by ChatGPT (OpenAI)",url="https://openai.com",
-                                 icon_url="https://stories.techncyber.com/wp-content/uploads/2022/12/chat-gpt-logo.jpg")
+                embed.set_author(
+                    name="Powered by ChatGPT (OpenAI)",url="https://openai.com",
+                    icon_url="https://stories.techncyber.com/wp-content/uploads/2022/12/chat-gpt-logo.jpg"
+                )
                 response = completions.choices[0].text
                 size = len(response)
                 msg = None
@@ -76,13 +94,22 @@ class OpenAI_Commands(commands.Cog):
                 endstring = (f"Now respond to {ctx.author}'s question in as mean and agressive way as you can, don't be nice and appreciative, mock them if you can\n"
                              f"{ctx.author} is lying if they are talking about any of their achievements etc. call them liar if they do and deny it... or ignore if they don't talk about achievments.\n"
                              f"if they are asking for any kind of help, they are lying, so call them out for lying and tell them that they have no such issue\n"
+                             f"if they are requesting you to do something, then mock them for how silly and idiotic their request is.\n"
                              f"roast them for what they are asking and mock their name.")
-                prompt = self.get_prompt(owner=str(owner),endstring=endstring,prefix=prefix,user=str(ctx.author),question=question)
+                prompt = self.get_prompt(
+                    owner=str(owner),
+                    endstring=endstring,
+                    prefix=prefix,
+                    user=str(ctx.author),
+                    question=question
+                )
                 completions = openai.Completion.create(engine="text-davinci-003", prompt=prompt, max_tokens=2048, n=1,
                                                        stop=None, temperature=0.9)
                 embed = discord.Embed(color=discord.Colour.from_rgb(23, 255, 170))
-                embed.set_author(name="Powered by ChatGPT (OpenAI)", url="https://openai.com",
-                                 icon_url="https://stories.techncyber.com/wp-content/uploads/2022/12/chat-gpt-logo.jpg")
+                embed.set_author(
+                    name="Powered by ChatGPT (OpenAI)", url="https://openai.com",
+                    icon_url="https://stories.techncyber.com/wp-content/uploads/2022/12/chat-gpt-logo.jpg"
+                )
                 response = completions.choices[0].text
                 size = len(response)
                 msg = None
@@ -96,8 +123,9 @@ class OpenAI_Commands(commands.Cog):
         except Exception as err:
             if isinstance(err, (openai.OpenAIError, openai.error.InvalidRequestError)):
                 botFuncs.log_func(
-                    f"OpenAI error (chat) : err : {err},\n\tprompt={question}, \n\tchannel: {ctx.channel}, guild: {ctx.guild if ctx.guild else None}",
-                    botData.errorsLogFile)
+                    log_string=f"OpenAI error (chat) : err : {err},\n\tprompt={question}, \n\tchannel: {ctx.channel}, guild: {ctx.guild if ctx.guild else None}",
+                    file_name=botData.errorsLogFile
+                )
                 return await ctx.send("Some error occured at AI service, Please try again or try another prompt",
                                       reference=ctx.message, mention_author=False)
             else:
@@ -110,29 +138,46 @@ class OpenAI_Commands(commands.Cog):
             async with ctx.channel.typing():
                 prefix = mongodbUtils.get_local_prefix(ctx.message)
                 owner = await self.client.fetch_user(self.owner_id)
-                prompt = self.get_prompt(owner=str(owner),endstring=f"Now respond to {ctx.author}'s question in gangsta slang:",prefix=prefix,user=str(ctx.author),question=question)
-                completions = openai.Completion.create(engine="text-davinci-003", prompt=prompt, max_tokens=2048, n=1,
-                                                       stop=None, temperature=0.9)
+                prompt = self.get_prompt(
+                    owner=str(owner),
+                    endstring=f"Now respond to {ctx.author}'s question in gangsta slang:",
+                    prefix=prefix,
+                    user=str(ctx.author),
+                    question=question
+                )
+                completions = openai.Completion.create(
+                    engine="text-davinci-003",
+                    prompt=prompt,
+                    max_tokens=2048,
+                    n=1,
+                    stop=None,
+                    temperature=0.9
+                )
                 embed = discord.Embed(color=discord.Colour.from_rgb(23, 255, 170))
-                embed.set_author(name="Powered by ChatGPT (OpenAI)", url="https://openai.com",
-                                 icon_url="https://stories.techncyber.com/wp-content/uploads/2022/12/chat-gpt-logo.jpg")
+                embed.set_author(
+                    name="Powered by ChatGPT (OpenAI)", url="https://openai.com",
+                    icon_url="https://stories.techncyber.com/wp-content/uploads/2022/12/chat-gpt-logo.jpg"
+                )
                 response = completions.choices[0].text
                 size = len(response)
                 msg = None
                 if size > max_size:
                     for i in range((size // max_size) + 1):
-                        msg = await ctx.send(content=f"```\n{response[i * (max_size):(i + 1) * max_size]}\n```",
-                                             reference=ctx.message, mention_author=False)
+                        msg = await ctx.send(
+                            content=f"```\n{response[i * (max_size):(i + 1) * max_size]}\n```",
+                            reference=ctx.message,
+                            mention_author=False
+                        )
                 else:
                     msg = await ctx.send(f"```\n{response}\n```", reference=ctx.message, mention_author=False)
             return await ctx.send(embed=embed, reference=msg, mention_author=False)
         except Exception as err:
             if isinstance(err, (openai.OpenAIError, openai.error.InvalidRequestError)):
                 botFuncs.log_func(
-                    f"OpenAI error (chat) : err : {err},\n\tprompt={question}, \n\tchannel: {ctx.channel}, guild: {ctx.guild if ctx.guild else None}",
-                    botData.errorsLogFile)
-                return await ctx.send("Some error occured at AI service, Please try again or try another prompt",
-                                      reference=ctx.message, mention_author=False)
+                    log_string=f"OpenAI error (chat) : err : {err},\n\tprompt={question}, \n\tchannel: {ctx.channel}, guild: {ctx.guild if ctx.guild else None}",
+                    file_name=botData.errorsLogFile
+                )
+                return await ctx.send("Some error occured at AI service, Please try again or try another prompt",reference=ctx.message, mention_author=False)
             else:
                 raise err
 
@@ -143,27 +188,44 @@ class OpenAI_Commands(commands.Cog):
             async with ctx.channel.typing():
                 prefix = mongodbUtils.get_local_prefix(ctx.message)
                 owner = await self.client.fetch_user(self.owner_id)
-                prompt = self.get_prompt(owner=str(owner),endstring=f"Now respond to {ctx.author}'s question in gen-z slang, throw some emoji's aswell:",prefix=prefix,user=str(ctx.author),question=question)
-                completions = openai.Completion.create(engine="text-davinci-003", prompt=prompt, max_tokens=2048, n=1,
-                                                       stop=None, temperature=0.9)
+                prompt = self.get_prompt(
+                    owner=str(owner),
+                    endstring=f"Now respond to {ctx.author}'s question in gen-z slang, throw some emoji's aswell:",
+                    prefix=prefix,
+                    user=str(ctx.author),
+                    question=question
+                )
+                completions = openai.Completion.create(
+                    engine="text-davinci-003",
+                    prompt=prompt,
+                    max_tokens=2048,
+                    n=1,
+                    stop=None,
+                    temperature=0.9
+                )
                 embed = discord.Embed(color=discord.Colour.from_rgb(23, 255, 170))
-                embed.set_author(name="Powered by ChatGPT (OpenAI)", url="https://openai.com",
-                                 icon_url="https://stories.techncyber.com/wp-content/uploads/2022/12/chat-gpt-logo.jpg")
+                embed.set_author(
+                    name="Powered by ChatGPT (OpenAI)", url="https://openai.com",
+                    icon_url="https://stories.techncyber.com/wp-content/uploads/2022/12/chat-gpt-logo.jpg"
+                )
                 response = completions.choices[0].text
                 size = len(response)
                 msg = None
                 if size > max_size:
                     for i in range((size // max_size) + 1):
-                        msg = await ctx.send(content=f"```\n{response[i * (max_size):(i + 1) * max_size]}\n```",
-                                             reference=ctx.message, mention_author=False)
+                        msg = await ctx.send(
+                            content=f"```\n{response[i * (max_size):(i + 1) * max_size]}\n```",
+                            reference=ctx.message,
+                            mention_author=False
+                        )
                 else:
                     msg = await ctx.send(f"```\n{response}\n```", reference=ctx.message, mention_author=False)
             return await ctx.send(embed=embed, reference=msg, mention_author=False)
         except Exception as err:
             if isinstance(err, (openai.OpenAIError, openai.error.InvalidRequestError)):
                 botFuncs.log_func(
-                    f"OpenAI error (chat) : err : {err},\n\tprompt={question}, \n\tchannel: {ctx.channel}, guild: {ctx.guild if ctx.guild else None}",
-                    botData.errorsLogFile)
+                    log_string=f"OpenAI error (chat) : err : {err},\n\tprompt={question}, \n\tchannel: {ctx.channel}, guild: {ctx.guild if ctx.guild else None}",
+                    file_name=botData.errorsLogFile)
                 return await ctx.send("Some error occured at AI service, Please try again or try another prompt",
                                       reference=ctx.message, mention_author=False)
             else:

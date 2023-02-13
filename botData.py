@@ -2,7 +2,6 @@ import os
 import botFuncs
 import discord
 from discord.ext import commands
-import os
 import dotenv
 dotenv.load_dotenv()
 
@@ -125,7 +124,8 @@ devCmdDescription_dict = {
     'logs clear' : "Enter the name of Logs file with this command to clear the specified Log File",
     'getf' : ("Use this command to get the files from source code by entering path (path starting from main directory)\n"
               "if path is not provided, then shows the list of files which can be fetched using command"),
-    'guilds' : "use this command to get the list of guilds of bot and their id's"
+    'guilds' : "use this command to get the list of guilds of bot and their id's",
+    'getbotnumber' : "use this command to get the bot number, (to know whether the current instance of bot is running on cloud or on owner's local machine)"
 }
 
 #-------------------------- Functions to create help prompt messages using real time prefix --------------------------#

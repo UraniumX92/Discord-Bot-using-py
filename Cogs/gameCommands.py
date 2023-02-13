@@ -1,7 +1,6 @@
 import discord
 import botFuncs
 import botData
-import time
 import mongodbUtils
 import random
 import asyncio

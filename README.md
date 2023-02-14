@@ -1,6 +1,14 @@
-# *Discord Bot v4.3.1 :*
+# *Discord Bot v4.4.0 :*
 ### ***New:***
 
+  * Categorized all the prompt engineered commands differently.
+    * mean,gangsta,gen-z,nerd, ask - these modified commands now use a certain max length prompt.
+    * gpt | askgpt | chatgpt - this is vanilla command without prompt engineering.
+
+***
+
+
+#### *Change Log from v4.3.1:*
 ### Hotfix:
   * *Optimized prompt engineering*
   * *Removed imports which were previously used, but not in use currently*
@@ -9,17 +17,17 @@
   * **GPTask**
     * Ask ChatGPT3 model to write anything for you by giving some prompt text.
   * **gptmean**
-    * Ask ChatGPT3 model anything and get a mean response.
+    * Ask ChatGPT3 model anything, and get a mean response.
   * **gptgangsta**
-    * Ask ChatGPT3 model anything and it will reply in gangsta slang.
+    * Ask ChatGPT3 model anything, and it will reply in gangsta slang.
   * **gptgenz**
-    * Ask ChatGPT3 model anything and it will reply in Gen-Z slang.
+    * Ask ChatGPT3 model anything, and it will reply in Gen-Z slang.
   * **gptnerd**
-    * Ask ChatGPT3 model anything and it will taunt you and lectures you about some CS topic instead.
+    * Ask ChatGPT3 model anything, and it will taunt you and lectures you about some CS topic instead.
   * **ImageAI** 
     * Ask OpenAI Image generation model to create an image based on your given prompt text.
 ***
-#### *Change Log from v4.2.0:*
+#### v4.2.x
 * DataBase Structure changes:
 * Merged `guild_prefixes` `guild_bannedwords` `guild_custom_commands` `guild_switches` into 1 Collection named `guild_info`
 * New Features/Commands:

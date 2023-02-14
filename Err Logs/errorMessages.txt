@@ -80,3 +80,4 @@ Error Message Logs Cleared at [14-08-2021 19:50:35]
 [26-01-2023 20:29:54] --> Uranium#4939: +gpt hi --Guild : "headrub n payload" -- Channel: #general
 [26-01-2023 20:44:19] --> Uranium#4939: +gpt hello man --Guild : "headrub n payload" -- Channel: #general
 [12-02-2023 18:26:45] --> Uranium#4939: $gptmean who are you?  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939
+[14-02-2023 09:43:12] --> Uranium#4939: $gpt who are you?  -- Channel: #Direct Message with Uranium#4939 --Command User : Uranium#4939

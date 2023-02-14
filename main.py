@@ -348,5 +348,5 @@ except discord.HTTPException as err:
     # For replit. if client gets rate limited, this will kill the process on replit, and restart repl in a different container. (different IP)
 	if err.status == 429:
 		print("Rate Limit Detected, restarting Repl")
-		os.kill(1,1)
+		# os.kill(1,1)
 	print(err)

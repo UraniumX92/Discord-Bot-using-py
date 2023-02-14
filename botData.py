@@ -82,10 +82,12 @@ game_cmd_dict = {
 
 ai_cmd_dict = {
     'GPTask (gpt | aiask | askai)'      : "ask ChatGPT3 model to write anything for you by giving some prompt text.",
-    'gptmean (meanai | aimean)'         : "ask ChatGPT3 model anything and get a mean response.",
-    'gptgangsta (gangstai | aigangsta)' : "ask ChatGPT3 model anything and it will reply in gangsta slang.",
-    'gptgenz (genzai | aigenz)'         : "ask ChatGPT3 model anything and it will reply in Gen-Z slang.",
-    'gptnerd (nerdai | ainerd)'         : "ask ChatGPT3 model any.... you should learn some coding first.",
+    '**Modified AI commands:**'         : "commands listed below are modified AI, do not use long prompts for below commands",
+    'ask (askai | aiask)'               : "ask Modified ChatGPT3 model anything and get a response.",
+    'mean (meanai | aimean)'            : "ask Modified ChatGPT3 model anything and get a mean response.",
+    'gangsta (gangstai | aigangsta)'    : "ask Modified ChatGPT3 model anything and it will reply in gangsta slang.",
+    'genz (genzai | aigenz)'            : "ask Modified ChatGPT3 model anything and it will reply in Gen-Z slang.",
+    'nerd (nerdai | ainerd)'            : "ask Modified ChatGPT3 model any.... you should learn some coding first.",
     'imageAI (imgai | aiimg | genimg)'  : "ask OpenAI Image generation model to create an image based on your given prompt text.",
 }
 

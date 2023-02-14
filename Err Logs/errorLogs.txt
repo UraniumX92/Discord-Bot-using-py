@@ -132,3 +132,4 @@ OpenAI error (Image) : err : Your request was rejected as a result of our safety
 	channel: general, guild: headrub n payload
 
 [12-02-2023 18:26:45] --> name 'owner' is not defined -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939
+[14-02-2023 09:43:12] --> name 'question' is not defined -- In Channel : Direct Message with Uranium#4939 -- Command User : Uranium#4939

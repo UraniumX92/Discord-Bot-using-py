@@ -11,11 +11,13 @@ import dotenv
 dotenv.load_dotenv()
 openai.api_key = os.environ["OPENAI_API"]
 
+max_prompt_length = 180
+max_response_length = 1990
+
+def length_check(ctx:commands.Context):
+        return len(ctx.message.content) < max_prompt_length
 
 class OpenAI_Commands(commands.Cog):
-    max_prompt_length = 180
-    max_response_length = 190
-
     def __init__(self,client):
         self.client = client
         self.owner_id = botData.owner_id
@@ -31,22 +33,21 @@ class OpenAI_Commands(commands.Cog):
                           f"there are other fun and utility commands too. which can be checked using this command : {prefix}help\n"
                           f"Your code's GitHub Repository is at https://github.com/UraniumX92/Discord-Bot-using-py\n")
 
-        promptstr += (f"a discord user named \"{user}\" asked you this question:\n"
+        promptstr += (f"a discord user named \"{user}\" is asking you this question:\n"
                       f"\"{question}\"\n"
-                      f"if question is about your creator or about you, then only give the required information from info mentioned above (at beginning).\n"
-                      f"if they are asking about themselves, then tell their name ({user}) and any info you have about them.\n")
+                      f"- end of {user}'s question/query.")
         return promptstr + endstring
 
-    @classmethod
-    def length_check(cls,ctx:commands.Context):
-        return len(ctx.message.content) < cls.max_prompt_length
+    
 
     @commands.command(name="openAIhelp",aliases=['aihelp','helpai','ai-help','help-ai','ai'])
     async def openAI_help(self,ctx:commands.Context):
         AI_help_embed = botData.help_embed(title="OpenAI Commands / AI commands", dictx=botData.ai_cmd_dict,member=ctx.author, client=self.client)
-        await ctx.send(embed=AI_help_embed,
-                       reference=ctx.message,
-                       mention_author=False)
+        await ctx.send(
+            embed=AI_help_embed,
+            reference=ctx.message,
+            mention_author=False
+        )
 
     @commands.command(name="gpt",aliases=['askgpt','chatgpt'])
     async def askGPT(self,ctx:commands.Context,*,prompt):
@@ -67,9 +68,9 @@ class OpenAI_Commands(commands.Cog):
                 response = completions.choices[0].text
                 size = len(response)
                 msg = None
-                if size>self.max_response_length:
-                    for i in range((size//self.max_response_length)+1):
-                        msg = await ctx.send(content=f"```\n{response[i*(self.max_response_length):(i+1)*self.max_response_length]}\n```",reference=ctx.message,mention_author=False)
+                if size>max_response_length:
+                    for i in range((size//max_response_length)+1):
+                        msg = await ctx.send(content=f"```\n{response[i*(max_response_length):(i+1)*max_response_length]}\n```",reference=ctx.message,mention_author=False)
                 else:
                     msg = await ctx.send(f"```\n{response}\n```",reference=ctx.message,mention_author=False)
             return await ctx.send(embed=embed,reference=msg,mention_author=False)
@@ -79,7 +80,7 @@ class OpenAI_Commands(commands.Cog):
                     log_string=f"[{botFuncs.getDateTime()}] --> OpenAI error (chat) : err : {err},\n\tprompt={prompt}, \n\tchannel: {ctx.channel}, guild: {ctx.guild if ctx.guild else None}",
                     file_name=botData.errorsLogFile
                 )
-                return await ctx.send("Some error occured at AI service, Please try again or try another prompt",reference=ctx.message, mention_author=False)
+                return await ctx.send(f"An error occured at AI service, \n```\n{err}\n```\n Please try again or try another prompt",reference=ctx.message, mention_author=False)
             else:
                 raise err
 
@@ -113,16 +114,16 @@ class OpenAI_Commands(commands.Cog):
                 response = completions.choices[0].text
                 size = len(response)
                 msg = None
-                if size>self.max_response_length:
-                    for i in range((size//self.max_response_length)+1):
-                        msg = await ctx.send(content=f"```\n{response[i*(self.max_response_length):(i+1)*self.max_response_length]}\n```",reference=ctx.message,mention_author=False)
+                if size>max_response_length:
+                    for i in range((size//max_response_length)+1):
+                        msg = await ctx.send(content=f"```\n{response[i*(max_response_length):(i+1)*max_response_length]}\n```",reference=ctx.message,mention_author=False)
                 else:
                     msg = await ctx.send(f"```\n{response}\n```",reference=ctx.message,mention_author=False)
             return await ctx.send(embed=embed,reference=msg,mention_author=False)
         except Exception as err:
             if isinstance(err, (openai.OpenAIError, openai.error.InvalidRequestError)):
                 botFuncs.log_func(f"[{botFuncs.getDateTime()}] --> OpenAI error (chat) : err : {err},\n\tprompt={question}, \n\tchannel: {ctx.channel}, guild: {ctx.guild if ctx.guild else None}", botData.errorsLogFile)
-                return await ctx.send("Some error occured at AI service, Please try again or try another prompt",reference=ctx.message, mention_author=False)
+                return await ctx.send(f"An error occured at AI service, \n```\n{err}\n```\n Please try again or try another prompt",reference=ctx.message, mention_author=False)
             else:
                 raise err
 
@@ -155,9 +156,9 @@ class OpenAI_Commands(commands.Cog):
                 response = completions.choices[0].text
                 size = len(response)
                 msg = None
-                if size > self.max_response_length:
-                    for i in range((size // self.max_response_length) + 1):
-                        msg = await ctx.send(content=f"```\n{response[i * (self.max_response_length):(i + 1) * self.max_response_length]}\n```",
+                if size > max_response_length:
+                    for i in range((size // max_response_length) + 1):
+                        msg = await ctx.send(content=f"```\n{response[i * (max_response_length):(i + 1) * max_response_length]}\n```",
                                              reference=ctx.message, mention_author=False)
                 else:
                     msg = await ctx.send(f"```\n{response}\n```", reference=ctx.message, mention_author=False)
@@ -168,7 +169,7 @@ class OpenAI_Commands(commands.Cog):
                     log_string=f"[{botFuncs.getDateTime()}] --> OpenAI error (chat) : err : {err},\n\tprompt={question}, \n\tchannel: {ctx.channel}, guild: {ctx.guild if ctx.guild else None}",
                     file_name=botData.errorsLogFile
                 )
-                return await ctx.send("Some error occured at AI service, Please try again or try another prompt",
+                return await ctx.send(f"An error occured at AI service, \n```\n{err}\n```\n Please try again or try another prompt",
                                       reference=ctx.message, mention_author=False)
             else:
                 raise err
@@ -203,10 +204,10 @@ class OpenAI_Commands(commands.Cog):
                 response = completions.choices[0].text
                 size = len(response)
                 msg = None
-                if size > self.max_response_length:
-                    for i in range((size // self.max_response_length) + 1):
+                if size > max_response_length:
+                    for i in range((size // max_response_length) + 1):
                         msg = await ctx.send(
-                            content=f"```\n{response[i * (self.max_response_length):(i + 1) * self.max_response_length]}\n```",
+                            content=f"```\n{response[i * (max_response_length):(i + 1) * max_response_length]}\n```",
                             reference=ctx.message,
                             mention_author=False
                         )
@@ -219,7 +220,7 @@ class OpenAI_Commands(commands.Cog):
                     log_string=f"[{botFuncs.getDateTime()}] --> OpenAI error (chat) : err : {err},\n\tprompt={question}, \n\tchannel: {ctx.channel}, guild: {ctx.guild if ctx.guild else None}",
                     file_name=botData.errorsLogFile
                 )
-                return await ctx.send("Some error occured at AI service, Please try again or try another prompt",reference=ctx.message, mention_author=False)
+                return await ctx.send(f"An error occured at AI service, \n```\n{err}\n```\n Please try again or try another prompt",reference=ctx.message, mention_author=False)
             else:
                 raise err
 
@@ -253,10 +254,10 @@ class OpenAI_Commands(commands.Cog):
                 response = completions.choices[0].text
                 size = len(response)
                 msg = None
-                if size > self.max_response_length:
-                    for i in range((size // self.max_response_length) + 1):
+                if size > max_response_length:
+                    for i in range((size // max_response_length) + 1):
                         msg = await ctx.send(
-                            content=f"```\n{response[i * (self.max_response_length):(i + 1) * self.max_response_length]}\n```",
+                            content=f"```\n{response[i * (max_response_length):(i + 1) * max_response_length]}\n```",
                             reference=ctx.message,
                             mention_author=False
                         )
@@ -268,7 +269,7 @@ class OpenAI_Commands(commands.Cog):
                 botFuncs.log_func(
                     log_string=f"[{botFuncs.getDateTime()}] --> OpenAI error (chat) : err : {err},\n\tprompt={question}, \n\tchannel: {ctx.channel}, guild: {ctx.guild if ctx.guild else None}",
                     file_name=botData.errorsLogFile)
-                return await ctx.send("Some error occured at AI service, Please try again or try another prompt",
+                return await ctx.send(f"An error occured at AI service, \n```\n{err}\n```\n Please try again or try another prompt",
                                       reference=ctx.message, mention_author=False)
             else:
                 raise err
@@ -292,9 +293,9 @@ class OpenAI_Commands(commands.Cog):
                 response = completions.choices[0].text
                 size = len(response)
                 msg = None
-                if size > self.max_response_length:
-                    for i in range((size // self.max_response_length) + 1):
-                        msg = await ctx.send(content=f"```\n{response[i * (self.max_response_length):(i + 1) * self.max_response_length]}\n```",
+                if size > max_response_length:
+                    for i in range((size // max_response_length) + 1):
+                        msg = await ctx.send(content=f"```\n{response[i * (max_response_length):(i + 1) * max_response_length]}\n```",
                                              reference=ctx.message, mention_author=False)
                 else:
                     msg = await ctx.send(f"```\n{response}\n```", reference=ctx.message, mention_author=False)
@@ -304,7 +305,7 @@ class OpenAI_Commands(commands.Cog):
                 botFuncs.log_func(
                     f"[{botFuncs.getDateTime()}] --> OpenAI error (chat) : err : {err},\n\tprompt={question}, \n\tchannel: {ctx.channel}, guild: {ctx.guild if ctx.guild else None}",
                     botData.errorsLogFile)
-                return await ctx.send("Some error occured at AI service, Please try again or try another prompt",
+                return await ctx.send(f"An error occured at AI service, \n```\n{err}\n```\n Please try again or try another prompt",
                                       reference=ctx.message, mention_author=False)
             else:
                 raise err
@@ -323,7 +324,7 @@ class OpenAI_Commands(commands.Cog):
         except Exception as err:
             if isinstance(err, (openai.OpenAIError, openai.error.InvalidRequestError)):
                 botFuncs.log_func(f"[{botFuncs.getDateTime()}] --> OpenAI error (Image) : err : {err},\n\tprompt={prompt}, \n\tchannel: {ctx.channel}, guild: {ctx.guild if ctx.guild else None}", botData.errorsLogFile)
-                return await ctx.send("Some error occured at AI service, Please try again or try another prompt",reference=ctx.message,mention_author=False)
+                return await ctx.send(f"An error occured at AI service, \n```\n{err}\n```\n Please try again or try another prompt",reference=ctx.message,mention_author=False)
             else:
                 raise err
 
@@ -338,7 +339,7 @@ class OpenAI_Commands(commands.Cog):
         author = ctx.author
         del_after = 10
         if isinstance(error,commands.CheckFailure):
-            await ctx.send(f"{ctx.author.mention}, Prompt text is too long, you can only use {self.max_prompt_length} characters for this command. use `{prefix}gpt` command if you want to use longer prompts.")
+            await ctx.send(f"{ctx.author.mention}, Prompt text is too long, you can only use {max_prompt_length} characters for this command. use `{prefix}gpt` command if you want to use longer prompts.",delete_after=del_after)
         elif isinstance(error, commands.MissingPermissions):
             await ctx.send(f"{ctx.author.mention}, Either you, or Bot is Missing Permission to perform the task.", delete_after=del_after)
         elif isinstance(error, commands.NoPrivateMessage):

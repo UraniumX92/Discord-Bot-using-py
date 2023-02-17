@@ -1,6 +1,12 @@
-# *Discord Bot v4.4.0 :*
+# *Discord Bot v4.4.1 :*
 ### ***New:***
 
+### Hotfix:
+  * Fixed an unhandled error.
+  * Improved prompt used in prompt-engineered commands.
+  * Added better error message display for users.
+
+### ***New in v4.4.0:***
   * Categorized all the prompt engineered commands differently.
     * mean,gangsta,gen-z,nerd, ask - these modified commands now use a certain max length prompt.
     * gpt | askgpt | chatgpt - this is vanilla command without prompt engineering.
